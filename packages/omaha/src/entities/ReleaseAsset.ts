@@ -1,0 +1,66 @@
+import { Exclude } from 'class-transformer';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Asset } from './Asset';
+import { Release } from './Release';
+
+@Entity({ name: 'release_assets' })
+@Unique([ 'release', 'asset' ])
+export class ReleaseAsset {
+
+	@PrimaryGeneratedColumn({ unsigned: true })
+	@Exclude()
+	public id: number;
+
+	/**
+	 * The release that this asset is for.
+	 */
+	@ManyToOne(() => Release, release => release.assets, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'release_id' })
+	public release: Promise<Release>;
+
+	/**
+	 * The asset that this row represents for the release.
+	 */
+	@ManyToOne(() => Asset, { onDelete: 'CASCADE', eager: true })
+	@JoinColumn({ name: 'asset_id' })
+	public asset: Asset;
+
+	/**
+	 * The name of the file as it will be downloaded.
+	 */
+	@Column({ length: 256 })
+	public file_name: string;
+
+	/**
+	 * The name of the file within the storage system. This does not include the directory or path to the file, which
+	 * will be the repository's unique ID.
+	 */
+	@Column({ length: 256 })
+	@Exclude()
+	public object_name: string;
+
+	/**
+	 * The mime type of the file.
+	 */
+	@Column({ length: 64 })
+	public mime: string;
+
+	/**
+	 * The effective size of the file in storage.
+	 */
+	@Column({ type: 'bigint', unsigned: true })
+	public size: number;
+
+	/**
+	 * The time when this release was created.
+	 */
+	@CreateDateColumn()
+	public created_at: Date;
+
+	/**
+	 * The time when this release was last updated.
+	 */
+	@UpdateDateColumn()
+	public updated_at: Date;
+
+}

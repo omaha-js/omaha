@@ -1,0 +1,67 @@
+.notifications {
+	position: fixed;
+	top: 50px;
+	right: 50px;
+	width: 360px;
+	z-index: 1001;
+
+	.notification {
+		display: flex;
+		padding: 12px 20px 12px 14px;
+		margin: 0 0 10px;
+
+		background-color: $oc-dark-5;
+		border-radius: 4px;
+
+		cursor: pointer;
+		transition: background-color 200ms;
+
+		&:hover {
+			background-color: $oc-dark-6;
+		}
+
+		.notification-icon {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 20px;
+			height: 20px;
+			margin-right: 14px;
+			flex: 0 0 20px;
+
+			svg {
+				width: 18px;
+				height: 18px;
+			}
+		}
+
+		.notification-content {
+			h4 {
+				overflow: hidden;
+				text-overflow: ellipsis;
+
+				font-size: 14px;
+				font-weight: 700;
+				line-height: 20px;
+
+				height: 20px;
+				margin-bottom: 3px;
+			}
+
+			p {
+				font-size: 14px;
+				line-height: 1.35;
+				color: $oc-gray-5;
+				margin: 0;
+			}
+		}
+
+		@each $map, $name in $oc-color-list {
+			&.#{$name} {
+				.notification-icon, .notification-content h4 {
+					color: map-get($map, "6");
+				}
+			}
+		}
+	}
+}

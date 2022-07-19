@@ -1,0 +1,19 @@
+{
+	"private": true,
+	"scripts": {
+		"dev": "pnpm -r --parallel run dev"
+	},
+	"dependencies": {},
+	"devDependencies": {},
+	"pnpm": {
+		"peerDependencyRules": {
+			"ignoreMissing": [
+				"webpack",
+				"@popperjs/core"
+			],
+			"allowedVersions": {
+				"typeorm": "0.3.5"
+			}
+		}
+	}
+}

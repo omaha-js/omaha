@@ -1,0 +1,8 @@
+a[href] {
+	color: $oc-gray-6;
+	text-decoration: underline;
+
+	&:hover {
+		color: $oc-blue-8;
+	}
+}

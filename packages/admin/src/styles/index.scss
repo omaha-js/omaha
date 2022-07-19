@@ -1,0 +1,19 @@
+@import 'utilities/reset';
+@import 'components/kit/index';
+@import 'layout';
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+	-webkit-font-smoothing: antialiased;
+	font-size: 15px;
+	background-color: $oc-dark-7;
+}
+
+// Components
+@import 'components/layout/sidebar';
+@import 'components/layout/notifications';
+@import 'components/loader';
+@import 'components/tabs';
+
+// Special pages
+@import 'pages/login';
