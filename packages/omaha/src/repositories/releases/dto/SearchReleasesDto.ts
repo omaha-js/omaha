@@ -26,7 +26,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsIn([ 'true', '1', 'false', '0' ])
-	attachments?: 'true' | '1' | 'false' | '0';
+	include_attachments?: 'true' | '1' | 'false' | '0';
 
 	/**
 	 * Search for a version. This can be an exact version number, a version constraint (based on the driver used for

@@ -61,7 +61,7 @@ export class ReleasesService {
 		builder.andWhere('Release.repository_id = :id', repo);
 
 		// Artificial limiter when assets are enabled
-		if (params.attachments) {
+		if (params.includeAttachments) {
 			if (params.count === 0 || params.count > 100) {
 				params.count = 100;
 			}
@@ -77,7 +77,7 @@ export class ReleasesService {
 		builder.leftJoinAndSelect('Release.tags', 'Tag');
 
 		// Join attachments if enabled
-		if (params.attachments) {
+		if (params.includeAttachments) {
 			builder.leftJoinAndSelect('Release.attachments', 'ReleaseAttachment');
 			builder.leftJoinAndSelect('ReleaseAttachment.asset', 'Asset');
 		}
@@ -260,7 +260,7 @@ export class ReleasesService {
 export interface ReleaseSearchParams {
 	page: number;
 	count: number;
-	attachments: boolean;
+	includeAttachments: boolean;
 	constraint: string | undefined;
 	tags: string[];
 	sort: 'version' | 'date';

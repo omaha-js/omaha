@@ -23,7 +23,7 @@ export class ReleasesController {
 		return this.service.search(repo, {
 			page: dto.page ?? 1,
 			count: dto.count ?? 25,
-			attachments: ['1', 'true'].includes(dto.attachments ?? '0'),
+			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
 			constraint: dto.constraint ?? undefined,
 			tags: (dto.tags ?? '').split(/(?: *, *)+/).map(tag => tag.trim()).filter(tag => tag.length > 0),
 			sort: dto.sort ?? 'version',
