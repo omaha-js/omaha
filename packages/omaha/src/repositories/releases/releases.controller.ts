@@ -23,7 +23,7 @@ export class ReleasesController {
 		return this.service.search(repo, {
 			page: dto.page ?? 1,
 			count: dto.count ?? 25,
-			assets: ['1', 'true'].includes(dto.assets ?? '0'),
+			attachments: ['1', 'true'].includes(dto.attachments ?? '0'),
 			constraint: dto.constraint ?? undefined,
 			tags: (dto.tags ?? '').split(/(?: *, *)+/).map(tag => tag.trim()).filter(tag => tag.length > 0),
 			sort: dto.sort ?? 'version',
@@ -64,7 +64,7 @@ export class ReleasesController {
 		// Lazy load tags and assets
 		await Promise.all([
 			release.tags,
-			release.assets
+			release.attachments
 		]);
 
 		return release;

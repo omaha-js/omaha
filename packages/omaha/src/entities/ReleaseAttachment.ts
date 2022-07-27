@@ -3,9 +3,9 @@ import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGenerat
 import { Asset } from './Asset';
 import { Release } from './Release';
 
-@Entity({ name: 'release_assets' })
+@Entity({ name: 'release_attachments' })
 @Unique([ 'release', 'asset' ])
-export class ReleaseAsset {
+export class ReleaseAttachment {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
 	@Exclude()
@@ -14,7 +14,7 @@ export class ReleaseAsset {
 	/**
 	 * The release that this asset is for.
 	 */
-	@ManyToOne(() => Release, release => release.assets, { onDelete: 'CASCADE' })
+	@ManyToOne(() => Release, release => release.attachments, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'release_id' })
 	public release: Promise<Release>;
 

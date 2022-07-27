@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
-import { ReleaseAsset } from './ReleaseAsset';
+import { ReleaseAttachment } from './ReleaseAttachment';
 import { Repository } from './Repository';
 import { Tag } from './Tag';
 
@@ -64,10 +64,10 @@ export class Release {
 	public tags: Promise<Tag[]>;
 
 	/**
-	 * The asset uploads for this release.
+	 * The uploads for this release.
 	 */
-	@OneToMany(() => ReleaseAsset, asset => asset.release)
-	public assets: Promise<ReleaseAsset[]>;
+	@OneToMany(() => ReleaseAttachment, attachment => attachment.release)
+	public attachments: Promise<ReleaseAttachment[]>;
 
 	/**
 	 * The names of the tags that this release is assigned to. Requires the tags to have already been loaded.
@@ -81,11 +81,11 @@ export class Release {
 	/**
 	 * The names of the tags that this release is assigned to. Requires the tags to have already been loaded.
 	 */
-	@Expose({ name: 'assets' })
-	public get jsonAssetsProp() {
-		const assets: Tag[] = (this as any).__assets__;
-		if (!assets) return;
-		return assets;
+	@Expose({ name: 'attachments' })
+	public get jsonAttachmentsProp() {
+		const files: Tag[] = (this as any).__attachments__;
+		if (!files) return;
+		return files;
 	}
 
 }

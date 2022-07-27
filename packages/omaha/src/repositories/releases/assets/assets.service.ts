@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ReleaseAsset } from 'src/entities/ReleaseAsset';
+import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 import { Repository as TypeOrmRepository } from 'typeorm';
 
 @Injectable()
 export class AssetsService {
 
 	public constructor(
-		@InjectRepository(ReleaseAsset) private readonly repository: TypeOrmRepository<ReleaseAsset>,
+		@InjectRepository(ReleaseAttachment) private readonly repository: TypeOrmRepository<ReleaseAttachment>,
 	) {}
 
-	public async save(asset: ReleaseAsset) {
+	public async save(asset: ReleaseAttachment) {
 		return this.repository.save(asset);
 	}
 

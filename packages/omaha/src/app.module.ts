@@ -10,7 +10,7 @@ import { Collaboration } from './entities/Collaboration';
 import { Tag } from './entities/Tag';
 import { Asset } from './entities/Asset';
 import { Release } from './entities/Release';
-import { ReleaseAsset } from './entities/ReleaseAsset';
+import { ReleaseAttachment } from './entities/ReleaseAttachment';
 import { StorageModule } from './storage/storage.module';
 
 @Module({
@@ -32,7 +32,7 @@ import { StorageModule } from './storage/storage.module';
 				Tag,
 				Asset,
 				Release,
-				ReleaseAsset
+				ReleaseAttachment
 			],
 		}),
 		RepositoriesModule,

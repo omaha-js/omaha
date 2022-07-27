@@ -61,7 +61,7 @@ export class ReleasesService {
 		builder.andWhere('Release.repository_id = :id', repo);
 
 		// Artificial limiter when assets are enabled
-		if (params.assets) {
+		if (params.attachments) {
 			if (params.count === 0 || params.count > 100) {
 				params.count = 100;
 			}
@@ -76,10 +76,10 @@ export class ReleasesService {
 		// Join tags
 		builder.leftJoinAndSelect('Release.tags', 'Tag');
 
-		// Join assets if enabled
-		if (params.assets) {
-			builder.leftJoinAndSelect('Release.assets', 'ReleaseAsset');
-			builder.leftJoinAndSelect('ReleaseAsset.asset', 'Asset');
+		// Join attachments if enabled
+		if (params.attachments) {
+			builder.leftJoinAndSelect('Release.attachments', 'ReleaseAttachment');
+			builder.leftJoinAndSelect('ReleaseAttachment.asset', 'Asset');
 		}
 
 		// Include from tags array
@@ -181,12 +181,12 @@ export class ReleasesService {
 		if (release.draft && dto.draft === false) {
 			// Get the assets for both the repository and the release
 			const repoAssets = await repo.assets;
-			const releaseAssets = await release.assets;
+			const ReleaseAttachments = await release.attachments;
 
 			// Check if all required assets have an upload
 			for (const repoAsset of repoAssets) {
 				if (repoAsset.required) {
-					const asset = releaseAssets.find(asset => asset.asset.id === repoAsset.id);
+					const asset = ReleaseAttachments.find(asset => asset.asset.id === repoAsset.id);
 
 					if (!asset) {
 						throw new BadRequestException(`The ${repoAsset.name} asset is required before publishing`);
@@ -260,7 +260,7 @@ export class ReleasesService {
 export interface ReleaseSearchParams {
 	page: number;
 	count: number;
-	assets: boolean;
+	attachments: boolean;
 	constraint: string | undefined;
 	tags: string[];
 	sort: 'version' | 'date';

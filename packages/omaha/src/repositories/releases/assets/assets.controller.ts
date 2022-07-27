@@ -33,7 +33,7 @@ export class AssetsController {
 	@Get()
 	public async getAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
-		const asset = (await release.assets).find(asset => asset.asset.name.toLowerCase() === assetName.toLowerCase());
+		const asset = (await release.attachments).find(asset => asset.asset.name.toLowerCase() === assetName.toLowerCase());
 
 		if (!asset) {
 			throw new NotFoundException(`The specified asset was not found in the release`);
@@ -43,17 +43,17 @@ export class AssetsController {
 	}
 
 	@Post()
-	@UseScopes('repo.assets.manage')
+	@UseScopes('repo.releases.attachments.manage')
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
 	public async uploadAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
 		const repoAsset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
-		const releaseAsset = (await release.assets).find(asset => asset.asset.id === repoAsset.id);
+		const attachment = (await release.attachments).find(attachment => attachment.asset.id === repoAsset.id);
 
 		// Preflight checks
 		if (!file) throw new BadRequestException(`Missing file upload`);
 		if (!repoAsset) throw new NotFoundException(`The specified asset was not found in the repository`);
-		if (!release.draft) throw new BadRequestException(`Cannot upload assets to a published release`);
+		if (!release.draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
 
 		// Make sure the file exists
 		if (!fs.existsSync(file.path)) {
@@ -71,31 +71,31 @@ export class AssetsController {
 			// Clean up the file
 			await fs.promises.unlink(file.path);
 
-			// Update an existing release asset
-			if (releaseAsset) {
-				releaseAsset.file_name = file.originalname,
-				releaseAsset.object_name = saveName;
-				releaseAsset.mime = file.mimetype;
-				releaseAsset.size = file.size;
+			// Update an existing attachment
+			if (attachment) {
+				attachment.file_name = file.originalname,
+				attachment.object_name = saveName;
+				attachment.mime = file.mimetype;
+				attachment.size = file.size;
 
-				return await this.assets.save(releaseAsset);
+				return await this.assets.save(attachment);
 			}
 
-			// Create a new release asset
+			// Create a new attachment
 			else {
-				const asset = await this.assets.create();
-				asset.file_name = file.originalname;
-				asset.object_name = saveName;
-				asset.size = file.size;
-				asset.mime = file.mimetype;
-				asset.release = Promise.resolve(release);
-				asset.asset = repoAsset;
+				const attachment = await this.assets.create();
+				attachment.file_name = file.originalname;
+				attachment.object_name = saveName;
+				attachment.size = file.size;
+				attachment.mime = file.mimetype;
+				attachment.release = Promise.resolve(release);
+				attachment.asset = repoAsset;
 
-				return await this.assets.save(asset);
+				return await this.assets.save(attachment);
 			}
 		}
 		catch (err) {
-			this.logger.error('Asset upload failed:', err);
+			this.logger.error('Attachment upload failed:', err);
 
 			try { await fs.promises.unlink(file.path); }
 			catch (err) {}

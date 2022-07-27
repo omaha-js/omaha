@@ -21,12 +21,12 @@ export class SearchReleasesDto {
 	count?: number;
 
 	/**
-	 * Whether or not to include release assets in the results.
+	 * Whether or not to include attachments in the results.
 	 * @default '0'
 	 */
 	@IsOptional()
 	@IsIn([ 'true', '1', 'false', '0' ])
-	assets?: 'true' | '1' | 'false' | '0';
+	attachments?: 'true' | '1' | 'false' | '0';
 
 	/**
 	 * Search for a version. This can be an exact version number, a version constraint (based on the driver used for
