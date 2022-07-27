@@ -5,53 +5,29 @@
 export interface VersionSchemeDriver {
 
 	/**
-	 * Parses the given input into an object containing version parts for further use with the driver. If the input
-	 * is not a valid version string as per the driver's specifications, an error will be thrown.
+	 * Validates the given version string. Returns the validated (and/or reformatted) string if valid, or throws an
+	 * error otherwise.
 	 *
 	 * @param input
-	 * @throws `BadRequestException`
+	 * @throws BadRequestException
 	 */
-	parseVersionString(input: string): VersionParseResult;
+	validateVersionString(input: string): string;
 
 	/**
-	 * Converts a parsed `VersionParseResult` object back into a version string.
+	 * Filters the given array of versions and returns a new array containing all versions that fit the given
+	 * constraint in their original orders.
 	 *
-	 * @param parsed
+	 * @param versions
+	 * @param constraint
 	 */
-	getVersionString(parsed: VersionParseResult): string;
-
-}
-
-export interface VersionParseResult {
+	getVersionsFromConstraint(versions: string[], constraint: string): string[];
 
 	/**
-	 * The first (major) part of the version string.
+	 * Returns a new array of all given versions sorted in the specified direction.
+	 *
+	 * @param versions
+	 * @param direction
 	 */
-	versionPart1: number;
-
-	/**
-	 * The second (minor) part of the version string or `null` if not applicable.
-	 */
-	versionPart2: number | null;
-
-	/**
-	 * The third (patch) part of the version string or `null` if not applicable.
-	 */
-	versionPart3: number | null;
-
-	/**
-	 * The fourth (build) part of the version string or `null` if not applicable.
-	 */
-	versionPart4: number | null;
-
-	/**
-	 * The fifth (prerelease metadata) part of the version string or `null` if not applicable.
-	 */
-	versionMeta: string | null;
-
-	/**
-	 * The sixth (build metadata) part of the version string or `null` if not applicable.
-	 */
-	versionBuildMeta: string | null;
+	getVersionsSorted(versions: string[], direction: 'asc' | 'desc'): string[];
 
 }

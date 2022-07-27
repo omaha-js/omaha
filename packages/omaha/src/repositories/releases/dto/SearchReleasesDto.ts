@@ -29,8 +29,9 @@ export class SearchReleasesDto {
 	assets?: 'true' | '1' | 'false' | '0';
 
 	/**
-	 * Search for a version. This can be a semver constraint, version number, or tag name, and is checked in that order.
-	 * @default ''
+	 * Search for a version. This can be an exact version number, a version constraint (based on the driver used for
+	 * the repository), or tag name, and is checked in that order.
+	 * @default undefined
 	 */
 	@IsOptional()
 	@IsString()
@@ -59,5 +60,13 @@ export class SearchReleasesDto {
 	@IsOptional()
 	@IsIn([ 'desc', 'asc' ])
 	sort_order?: 'desc' | 'asc';
+
+	/**
+	 * The type of release to search for. Note that a relevant permission scope is required to see draft releases.
+	 * @default 'all'
+	 */
+	@IsOptional()
+	@IsIn([ 'draft', 'published', 'all' ])
+	status?: 'draft' | 'published' | 'all';
 
 }

@@ -19,8 +19,17 @@ export class ReleasesController {
 	) {}
 
 	@Get()
-	public async search(@Query() dto: SearchReleasesDto) {
-		return { todo: 'search', dto };
+	public async search(@Repo() repo: Repository, @Query() dto: SearchReleasesDto) {
+		return this.service.search(repo, {
+			page: dto.page ?? 1,
+			count: dto.count ?? 25,
+			assets: ['1', 'true'].includes(dto.assets ?? '0'),
+			constraint: dto.constraint ?? undefined,
+			tags: (dto.tags ?? '').split(/(?: *, *)+/).map(tag => tag.trim()).filter(tag => tag.length > 0),
+			sort: dto.sort ?? 'version',
+			sort_order: dto.sort_order ?? 'desc',
+			status: dto.status ?? 'all'
+		});
 	}
 
 	/**

@@ -6,7 +6,6 @@ import { Tag } from './Tag';
 
 @Entity({ name: 'releases' })
 @Unique([ 'repository', 'version' ])
-@Unique([ 'repository', 'versionPart1', 'versionPart2', 'versionPart3', 'versionPart4' ])
 export class Release {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
@@ -22,48 +21,6 @@ export class Release {
 	 */
 	@Column()
 	public version: string;
-
-	/**
-	 * The first segmented part of the version string used by the scheme driver to sort releases.
-	 */
-	@Column({ name: 'v1', type: 'smallint', unsigned: true, nullable: false })
-	@Exclude()
-	public versionPart1: number;
-
-	/**
-	 * The second segmented part of the version string used by the scheme driver to sort releases.
-	 */
-	@Column({ name: 'v2', type: 'smallint', unsigned: true, nullable: true, default: null })
-	@Exclude()
-	public versionPart2: number | null;
-
-	/**
-	 * The third segmented part of the version string used by the scheme driver to sort releases.
-	 */
-	@Column({ name: 'v3', type: 'smallint', unsigned: true, nullable: true, default: null })
-	@Exclude()
-	public versionPart3: number | null;
-
-	/**
-	 * The fourth segmented part of the version string used by the scheme driver to sort releases.
-	 */
-	@Column({ name: 'v4', type: 'smallint', unsigned: true, nullable: true, default: null })
-	@Exclude()
-	public versionPart4: number | null;
-
-	/**
-	 * The prerelease metadata segment from the version string if applicable.
-	 */
-	@Column({ name: 'vmeta_pre', length: 64, nullable: true, default: null })
-	@Exclude()
-	public versionMeta: string | null;
-
-	/**
-	 * The build metadata segment from the version string if applicable.
-	 */
-	@Column({ name: 'vmeta_build', length: 64, nullable: true, default: null })
-	@Exclude()
-	public versionBuildMeta: string | null;
 
 	/**
 	 * Whether or not this release is a draft.
@@ -119,6 +76,16 @@ export class Release {
 	public get jsonTagsProp() {
 		const tags: Tag[] = (this as any).__tags__ ?? [];
 		return tags.map(tag => tag.name);
+	}
+
+	/**
+	 * The names of the tags that this release is assigned to. Requires the tags to have already been loaded.
+	 */
+	@Expose({ name: 'assets' })
+	public get jsonAssetsProp() {
+		const assets: Tag[] = (this as any).__assets__;
+		if (!assets) return;
+		return assets;
 	}
 
 }

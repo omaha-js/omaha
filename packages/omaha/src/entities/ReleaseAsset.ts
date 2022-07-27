@@ -48,7 +48,7 @@ export class ReleaseAsset {
 	/**
 	 * The effective size of the file in storage.
 	 */
-	@Column({ type: 'bigint', unsigned: true })
+	@Column({ unsigned: true })
 	public size: number;
 
 	/**

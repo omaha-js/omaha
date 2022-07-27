@@ -95,4 +95,22 @@ export class TagsService {
 		});
 	}
 
+	/**
+	 * Returns the names of all tags available in the given repository.
+	 *
+	 * @param repo
+	 * @returns
+	 */
+	public async getAllTags(repo: Repository) {
+		const builder = this.repository.createQueryBuilder();
+
+		builder.select(['Tag.name as name']);
+		builder.where('Tag.repository_id = :id', repo);
+
+		const rows = await builder.getRawMany();
+		const tags = rows.map(row => row.name);
+
+		return tags;
+	}
+
 }

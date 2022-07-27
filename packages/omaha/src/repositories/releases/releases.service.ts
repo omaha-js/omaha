@@ -6,6 +6,7 @@ import { CreateReleaseDto } from './dto/CreateReleaseDto';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
+import { SearchReleasesDto } from './dto/SearchReleasesDto';
 
 @Injectable()
 export class ReleasesService {
@@ -49,8 +50,88 @@ export class ReleasesService {
 	/**
 	 * Searches for assets.
 	 */
-	public async search() {
+	public async search(repo: Repository, params: ReleaseSearchParams) {
+		const builder = this.repository.createQueryBuilder();
+		const tags = await this.tags.getAllTags(repo);
 
+		// Get all available version strings
+		const versions = await this.getAllVersions(repo, params.status);
+
+		// Repository scope
+		builder.andWhere('Release.repository_id = :id', repo);
+
+		// Artificial limiter when assets are enabled
+		if (params.assets) {
+			if (params.count === 0 || params.count > 100) {
+				params.count = 100;
+			}
+		}
+
+		// Count & page
+		if (params.count > 0) {
+			builder.limit(params.count);
+			builder.offset((params.page * params.count) - params.count);
+		}
+
+		// Join tags
+		builder.leftJoinAndSelect('Release.tags', 'Tag');
+
+		// Join assets if enabled
+		if (params.assets) {
+			builder.leftJoinAndSelect('Release.assets', 'ReleaseAsset');
+			builder.leftJoinAndSelect('ReleaseAsset.asset', 'Asset');
+		}
+
+		// Include from tags array
+		if (params.tags.length > 0) {
+			builder.andWhere('Tag.name IN (:tags)', {
+				tags: params.tags
+			});
+		}
+
+		// Draft status
+		if (params.status !== 'all') {
+			builder.andWhere('Release.draft = :draft', {
+				draft: params.status === 'draft' ? 1 : 0
+			});
+		}
+
+		// Constraint
+		if (params.constraint) {
+			// Implement tag constraint
+			if (tags.includes(params.constraint.toLowerCase())) {
+				builder.andWhere('Tag.name = :tag', {
+					tag: params.constraint.toLowerCase()
+				});
+			}
+
+			// Implement the constraint using the driver
+			else {
+				// Filter them using the driver
+				const filtered = repo.driver.getVersionsFromConstraint(versions, params.constraint);
+
+				// Apply the filter to the query
+				builder.andWhere('Release.version IN (:filtered)', { filtered });
+			}
+		}
+
+		// Sort by version (using driver)
+		if (params.sort === 'version') {
+			// Request sort order from driver
+			const sorted = repo.driver.getVersionsSorted(versions, params.sort_order);
+
+			builder.orderBy(`FIELD (Release.version, :sort_versions)`);
+			builder.setParameter('sort_versions', sorted);
+		}
+
+		// Sort by date
+		else if (params.sort === 'date') {
+			builder.orderBy('Release.published_at', params.sort_order.toUpperCase() as 'ASC' | 'DESC');
+		}
+
+		return {
+			releases: await builder.getMany()
+		};
 	}
 
 	/**
@@ -64,18 +145,12 @@ export class ReleasesService {
 			throw new BadRequestException('The specified version already exists within the repository');
 		}
 
-		// Parse the version string with the driver
-		const version = repo.driver.parseVersionString(dto.version);
+		// Validate the version string with the driver
+		const version = repo.driver.validateVersionString(dto.version);
 
 		// Create the release
 		const release = this.repository.create({
-			version: dto.version,
-			versionPart1: version.versionPart1,
-			versionPart2: version.versionPart2,
-			versionPart3: version.versionPart3,
-			versionPart4: version.versionPart4,
-			versionMeta: version.versionMeta,
-			versionBuildMeta: version.versionBuildMeta,
+			version,
 			draft: true,
 			description: dto.description,
 		});
@@ -154,4 +229,41 @@ export class ReleasesService {
 		});
 	}
 
+	/**
+	 * Returns an array of all version strings available in this repository.
+	 *
+	 * @param repo
+	 * @param status
+	 * @returns
+	 */
+	public async getAllVersions(repo: Repository, status: 'all' | 'draft' | 'published' = 'published'): Promise<string[]> {
+		const builder = this.repository.createQueryBuilder();
+
+		builder.select(['Release.version as version']);
+		builder.where('Release.repository_id = :id', repo);
+
+		if (status !== 'all') {
+			builder.andWhere('Release.draft = :draft', {
+				draft: status === 'draft' ? 1 : 0
+			});
+		}
+
+		const rows = await builder.getRawMany();
+		const versions = rows.map(row => row.version);
+
+		return versions;
+	}
+
+}
+
+
+export interface ReleaseSearchParams {
+	page: number;
+	count: number;
+	assets: boolean;
+	constraint: string | undefined;
+	tags: string[];
+	sort: 'version' | 'date';
+	sort_order: 'desc' | 'asc';
+	status: 'draft' | 'published' | 'all';
 }
