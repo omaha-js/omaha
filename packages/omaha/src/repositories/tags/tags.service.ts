@@ -101,7 +101,7 @@ export class TagsService {
 	 * @param repo
 	 * @returns
 	 */
-	public async getAllTags(repo: Repository) {
+	public async getAllTags(repo: Repository): Promise<string[]> {
 		const builder = this.repository.createQueryBuilder();
 
 		builder.select(['Tag.name as name']);
