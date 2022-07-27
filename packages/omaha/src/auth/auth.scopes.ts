@@ -65,8 +65,8 @@ export const RepositoryScopes = [
 		groups: ['owner', 'manager']
 	},
 	{
-		id: 'repo.releases.attachments.manage',
-		name: 'Upload release attachments',
+		id: 'repo.releases.attachments',
+		name: 'Manage release attachments',
 		description: `Allows clients to upload and delete files for draft releases`,
 		groups: ['owner', 'manager']
 	},

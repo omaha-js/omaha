@@ -43,7 +43,7 @@ export class AssetsController {
 	}
 
 	@Post()
-	@UseScopes('repo.releases.attachments.manage')
+	@UseScopes('repo.releases.attachments')
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
 	public async uploadAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
