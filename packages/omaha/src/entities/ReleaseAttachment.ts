@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { Asset } from './Asset';
 import { Release } from './Release';
@@ -23,6 +23,7 @@ export class ReleaseAttachment {
 	 */
 	@ManyToOne(() => Asset, { onDelete: 'CASCADE', eager: true })
 	@JoinColumn({ name: 'asset_id' })
+	@Transform(asset => (asset.value as Asset).name)
 	public asset: Asset;
 
 	/**
