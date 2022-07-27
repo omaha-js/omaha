@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, UnauthorizedException } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { User } from 'src/support/User';
+import { AuthScopes } from './auth.scopes';
 import { AuthService } from './auth.service';
 import { Guest } from './decorators/guest.decorator';
 import { LoginDto } from './dto/LoginDto';
@@ -84,6 +85,20 @@ export class AuthController {
 	@Guest(false)
 	public async passwordResetSubmit() {
 		throw new UnauthorizedException();
+	}
+
+	@Get('scopes')
+	@Guest()
+	public async getScopes(@User() token?: Token) {
+		return {
+			scopes: AuthScopes.map(scope => {
+				return {
+					...scope,
+					groups: undefined,
+					active: token ? token.scopes.includes(scope.id) : false
+				};
+			})
+		};
 	}
 
 }
