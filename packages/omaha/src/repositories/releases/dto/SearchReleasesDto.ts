@@ -46,6 +46,15 @@ export class SearchReleasesDto {
 	tags?: string;
 
 	/**
+	 * A comma-delimited list of assets to look for. When multiple assets are defined, releases that match any of them
+	 * will be included in the results.
+	 * @default '' // (all)
+	 */
+	@IsOptional()
+	@IsString()
+	assets?: string;
+
+	/**
 	 * The sorting algorithm to use for results.
 	 * @default 'version'
 	 */

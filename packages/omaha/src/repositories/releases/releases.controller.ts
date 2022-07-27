@@ -26,6 +26,7 @@ export class ReleasesController {
 			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
 			constraint: dto.constraint ?? undefined,
 			tags: (dto.tags ?? '').split(/(?: *, *)+/).map(tag => tag.trim()).filter(tag => tag.length > 0),
+			assets: (dto.assets ?? '').split(/(?: *, *)+/).map(asset => asset.trim()).filter(asset => asset.length > 0),
 			sort: dto.sort ?? 'version',
 			sort_order: dto.sort_order ?? 'desc',
 			status: dto.status ?? 'all'

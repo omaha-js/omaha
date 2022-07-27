@@ -6,7 +6,6 @@ import { CreateReleaseDto } from './dto/CreateReleaseDto';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
-import { SearchReleasesDto } from './dto/SearchReleasesDto';
 
 @Injectable()
 export class ReleasesService {
@@ -86,6 +85,13 @@ export class ReleasesService {
 		if (params.tags.length > 0) {
 			builder.andWhere('Tag.name IN (:tags)', {
 				tags: params.tags
+			});
+		}
+
+		// Include from attachments array
+		if (params.assets.length > 0) {
+			builder.andWhere('Asset.name IN (:assets)', {
+				assets: params.assets
 			});
 		}
 
@@ -263,6 +269,7 @@ export interface ReleaseSearchParams {
 	includeAttachments: boolean;
 	constraint: string | undefined;
 	tags: string[];
+	assets: string[];
 	sort: 'version' | 'date';
 	sort_order: 'desc' | 'asc';
 	status: 'draft' | 'published' | 'all';
