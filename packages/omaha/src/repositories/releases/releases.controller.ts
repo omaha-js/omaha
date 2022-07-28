@@ -20,16 +20,22 @@ export class ReleasesController {
 
 	@Get()
 	public async search(@Repo() repo: Repository, @Query() dto: SearchReleasesDto) {
+		const list = (input: string) => (input
+			.split(/(?: *, *)+/)
+			.map(tag => tag.trim())
+			.filter(tag => tag.length > 0)
+		);
+
 		return this.service.search(repo, {
-			page: dto.page ?? 1,
-			count: dto.count ?? 25,
+			page: dto.page ? Number(dto.page) : 1,
+			count: dto.count ? Number(dto.count) : 25,
 			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
 			constraint: dto.constraint ?? undefined,
-			tags: (dto.tags ?? '').split(/(?: *, *)+/).map(tag => tag.trim()).filter(tag => tag.length > 0),
-			assets: (dto.assets ?? '').split(/(?: *, *)+/).map(asset => asset.trim()).filter(asset => asset.length > 0),
+			tags: list(dto.tags ?? 'latest'),
+			assets: list(dto.assets ?? ''),
 			sort: dto.sort ?? 'version',
 			sort_order: dto.sort_order ?? 'desc',
-			status: dto.status ?? 'all'
+			status: dto.status ?? 'published'
 		});
 	}
 

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Release } from 'src/entities/Release';
 import { Repository } from 'src/entities/Repository';
 import { CreateReleaseDto } from './dto/CreateReleaseDto';
-import { Repository as TypeOrmRepository } from 'typeorm';
+import { In, Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
 
@@ -50,14 +50,21 @@ export class ReleasesService {
 	 * Searches for assets.
 	 */
 	public async search(repo: Repository, params: ReleaseSearchParams) {
-		const builder = this.repository.createQueryBuilder();
+		// Get available tag names and look for a matching constraint
 		const tags = await this.tags.getAllTags(repo);
 
-		// Get all available version strings
-		const versions = await this.getAllVersions(repo, params.status);
+		// Handle constraints matching tag names
+		if (tags.includes(params.constraint?.toLowerCase().trim())) {
+			params.tags = [params.constraint.toLowerCase().trim()];
+			params.constraint = undefined;
+		};
 
-		// Repository scope
-		builder.andWhere('Release.repository_id = :id', repo);
+		// Narrow down all version numbers matching our criteria
+		const matches = await this.getFilteredVersions(repo, params);
+
+		// Narrow them down further with the version constraint and sort using the driver
+		const filtered = repo.driver.getVersionsFromConstraint(matches, params.constraint ?? '*');
+		const sorted = params.sort === 'version' ? repo.driver.getVersionsSorted(filtered, params.sort_order) : filtered;
 
 		// Artificial limiter when assets are enabled
 		if (params.includeAttachments) {
@@ -66,77 +73,39 @@ export class ReleasesService {
 			}
 		}
 
-		// Count & page
-		if (params.count > 0) {
-			builder.limit(params.count);
-			builder.offset((params.page * params.count) - params.count);
-		}
+		// Calculate pagination
+		const numResults = sorted.length;
+		const numPages = params.count === 0 ? 1 : Math.max(1, Math.ceil(numResults / params.count));
+		const currentPage = Math.min(Math.max(1, params.page), numPages);
+		const currentPageSize = params.count === 0 ? numResults : params.count;
+		const sliceStartIndex = (currentPage * currentPageSize) - currentPageSize;
+		const sliceEndIndex = sliceStartIndex + currentPageSize;
+		const sliced = sorted.slice(sliceStartIndex, sliceEndIndex);
 
-		// Join tags
-		builder.leftJoinAndSelect('Release.tags', 'Tag');
+		// Fetch releases for the current page
+		const releases = await this.repository.find({
+			relations: {
+				attachments: params.includeAttachments,
+				tags: true
+			},
+			where: {
+				repository: { id: repo.id },
+				version: In(sliced)
+			},
+			order: { created_at: params.sort_order }
+		});
 
-		// Join attachments if enabled
-		if (params.includeAttachments) {
-			builder.leftJoinAndSelect('Release.attachments', 'ReleaseAttachment');
-			builder.leftJoinAndSelect('ReleaseAttachment.asset', 'Asset');
-		}
-
-		// Include from tags array
-		if (params.tags.length > 0) {
-			builder.andWhere('Tag.name IN (:tags)', {
-				tags: params.tags
-			});
-		}
-
-		// Include from attachments array
-		if (params.assets.length > 0) {
-			builder.andWhere('Asset.name IN (:assets)', {
-				assets: params.assets
-			});
-		}
-
-		// Draft status
-		if (params.status !== 'all') {
-			builder.andWhere('Release.draft = :draft', {
-				draft: params.status === 'draft' ? 1 : 0
-			});
-		}
-
-		// Constraint
-		if (params.constraint) {
-			// Implement tag constraint
-			if (tags.includes(params.constraint.toLowerCase())) {
-				builder.andWhere('Tag.name = :tag', {
-					tag: params.constraint.toLowerCase()
-				});
-			}
-
-			// Implement the constraint using the driver
-			else {
-				// Filter them using the driver
-				const filtered = repo.driver.getVersionsFromConstraint(versions, params.constraint);
-
-				// Apply the filter to the query
-				builder.andWhere('Release.version IN (:filtered)', { filtered });
-			}
-		}
-
-		// Sort by version (using driver)
-		if (params.sort === 'version') {
-			// Request sort order from driver
-			const sorted = repo.driver.getVersionsSorted(versions, params.sort_order);
-
-			builder.orderBy(`FIELD (Release.version, :sort_versions)`);
-			builder.setParameter('sort_versions', sorted);
-		}
-
-		// Sort by date
-		else if (params.sort === 'date') {
-			builder.orderBy('Release.published_at', params.sort_order.toUpperCase() as 'ASC' | 'DESC');
-		}
+		// Sort releases to match the sliced array
+		releases.sort((a, b) => sliced.indexOf(a.version) - sliced.indexOf(b.version));
 
 		return {
-			releases: await builder.getMany()
+			pagination: {
+				page: currentPage,
+				page_count: numPages,
+				page_size: currentPageSize,
+				num_results: numResults
+			},
+			results: releases
 		};
 	}
 
@@ -260,17 +229,48 @@ export class ReleasesService {
 		return versions;
 	}
 
+	/**
+	 * Returns an array of all version strings in a repository whose releases pass through the given filters.
+	 *
+	 * @param repo
+	 * @param params
+	 * @returns
+	 */
+	public async getFilteredVersions(repo: Repository, params: ReleaseFilterParams) {
+		const draft = params.status === 'all' ? undefined : (params.status === 'draft' ? true : false);
+
+		// TODO: Disable draft forcefully if `repo.releases.create` and `repo.releases.attachments` are both missing
+
+		const releases = await this.repository.find({
+			select: ['version'],
+			where: {
+				repository: { id: repo.id },
+				tags: params.tags.length > 0 ? { name: In(params.tags) } : undefined,
+				attachments: params.assets.length === 0 ? undefined : {
+					asset: { name: In(params.assets) }
+				},
+				draft
+			},
+			order: { created_at: params.sort_order }
+		});
+
+		return releases.map(release => release.version);
+	}
+
 }
 
+export interface ReleaseFilterParams {
+	tags: string[];
+	assets: string[];
+	status: 'draft' | 'published' | 'all';
+	sort_order: 'desc' | 'asc';
+}
 
-export interface ReleaseSearchParams {
+export interface ReleaseSearchParams extends ReleaseFilterParams {
 	page: number;
 	count: number;
 	includeAttachments: boolean;
-	constraint: string | undefined;
-	tags: string[];
-	assets: string[];
+	constraint?: string;
 	sort: 'version' | 'date';
 	sort_order: 'desc' | 'asc';
-	status: 'draft' | 'published' | 'all';
 }

@@ -72,7 +72,7 @@ export class SearchReleasesDto {
 
 	/**
 	 * The type of release to search for. Note that a relevant permission scope is required to see draft releases.
-	 * @default 'all'
+	 * @default 'published'
 	 */
 	@IsOptional()
 	@IsIn([ 'draft', 'published', 'all' ])
