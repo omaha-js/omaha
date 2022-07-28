@@ -52,11 +52,8 @@ export class AttachmentsController {
 	public async downloadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
 		const expiration = 600000;
 		const attachment = await this.getAttachment(repo, version, assetName);
-		const release = await attachment.release;
-
-		const name = `${release.version}/${attachment.asset.name}`;
 		const disposition = `attachment; filename="${attachment.file_name}"`;
-		const url = await this.storage.getDownloadLink(repo, name, expiration, disposition);
+		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
 
 		return {
 			file_name: attachment.file_name,
