@@ -10,7 +10,7 @@ import { Environment } from 'src/app.environment';
 import { StorageService } from 'src/storage/storage.service';
 import { AttachmentsService } from './attachments.service';
 
-@Controller('repositories/:repo_id/releases/:version/:attachment')
+@Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
 export class AttachmentsController {
 
@@ -23,7 +23,7 @@ export class AttachmentsController {
 	) {}
 
 	/**
-	 * Reads an asset.
+	 * Reads an attachment.
 	 *
 	 * @param repo
 	 * @param version
@@ -31,7 +31,7 @@ export class AttachmentsController {
 	 * @returns
 	 */
 	@Get()
-	public async getAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('attachment') assetName: string) {
+	public async getAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
 		const attachment = (await release.attachments).find(
 			attachment => attachment.asset.name.toLowerCase() === assetName.toLowerCase()
@@ -44,10 +44,41 @@ export class AttachmentsController {
 		return attachment;
 	}
 
+	/**
+	 * Creates a download link for an attachment.
+	 */
+	@Get('download')
+	@UseScopes('repo.releases.attachments.download')
+	public async downloadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
+		const expiration = 3600000;
+		const attachment = await this.getAttachment(repo, version, assetName);
+		const release = await attachment.release;
+
+		const name = `${release.version}/${attachment.asset.name}`;
+		const url = await this.storage.getDownloadLink(repo, name, expiration);
+
+		return {
+			file_name: attachment.file_name,
+			mime: attachment.mime,
+			size: attachment.size,
+			download_url: url,
+			expires_in: expiration
+		};
+	}
+
+	/**
+	 * Uploads an attachment.
+	 *
+	 * @param repo
+	 * @param version
+	 * @param assetName
+	 * @param file
+	 * @returns
+	 */
 	@Post()
-	@UseScopes('repo.releases.attachments')
+	@UseScopes('repo.releases.attachments.manage')
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
-	public async uploadAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
+	public async uploadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
 		const repoAsset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
 		const attachment = (await release.attachments).find(attachment => attachment.asset.id === repoAsset.id);

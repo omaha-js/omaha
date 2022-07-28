@@ -27,6 +27,8 @@ import { RepositoriesGuard } from './repositories.guard';
 		RepositoriesService,
 		RepositoriesGuard
 	],
-	exports: []
+	exports: [
+		RepositoriesService
+	]
 })
 export class RepositoriesModule {}

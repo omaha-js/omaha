@@ -117,4 +117,18 @@ export class RepositoriesService {
 		return this.repository.save(repository);
 	}
 
+	/**
+	 * Fetches a repository from its identifier.
+	 *
+	 * @param id
+	 * @returns
+	 */
+	public async getRepository(id: string) {
+		return this.repository.findOneOrFail({
+			where: {
+				id
+			}
+		})
+	}
+
 }

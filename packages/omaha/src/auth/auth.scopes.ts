@@ -65,10 +65,16 @@ export const RepositoryScopes = [
 		groups: ['owner', 'manager']
 	},
 	{
-		id: 'repo.releases.attachments',
+		id: 'repo.releases.attachments.manage',
 		name: 'Manage release attachments',
-		description: `Allows clients to upload and delete files for draft releases`,
+		description: `Allows clients to manage attached files for draft releases`,
 		groups: ['owner', 'manager']
+	},
+	{
+		id: 'repo.releases.attachments.download',
+		name: 'Download releases',
+		description: `Allows clients to download files attached to releases`,
+		groups: ['owner', 'manager', 'auditor']
 	},
 	{
 		id: 'repo.tags.manage',
