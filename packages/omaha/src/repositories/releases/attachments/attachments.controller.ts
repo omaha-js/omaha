@@ -50,7 +50,7 @@ export class AttachmentsController {
 	@Get('download')
 	@UseScopes('repo.releases.attachments.download')
 	public async downloadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
-		const expiration = 3600000;
+		const expiration = 600000;
 		const attachment = await this.getAttachment(repo, version, assetName);
 		const release = await attachment.release;
 
