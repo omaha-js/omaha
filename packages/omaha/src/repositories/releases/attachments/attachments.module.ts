@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AssetsService } from './assets.service';
-import { AssetsController } from './assets.controller';
+import { AttachmentsService } from './attachments.service';
+import { AttachmentsController } from './attachments.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 
@@ -8,7 +8,7 @@ import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 	imports: [
 		TypeOrmModule.forFeature([ ReleaseAttachment ]),
 	],
-	providers: [AssetsService],
-	controllers: [AssetsController]
+	providers: [AttachmentsService],
+	controllers: [AttachmentsController]
 })
-export class AssetsModule {}
+export class AttachmentsModule {}

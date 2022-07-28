@@ -4,7 +4,7 @@ import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 import { Repository as TypeOrmRepository } from 'typeorm';
 
 @Injectable()
-export class AssetsService {
+export class AttachmentsService {
 
 	public constructor(
 		@InjectRepository(ReleaseAttachment) private readonly repository: TypeOrmRepository<ReleaseAttachment>,

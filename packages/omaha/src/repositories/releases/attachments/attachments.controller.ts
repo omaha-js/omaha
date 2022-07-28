@@ -8,16 +8,16 @@ import { ReleasesService } from '../releases.service';
 import fs from 'fs';
 import { Environment } from 'src/app.environment';
 import { StorageService } from 'src/storage/storage.service';
-import { AssetsService } from './assets.service';
+import { AttachmentsService } from './attachments.service';
 
-@Controller('repositories/:repo_id/releases/:version/:asset')
+@Controller('repositories/:repo_id/releases/:version/:attachment')
 @UseGuards(RepositoriesGuard)
-export class AssetsController {
+export class AttachmentsController {
 
 	private logger = new Logger(this.constructor.name);
 
 	public constructor(
-		private readonly assets: AssetsService,
+		private readonly assets: AttachmentsService,
 		private readonly releases: ReleasesService,
 		private readonly storage: StorageService
 	) {}
@@ -31,15 +31,17 @@ export class AssetsController {
 	 * @returns
 	 */
 	@Get()
-	public async getAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
+	public async getAsset(@Repo() repo: Repository, @Param('version') version: string, @Param('attachment') assetName: string) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
-		const asset = (await release.attachments).find(asset => asset.asset.name.toLowerCase() === assetName.toLowerCase());
+		const attachment = (await release.attachments).find(
+			attachment => attachment.asset.name.toLowerCase() === assetName.toLowerCase()
+		);
 
-		if (!asset) {
-			throw new NotFoundException(`The specified asset was not found in the release`);
+		if (!attachment) {
+			throw new NotFoundException(`The specified attachment was not found in the release`);
 		}
 
-		return asset;
+		return attachment;
 	}
 
 	@Post()

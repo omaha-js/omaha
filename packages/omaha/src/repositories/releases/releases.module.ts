@@ -3,13 +3,13 @@ import { ReleasesService } from './releases.service';
 import { ReleasesController } from './releases.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Release } from 'src/entities/Release';
-import { AssetsModule } from './assets/assets.module';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Global()
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([ Release ]),
-		AssetsModule,
+		AttachmentsModule,
 	],
 	providers: [ReleasesService],
 	controllers: [ReleasesController],
