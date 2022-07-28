@@ -55,7 +55,8 @@ export class AttachmentsController {
 		const release = await attachment.release;
 
 		const name = `${release.version}/${attachment.asset.name}`;
-		const url = await this.storage.getDownloadLink(repo, name, expiration);
+		const disposition = `attachment; filename="${attachment.file_name}"`;
+		const url = await this.storage.getDownloadLink(repo, name, expiration, disposition);
 
 		return {
 			file_name: attachment.file_name,
