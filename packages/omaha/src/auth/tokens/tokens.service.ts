@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, RequestTimeoutException, UnauthorizedException } from '@nestjs/common';
 import { Account } from 'src/entities/Account';
 import { Environment } from 'src/app.environment';
-import { AccountScopeId, AllScopeIds, AuthScopeId, RepositoryScopeId } from '../auth.scopes';
+import { AllScopeIds, AuthScopeId, RepositoryScopeId } from '../auth.scopes';
 import { AccountToken } from './models/AccountToken';
 import { AccountsService } from 'src/accounts/accounts.service';
 import jwt from 'jsonwebtoken';
@@ -47,12 +47,12 @@ export class TokensService {
 	 * Creates a new database bearer token with the given parameters that grants scoped access to a specific account or
 	 * repository.
 	 *
-	 * The resulting token will consist of a unique 40-bit identifier, as well as a secret 96-bit salted hash. The
-	 * returned object will contain a 256-bit encoded `key` whose first 40 bits correspond to the token's identifier.
-	 * The remaining 216 bits in the token must validate against the secret 96-bit salted hash to authenticate.
+	 * The resulting token will consist of a unique 40-bit identifier, as well as a secret salted hash. The returned
+	 * object will contain a 256-bit encoded `key` whose first 40 bits correspond to the token's identifier. The
+	 * remaining 216 bits in the token must validate against the secret hash to authenticate.
 	 *
-	 * In production, the 96-bit salted hash must be kept secret, and the returned `key` must not be stored except by
-	 * the end user, thus the key cannot be recovered in the future.
+	 * In production, the key must be returned to the end user and forgotten. The end user will be responsible for the
+	 * safe storage of this key, as it cannot be recovered.
 	 *
 	 * @param params
 	 * @returns
@@ -337,7 +337,7 @@ interface CreateRepoTokenParams extends BaseTokenParams {
 
 interface CreateAccountTokenParams extends BaseTokenParams {
 	type: TokenType.Account;
-	scopes: AccountScopeId[];
+	scopes: AuthScopeId[];
 	account: Account;
 }
 
