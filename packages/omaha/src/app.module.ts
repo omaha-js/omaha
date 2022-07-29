@@ -12,6 +12,7 @@ import { Asset } from './entities/Asset';
 import { Release } from './entities/Release';
 import { ReleaseAttachment } from './entities/ReleaseAttachment';
 import { StorageModule } from './storage/storage.module';
+import { ReleaseDownload } from './entities/ReleaseDownload';
 
 @Module({
 	imports: [
@@ -32,7 +33,8 @@ import { StorageModule } from './storage/storage.module';
 				Tag,
 				Asset,
 				Release,
-				ReleaseAttachment
+				ReleaseAttachment,
+				ReleaseDownload
 			],
 		}),
 		RepositoriesModule,

@@ -1,7 +1,8 @@
 import { Exclude, Transform } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { Asset } from './Asset';
 import { Release } from './Release';
+import { ReleaseDownload } from './ReleaseDownload';
 
 @Entity({ name: 'release_attachments' })
 @Unique([ 'release', 'asset' ])
@@ -63,5 +64,9 @@ export class ReleaseAttachment {
 	 */
 	@UpdateDateColumn()
 	public updated_at: Date;
+
+	@OneToMany(() => ReleaseDownload, download => download.attachment)
+	@JoinTable()
+	public downloads: Promise<ReleaseDownload[]>;
 
 }
