@@ -12,7 +12,7 @@ export class DatabaseToken extends BaseToken {
 	private instance?: any;
 
 	public constructor(private readonly token: Token) {
-		const expiration = token.expiration ? token.expiration.getTime() : 0;
+		const expiration = token.expires_at ? token.expires_at.getTime() : 0;
 		super(token.scopes, expiration);
 	}
 

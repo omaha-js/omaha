@@ -80,7 +80,7 @@ export class TokensService {
 			id,
 			name: params.name,
 			description: params.description ?? '',
-			expiration: params.expiration ? new Date(params.expiration) : undefined,
+			expires_at: params.expiration ? new Date(params.expiration) : undefined,
 			hash,
 			type: params.type,
 			scopes: params.scopes

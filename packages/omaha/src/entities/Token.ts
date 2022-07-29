@@ -18,10 +18,6 @@ export class Token {
 	@Column({ type: 'text' })
 	public description: string;
 
-	@Column({ nullable: true, default: null })
-	@Index()
-	public expiration: Date | null;
-
 	@Column({ type: 'binary', length: 48 })
 	@Exclude()
 	public hash: Buffer;
@@ -39,6 +35,10 @@ export class Token {
 
 	@Column({ type: 'json' })
 	public scopes: AuthScopeId[];
+
+	@Column({ nullable: true, default: null })
+	@Index()
+	public expires_at: Date | null;
 
 	@CreateDateColumn()
 	public created_at: Date;
