@@ -1,4 +1,6 @@
-import { AuthScopeId, RepositoryScopeId } from 'src/auth/auth.scopes';
+import { AuthScopeId } from 'src/auth/auth.scopes';
+import { Account } from 'src/entities/Account';
+import { Repository } from 'src/entities/Repository';
 import { AccountToken } from './AccountToken';
 
 export abstract class BaseToken {
@@ -15,6 +17,10 @@ export abstract class BaseToken {
 	 * The number of milliseconds remaining for this token's lifespan.
 	 */
 	public get ttl() {
+		if (this.expiresAt === 0) {
+			return 315360000000;
+		}
+
 		return Math.max(0, this.expiresAt - Date.now());
 	}
 
@@ -23,7 +29,7 @@ export abstract class BaseToken {
 	 *
 	 * @returns
 	 */
-	public isForAccount(): this is AccountToken {
+	public isForAccount(): this is TokenForAccount {
 		return false;
 	}
 
@@ -32,7 +38,7 @@ export abstract class BaseToken {
 	 *
 	 * @returns
 	 */
-	public isForRepository() {
+	public isForRepository(): this is TokenForRepository {
 		return false;
 	}
 
@@ -45,4 +51,12 @@ export abstract class BaseToken {
 		return this.scopes.includes(scope);
 	}
 
+}
+
+interface TokenForAccount extends BaseToken {
+	account: Account;
+}
+
+interface TokenForRepository extends BaseToken {
+	repository: Repository;
 }

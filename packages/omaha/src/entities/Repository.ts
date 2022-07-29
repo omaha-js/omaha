@@ -7,6 +7,7 @@ import { Tag } from './Tag';
 import { VersionSchemeDriver } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { VersionSchemeDrivers } from 'src/drivers/versions';
 import { Expose } from 'class-transformer';
+import { Token } from './Token';
 
 @Entity({ name: 'repositories' })
 export class Repository {
@@ -47,6 +48,9 @@ export class Repository {
 	@OneToMany(() => Release, release => release.repository)
 	@JoinTable()
 	public releases: Promise<Release[]>;
+
+	@OneToMany(() => Token, token => token.repository)
+	public tokens: Promise<Token[]>;
 
 	@Column({ type: 'json' })
 	public settings: RepositorySettings;

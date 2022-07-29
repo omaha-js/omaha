@@ -43,7 +43,7 @@ export class AuthController {
 			password: dto.password ?? ''
 		});
 
-		const token = await this.tokens.createAccountToken(account, 86400 * 30);
+		const token = await this.tokens.createWebToken(account, 86400 * 30);
 
 		return {
 			token,
@@ -55,7 +55,7 @@ export class AuthController {
 	@Guest(false)
 	public async register(@Body() dto: RegisterDto) {
 		const account = await this.accounts.createAccount(dto);
-		const token = await this.tokens.createAccountToken(account);
+		const token = await this.tokens.createWebToken(account);
 
 		return {
 			token,

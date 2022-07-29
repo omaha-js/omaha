@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
@@ -32,8 +32,11 @@ export class RepositoriesController {
 		if (token.isForAccount()) {
 			return this.service.getRepositoriesForAccount(token.account);
 		}
+		else if (token.isForRepository()) {
+			return [token.repository];
+		}
 
-		return 'Not implemented!';
+		throw new NotFoundException();
 	}
 
 	@Post()

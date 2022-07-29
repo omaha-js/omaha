@@ -1,6 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
+import { Token } from './Token';
 
 @Entity({ name: 'accounts' })
 export class Account {
@@ -23,10 +24,6 @@ export class Account {
 	@Column({ default: false })
 	public verified: boolean;
 
-	@Column({ nullable: true, default: null })
-	@Exclude()
-	public online_at: Date;
-
 	@CreateDateColumn()
 	public created_at: Date;
 
@@ -35,5 +32,8 @@ export class Account {
 
 	@OneToMany(() => Collaboration, collab => collab.account)
 	public collaborations: Promise<Collaboration[]>;
+
+	@OneToMany(() => Token, token => token.account)
+	public tokens: Promise<Token[]>;
 
 }

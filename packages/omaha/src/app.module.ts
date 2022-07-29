@@ -13,6 +13,7 @@ import { Release } from './entities/Release';
 import { ReleaseAttachment } from './entities/ReleaseAttachment';
 import { StorageModule } from './storage/storage.module';
 import { ReleaseDownload } from './entities/ReleaseDownload';
+import { Token } from './entities/Token';
 
 @Module({
 	imports: [
@@ -34,7 +35,8 @@ import { ReleaseDownload } from './entities/ReleaseDownload';
 				Asset,
 				Release,
 				ReleaseAttachment,
-				ReleaseDownload
+				ReleaseDownload,
+				Token
 			],
 		}),
 		RepositoriesModule,

@@ -31,6 +31,10 @@ export class RepositoriesGuard implements CanActivate {
 			throw new InternalServerErrorException('Could not find the repository id for this request');
 		}
 
+		if (typeof request.params.repo_id !== 'string') {
+			throw new InternalServerErrorException('Invalid repository id');
+		}
+
 		if (token.isForAccount()) {
 			const repoId = request.params.repo_id;
 			const collaboration = await this.collaborations.getForAccountAndRepository(token.account, repoId);
@@ -51,6 +55,24 @@ export class RepositoriesGuard implements CanActivate {
 			// Gotta go fast...
 			(request as any)._guardedRepository = collaboration.repository;
 			(request as any)._guardedCollaboration = collaboration;
+
+			return true;
+		}
+
+		else if (token.isForRepository()) {
+			if (token.repository.id !== request.params.repo_id.toLowerCase()) {
+				throw new ForbiddenException('You do not have access to the requested repository');
+			}
+
+			if (scopes.length > 0) {
+				for (const scope of scopes) {
+					if (!token.hasPermission(scope)) {
+						throw new ForbiddenException('You do not have privileges to access this endpoint');
+					}
+				}
+			}
+
+			(request as any)._guardedRepository = token.repository;
 
 			return true;
 		}

@@ -1,0 +1,79 @@
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { UseScopes } from 'src/auth/decorators/scopes.decorator';
+import { TokensService } from 'src/auth/tokens/tokens.service';
+import { TokenType } from 'src/auth/tokens/tokens.types';
+import { Repository } from 'src/entities/Repository';
+import { Repo } from 'src/support/Repo';
+import { RepositoriesGuard } from '../repositories.guard';
+import { CreateRepoTokenDto } from './dto/CreateRepoTokenDto';
+import { UpdateRepoTokenDto } from './dto/UpdateRepoTokenDto';
+
+@Controller('repositories/:repo_id/tokens')
+@UseGuards(RepositoriesGuard)
+export class TokensController {
+
+	public constructor(
+		private readonly service: TokensService
+	) {}
+
+	@Get()
+	@UseScopes('repo.tokens.list')
+	public async getTokens(@Repo() repo: Repository) {
+		return repo.tokens;
+	}
+
+	@Post()
+	@UseScopes('repo.tokens.manage')
+	public async createToken(@Repo() repo: Repository, @Body() params: CreateRepoTokenDto) {
+		return await this.service.createDatabaseToken({
+			name: params.name,
+			description: params.description,
+			expiration: params.expiration,
+			type: TokenType.Repository,
+			repository: repo,
+			scopes: params.scopes
+		});
+	}
+
+	@Get(':id')
+	@UseScopes('repo.tokens.list')
+	public async getToken(@Repo() repo: Repository, @Param('id') id: string) {
+		const token = await this.service.getDatabaseTokenForRepository(repo, id);
+
+		if (!token) {
+			throw new NotFoundException('No token matching the given ID was found');
+		}
+
+		return token;
+	}
+
+	@Patch(':id')
+	@UseScopes('repo.tokens.manage')
+	public async updateToken(@Repo() repo: Repository, @Body() params: UpdateRepoTokenDto, @Param('id') id: string) {
+		const token = await this.service.getDatabaseTokenForRepository(repo, id);
+
+		if (!token) {
+			throw new NotFoundException('No token matching the given ID was found');
+		}
+
+		return await this.service.updateDatabaseToken(token, params);
+	}
+
+	@Delete(':id')
+	@UseScopes('repo.tokens.manage')
+	public async deleteToken(@Repo() repo: Repository, @Param('id') id: string) {
+		const token = await this.service.getDatabaseTokenForRepository(repo, id);
+
+		if (!token) {
+			throw new NotFoundException('No token matching the given ID was found');
+		}
+
+		await this.service.deleteDatabaseToken(token);
+
+		return {
+			success: true,
+			message: 'Token has been deleted successfully.'
+		};
+	}
+
+}

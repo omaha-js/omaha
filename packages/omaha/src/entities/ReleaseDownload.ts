@@ -1,5 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ReleaseAttachment } from './ReleaseAttachment';
+import { Token } from './Token';
 
 @Entity({ name: 'release_downloads' })
 @Index(['attachment', 'time'])
@@ -13,9 +14,9 @@ export class ReleaseDownload {
 	@Index()
 	public attachment: Promise<ReleaseAttachment>;
 
-	@Column({ name: 'token_id', unsigned: true })
-	@Index()
-	public tokenId: number;
+	@ManyToOne(() => Token, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'token_id' })
+	public token: Token;
 
 	@Column({ type: 'varchar', length: 45 })
 	public ip: string;
