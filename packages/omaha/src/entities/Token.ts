@@ -8,7 +8,7 @@ import { Repository } from './Repository';
 @Entity({ name: 'tokens' })
 export class Token {
 
-	@PrimaryColumn({ type: 'binary', length: 8 })
+	@PrimaryColumn({ type: 'binary', length: 5 })
 	@Transform(params => params.value.toString('hex'))
 	public id: Buffer;
 

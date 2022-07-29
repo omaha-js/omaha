@@ -47,9 +47,9 @@ export class TokensService {
 	 * Creates a new database bearer token with the given parameters that grants scoped access to a specific account or
 	 * repository.
 	 *
-	 * The resulting token will consist of a unique 64-bit identifier, as well as a secret 96-bit salted hash. The
-	 * returned object will contain a 256-bit encoded `key` whose first 64 bits correspond to the token's identifier.
-	 * The remaining 192 bits in the token must validate against the secret 96-bit salted hash to authenticate.
+	 * The resulting token will consist of a unique 40-bit identifier, as well as a secret 96-bit salted hash. The
+	 * returned object will contain a 256-bit encoded `key` whose first 40 bits correspond to the token's identifier.
+	 * The remaining 216 bits in the token must validate against the secret 96-bit salted hash to authenticate.
 	 *
 	 * In production, the 96-bit salted hash must be kept secret, and the returned `key` must not be stored except by
 	 * the end user, thus the key cannot be recovered in the future.
@@ -68,7 +68,7 @@ export class TokensService {
 		}
 
 		const id = await this.generateDatabaseTokenId();
-		const key = randomBytes(24);
+		const key = randomBytes(27);
 
 		const salt = randomBytes(16);
 		const hash = Buffer.concat([
@@ -134,7 +134,7 @@ export class TokensService {
 
 		// Invalidation – regenerate the key upon request
 		if (params.invalidate) {
-			const key = randomBytes(24);
+			const key = randomBytes(27);
 			const salt = randomBytes(16);
 
 			const hash = Buffer.concat([
@@ -267,8 +267,8 @@ export class TokensService {
 		// Tokens will always consist of 256 bits of data
 		if (buffer.length === 32) {
 			// Extract parameters from the token
-			const tokenId = buffer.slice(0, 8);
-			const key = buffer.slice(8);
+			const tokenId = buffer.slice(0, 5);
+			const key = buffer.slice(5);
 
 			// Find a matching token from the database
 			const match = await this.repository.findOne({ where: { id: tokenId }});
@@ -299,12 +299,12 @@ export class TokensService {
 	}
 
 	/**
-	 * Generates a unique token ID consisting of 10 random bytes.
+	 * Generates a unique token ID consisting of 5 random bytes.
 	 * @returns
 	 */
 	private async generateDatabaseTokenId(): Promise<Buffer> {
 		for (let attempt = 0; attempt < 30; attempt++) {
-			const bytes = randomBytes(8);
+			const bytes = randomBytes(5);
 			const existing = await this.repository.count({ where: { id: bytes } })
 
 			if (existing === 0) {
