@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
-import { Token } from 'src/auth/tokens/models/Token';
+import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Repository } from 'src/entities/Repository';
 import { Repo } from 'src/support/Repo';
 import { User } from 'src/support/User';
@@ -60,7 +60,7 @@ export class ReleasesController {
 	 * @param token
 	 */
 	@Get(':version')
-	public async get(@Repo() repo: Repository, @Param('version') version: string, @User() token: Token) {
+	public async get(@Repo() repo: Repository, @Param('version') version: string, @User() token: BaseToken) {
 		const release = await this.service.getFromVersionOrFail(repo, version);
 
 		// Require the "edit" privilege when reading a draft release

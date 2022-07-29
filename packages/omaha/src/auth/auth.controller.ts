@@ -6,7 +6,7 @@ import { AuthService } from './auth.service';
 import { Guest } from './decorators/guest.decorator';
 import { LoginDto } from './dto/LoginDto';
 import { RegisterDto } from './dto/RegisterDto';
-import { Token } from './tokens/models/Token';
+import { BaseToken } from './tokens/models/BaseToken';
 import { TokensService } from './tokens/tokens.service';
 
 @Controller('auth')
@@ -19,7 +19,7 @@ export class AuthController {
 
 	@Get('identity')
 	@Guest()
-	public async getIdentity(@User() token?: Token) {
+	public async getIdentity(@User() token?: BaseToken) {
 		if (token) {
 			return {
 				access: token.isForAccount() ? 'account' : 'repository',
@@ -89,7 +89,7 @@ export class AuthController {
 
 	@Get('scopes')
 	@Guest()
-	public async getScopes(@User() token?: Token) {
+	public async getScopes(@User() token?: BaseToken) {
 		return {
 			scopes: AuthScopes.map(scope => {
 				return {

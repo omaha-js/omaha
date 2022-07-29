@@ -2,7 +2,7 @@ import { Body, Controller, Delete, ForbiddenException, Get, Patch, Post, UseGuar
 import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
-import { Token } from 'src/auth/tokens/models/Token';
+import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
 import { Repository } from 'src/entities/Repository';
 import { Collab } from 'src/support/Collab';
@@ -28,7 +28,7 @@ export class RepositoriesController {
 	 * @returns
 	 */
 	@Get()
-	public getRepositoryList(@User() token: Token) {
+	public getRepositoryList(@User() token: BaseToken) {
 		if (token.isForAccount()) {
 			return this.service.getRepositoriesForAccount(token.account);
 		}

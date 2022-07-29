@@ -1,7 +1,7 @@
 import { AuthScopeId, RepositoryScopeId } from 'src/auth/auth.scopes';
 import { AccountToken } from './AccountToken';
 
-export abstract class Token {
+export abstract class BaseToken {
 
 	/**
 	 * @param scopes The scopes that this token grants.

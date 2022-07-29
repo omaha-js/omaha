@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Internal
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
-import { Token } from 'src/auth/tokens/models/Token';
+import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { CollaborationsService } from './collaborations/collaborations.service';
 import { RepositoriesService } from './repositories.service';
 
@@ -20,7 +20,7 @@ export class RepositoriesGuard implements CanActivate {
 
 	public async canActivate(context: ExecutionContext) {
 		const request = context.switchToHttp().getRequest<Request>();
-		const token = request.user as Token;
+		const token = request.user as BaseToken;
 		const scopes = this.getScopesFromContext(context);
 
 		if (!token) {

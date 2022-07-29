@@ -2,7 +2,7 @@ import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException,
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { AuthScopeId } from './auth.scopes';
-import { Token } from './tokens/models/Token';
+import { BaseToken } from './tokens/models/BaseToken';
 import { TokensService } from './tokens/tokens.service';
 
 @Injectable()
@@ -87,7 +87,7 @@ export class AuthGuard implements CanActivate {
 	 * @param request
 	 * @returns
 	 */
-	private async getToken(request: Request): Promise<Token | undefined> {
+	private async getToken(request: Request): Promise<BaseToken | undefined> {
 		const header = request.headers.authorization;
 
 		if (header && header.toLowerCase().startsWith('bearer ')) {

@@ -6,7 +6,7 @@ import { AccountToken } from './models/AccountToken';
 import { AccountsService } from 'src/accounts/accounts.service';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { Token } from './models/Token';
+import { BaseToken } from './models/BaseToken';
 
 @Injectable()
 export class TokensService {
@@ -64,7 +64,7 @@ export class TokensService {
 	 * @param token
 	 * @returns
 	 */
-	private async getTokenFromJWT(token: string): Promise<Token> {
+	private async getTokenFromJWT(token: string): Promise<BaseToken> {
 		const success = await new Promise<boolean>(resolve => {
 			jwt.verify(token, Environment.APP_SECRET, function(err, decoded) {
 				err ? resolve(false) : resolve(true);
@@ -93,7 +93,7 @@ export class TokensService {
 	 *
 	 * @param token
 	 */
-	private async getTokenFromDatabase(token: string): Promise<Token> {
+	private async getTokenFromDatabase(token: string): Promise<BaseToken> {
 		throw new UnauthorizedException('Database tokens are not implemented');
 	}
 
