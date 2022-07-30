@@ -1,6 +1,7 @@
 import { AuthScopeId } from 'src/auth/auth.scopes';
 import { Account } from 'src/entities/Account';
 import { Repository } from 'src/entities/Repository';
+import { Token } from 'src/entities/Token';
 import { AccountToken } from './AccountToken';
 
 export abstract class BaseToken {
@@ -43,6 +44,15 @@ export abstract class BaseToken {
 	}
 
 	/**
+	 * Returns true if this token was loaded from the database.
+	 *
+	 * @returns
+	 */
+	public isDatabaseToken(): this is TokenFromDatabase {
+		return false;
+	}
+
+	/**
 	 * Returns true if this token grants permission for the given scope.
 	 *
 	 * @param scope
@@ -59,4 +69,8 @@ interface TokenForAccount extends BaseToken {
 
 interface TokenForRepository extends BaseToken {
 	repository: Repository;
+}
+
+interface TokenFromDatabase extends BaseToken {
+	token: Token;
 }

@@ -11,7 +11,7 @@ export class DatabaseToken extends BaseToken {
 
 	private instance?: any;
 
-	public constructor(private readonly token: Token) {
+	public constructor(public readonly token: Token) {
 		const expiration = token.expires_at ? token.expires_at.getTime() : 0;
 		super(token.scopes, expiration);
 	}
@@ -22,6 +22,10 @@ export class DatabaseToken extends BaseToken {
 
 	public isForRepository(): boolean {
 		return this.token.type === TokenType.Repository;
+	}
+
+	public isDatabaseToken(): boolean {
+		return true;
 	}
 
 	/**

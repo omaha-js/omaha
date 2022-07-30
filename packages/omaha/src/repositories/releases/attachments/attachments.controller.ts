@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Repository } from 'src/entities/Repository';
@@ -9,6 +9,10 @@ import fs from 'fs';
 import { Environment } from 'src/app.environment';
 import { StorageService } from 'src/storage/storage.service';
 import { AttachmentsService } from './attachments.service';
+import { User } from 'src/support/User';
+import { BaseToken } from 'src/auth/tokens/models/BaseToken';
+import { DownloadsService } from '../downloads/downloads.service';
+import { Request } from 'express';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -19,7 +23,8 @@ export class AttachmentsController {
 	public constructor(
 		private readonly assets: AttachmentsService,
 		private readonly releases: ReleasesService,
-		private readonly storage: StorageService
+		private readonly storage: StorageService,
+		private readonly downloads: DownloadsService
 	) {}
 
 	/**
@@ -49,11 +54,21 @@ export class AttachmentsController {
 	 */
 	@Get('download')
 	@UseScopes('repo.releases.attachments.download')
-	public async downloadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
+	public async downloadAttachment(
+		@Repo() repo: Repository,
+		@Param('version') version: string,
+		@Param('asset') assetName: string,
+		@User() token: BaseToken,
+		@Req() request: Request
+	) {
 		const expiration = 600000;
 		const attachment = await this.getAttachment(repo, version, assetName);
 		const disposition = `attachment; filename="${attachment.file_name}"`;
 		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
+
+		if (token.isDatabaseToken()) {
+			await this.downloads.recordDownload(attachment, token.token, request.ip);
+		}
 
 		return {
 			file_name: attachment.file_name,
