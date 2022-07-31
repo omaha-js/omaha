@@ -36,6 +36,12 @@ export class Release {
 	public description: string;
 
 	/**
+	 * The number of times the release was downloaded.
+	 */
+	@Column({ unsigned: true, default: 0 })
+	public download_count: number;
+
+	/**
 	 * The time when this release was created.
 	 */
 	@CreateDateColumn()

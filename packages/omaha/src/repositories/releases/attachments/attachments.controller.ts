@@ -65,11 +65,12 @@ export class AttachmentsController {
 		const attachment = await this.getAttachment(repo, version, assetName);
 		const disposition = `attachment; filename="${attachment.file_name}"`;
 		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
+		const release = await attachment.release;
 
-		if (token.isDatabaseToken()) {
-			const release = await attachment.release;
+		if (token.isDatabaseToken() && !release.draft) {
 			await Promise.all([
 				this.downloads.recordDownload(repo, release, attachment, token.token, request.ip),
+				this.releases.recordDownload(release),
 				this.service.incrementDownloadCount(attachment)
 			]);
 		}

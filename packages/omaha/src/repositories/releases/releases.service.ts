@@ -257,6 +257,18 @@ export class ReleasesService {
 		return releases.map(release => release.version);
 	}
 
+	/**
+	 * Increments the download count on the given release.
+	 *
+	 * @param release
+	 * @returns
+	 */
+	public async recordDownload(release: Release) {
+		return this.repository.update(release.id, {
+			download_count: () => 'download_count + 1'
+		});
+	}
+
 }
 
 export interface ReleaseFilterParams {
