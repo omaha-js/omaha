@@ -10,12 +10,18 @@ export class AttachmentsService {
 		@InjectRepository(ReleaseAttachment) private readonly repository: TypeOrmRepository<ReleaseAttachment>,
 	) {}
 
-	public async save(asset: ReleaseAttachment) {
-		return this.repository.save(asset);
+	public async save(attachment: ReleaseAttachment) {
+		return this.repository.save(attachment);
 	}
 
 	public async create() {
 		return this.repository.create();
+	}
+
+	public async incrementDownloadCount(attachment: ReleaseAttachment) {
+		return this.repository.update(attachment.id, {
+			download_count: () => 'download_count + 1'
+		});
 	}
 
 }

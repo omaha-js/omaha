@@ -21,7 +21,7 @@ export class AttachmentsController {
 	private logger = new Logger(this.constructor.name);
 
 	public constructor(
-		private readonly assets: AttachmentsService,
+		private readonly service: AttachmentsService,
 		private readonly releases: ReleasesService,
 		private readonly storage: StorageService,
 		private readonly downloads: DownloadsService
@@ -67,7 +67,11 @@ export class AttachmentsController {
 		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
 
 		if (token.isDatabaseToken()) {
-			await this.downloads.recordDownload(attachment, token.token, request.ip);
+			const release = await attachment.release;
+			await Promise.all([
+				this.downloads.recordDownload(repo, release, attachment, token.token, request.ip),
+				this.service.incrementDownloadCount(attachment)
+			]);
 		}
 
 		return {
@@ -124,12 +128,12 @@ export class AttachmentsController {
 				attachment.mime = file.mimetype;
 				attachment.size = file.size;
 
-				return await this.assets.save(attachment);
+				return await this.service.save(attachment);
 			}
 
 			// Create a new attachment
 			else {
-				const attachment = await this.assets.create();
+				const attachment = await this.service.create();
 				attachment.file_name = file.originalname;
 				attachment.object_name = saveName;
 				attachment.size = file.size;
@@ -137,7 +141,7 @@ export class AttachmentsController {
 				attachment.release = Promise.resolve(release);
 				attachment.asset = repoAsset;
 
-				return await this.assets.save(attachment);
+				return await this.service.save(attachment);
 			}
 		}
 		catch (err) {

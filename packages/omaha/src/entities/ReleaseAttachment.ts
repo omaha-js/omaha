@@ -54,6 +54,12 @@ export class ReleaseAttachment {
 	public size: number;
 
 	/**
+	 * The number of times the attachment was downloaded.
+	 */
+	@Column({ unsigned: true, default: 0 })
+	public download_count: number;
+
+	/**
 	 * The time when this release was created.
 	 */
 	@CreateDateColumn()
@@ -65,6 +71,9 @@ export class ReleaseAttachment {
 	@UpdateDateColumn()
 	public updated_at: Date;
 
+	/**
+	 * The downloads for this attachment.
+	 */
 	@OneToMany(() => ReleaseDownload, download => download.attachment)
 	@JoinTable()
 	public downloads: Promise<ReleaseDownload[]>;

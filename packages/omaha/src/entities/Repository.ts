@@ -8,6 +8,7 @@ import { VersionSchemeDriver } from 'src/drivers/interfaces/VersionSchemeDriver'
 import { VersionSchemeDrivers } from 'src/drivers/versions';
 import { Expose } from 'class-transformer';
 import { Token } from './Token';
+import { ReleaseDownload } from './ReleaseDownload';
 
 @Entity({ name: 'repositories' })
 export class Repository {
@@ -54,6 +55,13 @@ export class Repository {
 
 	@Column({ type: 'json' })
 	public settings: RepositorySettings;
+
+	/**
+	 * The downloads for this repository.
+	 */
+	@OneToMany(() => ReleaseDownload, download => download.repository)
+	@JoinTable()
+	public downloads: Promise<ReleaseDownload[]>;
 
 	/**
 	 * The version driver for this repository.

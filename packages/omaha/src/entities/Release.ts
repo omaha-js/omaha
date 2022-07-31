@@ -1,6 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { ReleaseAttachment } from './ReleaseAttachment';
+import { ReleaseDownload } from './ReleaseDownload';
 import { Repository } from './Repository';
 import { Tag } from './Tag';
 
@@ -87,5 +88,12 @@ export class Release {
 		if (!files) return;
 		return files;
 	}
+
+	/**
+	 * The downloads for this release.
+	 */
+	@OneToMany(() => ReleaseDownload, download => download.release)
+	@JoinTable()
+	public downloads: Promise<ReleaseDownload[]>;
 
 }
