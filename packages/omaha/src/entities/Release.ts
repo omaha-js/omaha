@@ -81,7 +81,8 @@ export class Release {
 	 */
 	@Expose({ name: 'tags' })
 	public get jsonTagsProp() {
-		const tags: Tag[] = (this as any).__tags__ ?? [];
+		const tags: Tag[] = (this as any).__tags__;
+		if (!tags) return;
 		return tags.map(tag => tag.name);
 	}
 
