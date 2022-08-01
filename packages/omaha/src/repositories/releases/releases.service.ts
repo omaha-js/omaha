@@ -178,17 +178,26 @@ export class ReleasesService {
 		if (release.draft && dto.draft === false) {
 			// Get the assets for both the repository and the release
 			const repoAssets = await repo.assets;
-			const ReleaseAttachments = await release.attachments;
+			const attachments = await release.attachments;
 
 			// Check if all required assets have an upload
 			for (const repoAsset of repoAssets) {
 				if (repoAsset.required) {
-					const asset = ReleaseAttachments.find(asset => asset.asset.id === repoAsset.id);
+					const asset = attachments.find(asset => asset.asset.id === repoAsset.id);
 
 					if (!asset) {
-						throw new BadRequestException(`The ${repoAsset.name} asset is required before publishing`);
+						throw new BadRequestException(
+							`The ${repoAsset.name} attachment is required before this release can be published`
+						);
 					}
 				}
+			}
+
+			// Make sure at least one attachment is uploaded
+			if (attachments.length === 0) {
+				throw new BadRequestException(
+					`At least one attachment must be uploaded before this release can be published`
+				);
 			}
 
 			release.draft = false;
