@@ -11,6 +11,7 @@ import { User } from 'src/support/User';
 import { CollaboratorRole } from './collaborations/collaborations.types';
 import { CreateRepoDto } from './dto/CreateRepoDto';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
+import { ReleasesService } from './releases/releases.service';
 import { RepositoriesGuard } from './repositories.guard';
 import { RepositoriesService } from './repositories.service';
 
@@ -18,7 +19,8 @@ import { RepositoriesService } from './repositories.service';
 export class RepositoriesController {
 
 	public constructor(
-		private readonly service: RepositoriesService
+		private readonly service: RepositoriesService,
+		private readonly releases: ReleasesService
 	) {}
 
 	/**
@@ -78,6 +80,24 @@ export class RepositoriesController {
 			success: true,
 			message: 'Repository has been deleted successfully.'
 		};
+	}
+
+	/**
+	 * Lists all published version strings for the repository. These version strings are sorted by the driver in
+	 * descending order (highest version first).
+	 *
+	 * @param repo
+	 * @returns
+	 */
+	@Get(':repo_id/versions')
+	@UseGuards(RepositoriesGuard)
+	public async getAllVersions(@Repo() repo: Repository) {
+		const versions = repo.driver.getVersionsSorted(
+			await this.releases.getAllVersions(repo),
+			'desc'
+		);
+
+		return { versions };
 	}
 
 }
