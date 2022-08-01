@@ -30,6 +30,7 @@ export class ReleasesController {
 			page: dto.page ? Number(dto.page) : 1,
 			count: dto.count ? Number(dto.count) : 25,
 			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
+			includeDownloads: ['1', 'true'].includes(dto.include_downloads ?? '0'),
 			constraint: dto.constraint ?? undefined,
 			tags: list(dto.tags ?? 'latest'),
 			assets: list(dto.assets ?? ''),

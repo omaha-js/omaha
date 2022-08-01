@@ -29,6 +29,14 @@ export class SearchReleasesDto {
 	include_attachments?: 'true' | '1' | 'false' | '0';
 
 	/**
+	 * Whether or not to include 7-day download statistics in the results.
+	 * @default '0'
+	 */
+	@IsOptional()
+	@IsIn([ 'true', '1', 'false', '0' ])
+	include_downloads?: 'true' | '1' | 'false' | '0';
+
+	/**
 	 * Search for a version. This can be an exact version number, a version constraint (based on the driver used for
 	 * the repository), or tag name, and is checked in that order.
 	 * @default undefined

@@ -6,6 +6,8 @@ import { CreateReleaseDto } from './dto/CreateReleaseDto';
 import { In, Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
+import { ReleaseDownload } from 'src/entities/ReleaseDownload';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class ReleasesService {
@@ -47,13 +49,13 @@ export class ReleasesService {
 	}
 
 	/**
-	 * Searches for assets.
+	 * Searches for releases.
 	 */
 	public async search(repo: Repository, params: ReleaseSearchParams) {
-		// Get available tag names and look for a matching constraint
+		// Get all available tag names
 		const tags = await this.tags.getAllTags(repo);
 
-		// Handle constraints matching tag names
+		// Allow constraints to be set to a tag name
 		if (tags.includes(params.constraint?.toLowerCase().trim())) {
 			params.tags = [params.constraint.toLowerCase().trim()];
 			params.constraint = undefined;
@@ -82,21 +84,41 @@ export class ReleasesService {
 		const sliceEndIndex = sliceStartIndex + currentPageSize;
 		const sliced = sorted.slice(sliceStartIndex, sliceEndIndex);
 
+		// Build query manually to take control over subqueries
+		const query = this.repository.createQueryBuilder();
+		query.leftJoinAndSelect('Release.tags', 'Tag');
+		query.andWhere('Release.repository = :id', repo);
+		query.andWhere('Release.version IN (:versions)', { versions: sliced });
+		query.orderBy(`Release.created_at`, params.sort_order.toUpperCase() as any);
+
+		if (params.includeAttachments) {
+			query.leftJoinAndSelect('Release.attachments', 'Attachment');
+			query.leftJoinAndSelect('Attachment.asset', 'Asset');
+		}
+
+		if (params.includeDownloads) {
+			query.addSelect(qb => (qb
+				.select('COUNT(*) as count')
+				.from(ReleaseDownload, 'ReleaseDownload')
+				.andWhere('ReleaseDownload.release = Release.id')
+				.andWhere('ReleaseDownload.date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)')
+				.andWhere('ReleaseDownload.date < CURDATE()')
+			), 'Release_weekly_downloads');
+		}
+
 		// Fetch releases for the current page
-		const releases = await this.repository.find({
-			relations: {
-				attachments: params.includeAttachments,
-				tags: true
-			},
-			where: {
-				repository: { id: repo.id },
-				version: In(sliced)
-			},
-			order: { created_at: params.sort_order }
+		const { entities, raw } = await query.getRawAndEntities();
+		const results = entities.map((entity, index) => {
+			const downloads = raw[index].Release_weekly_downloads;
+			if (typeof downloads !== 'string') return instanceToPlain(entity);
+			return {
+				...instanceToPlain(entity),
+				weekly_downloads: Number(downloads)
+			};
 		});
 
 		// Sort releases to match the sliced array
-		releases.sort((a, b) => sliced.indexOf(a.version) - sliced.indexOf(b.version));
+		results.sort((a, b) => sliced.indexOf(a.version) - sliced.indexOf(b.version));
 
 		return {
 			pagination: {
@@ -105,7 +127,7 @@ export class ReleasesService {
 				page_size: currentPageSize,
 				num_results: numResults
 			},
-			results: releases
+			results
 		};
 	}
 
@@ -282,6 +304,7 @@ export interface ReleaseSearchParams extends ReleaseFilterParams {
 	page: number;
 	count: number;
 	includeAttachments: boolean;
+	includeDownloads: boolean;
 	constraint?: string;
 	sort: 'version' | 'date';
 	sort_order: 'desc' | 'asc';
