@@ -5,7 +5,6 @@ import { Repository } from 'src/entities/Repository';
 import { RepositoriesGuard } from 'src/repositories/repositories.guard';
 import { Repo } from 'src/support/Repo';
 import { ReleasesService } from '../releases.service';
-import fs from 'fs';
 import { Environment } from 'src/app.environment';
 import { StorageService } from 'src/storage/storage.service';
 import { AttachmentsService } from './attachments.service';
@@ -13,6 +12,8 @@ import { User } from 'src/support/User';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { DownloadsService } from '../downloads/downloads.service';
 import { Request } from 'express';
+import fs from 'fs';
+import crypto from 'crypto';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -116,6 +117,13 @@ export class AttachmentsController {
 			const stream = fs.createReadStream(file.path, { encoding: 'binary' });
 			const name = `${release.version}/${repoAsset.name}`;
 
+			// Compute a SHA-256 hash for the file by intercepting the stream
+			const hash = crypto.createHash('sha256');
+			stream.on('data', data => {
+				if (typeof data === 'string') hash.update(data, 'binary');
+				else hash.update(data);
+			});
+
 			// Write the file to storage
 			const saveName = await this.storage.write(repo, name, stream);
 
@@ -128,6 +136,7 @@ export class AttachmentsController {
 				attachment.object_name = saveName;
 				attachment.mime = file.mimetype;
 				attachment.size = file.size;
+				attachment.hash = hash.digest();
 
 				return await this.service.save(attachment);
 			}
@@ -141,6 +150,7 @@ export class AttachmentsController {
 				attachment.mime = file.mimetype;
 				attachment.release = Promise.resolve(release);
 				attachment.asset = repoAsset;
+				attachment.hash = hash.digest();
 
 				return await this.service.save(attachment);
 			}

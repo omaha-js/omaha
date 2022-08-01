@@ -54,6 +54,13 @@ export class ReleaseAttachment {
 	public size: number;
 
 	/**
+	 * The SHA-256 digest hash for the file's contents.
+	 */
+	@Column({ type: 'binary', length: 32 })
+	@Transform(params => params.value.toString('hex'))
+	public hash: Buffer;
+
+	/**
 	 * The number of times the attachment was downloaded.
 	 */
 	@Column({ unsigned: true, default: 0 })
