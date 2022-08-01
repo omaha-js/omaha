@@ -106,16 +106,24 @@ export class ReleasesService {
 			), 'Release_weekly_downloads');
 		}
 
+		let results: any;
+
 		// Fetch releases for the current page
-		const { entities, raw } = await query.getRawAndEntities();
-		const results = entities.map((entity, index) => {
-			const downloads = raw[index].Release_weekly_downloads;
-			if (typeof downloads !== 'string') return instanceToPlain(entity);
-			return {
-				...instanceToPlain(entity),
-				weekly_downloads: Number(downloads)
-			};
-		});
+		// Skip when no versions are available (query will error otherwise)
+		if (sliced.length > 0) {
+			const { entities, raw } = await query.getRawAndEntities();
+			results = entities.map((entity, index) => {
+				const downloads = raw[index].Release_weekly_downloads;
+				if (typeof downloads !== 'string') return instanceToPlain(entity);
+				return {
+					...instanceToPlain(entity),
+					weekly_downloads: Number(downloads)
+				};
+			});
+		}
+		else {
+			results = [];
+		}
 
 		// Sort releases to match the sliced array
 		results.sort((a, b) => sliced.indexOf(a.version) - sliced.indexOf(b.version));
