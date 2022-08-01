@@ -42,7 +42,7 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 			);
 		}
 
-		const version = `${match[1]}.${match[2]}.${match[3]}-${match[4]}`;
+		const version = `${Number(match[1])}.${Number(match[2])}.${Number(match[3])}-${Number(match[4])}`;
 
 		if (semver.valid(version) === null) {
 			throw new BadRequestException(
@@ -54,8 +54,7 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 	}
 
 	public validateVersionString(input: string): string {
-		this.getSemanticFromMicrosoft(input);
-		return input.trim();
+		return this.getMicrosoftFromSemantic(this.getSemanticFromMicrosoft(input));
 	}
 
 	public getVersionsFromConstraint(versions: string[], constraint: string): string[] {
