@@ -1,10 +1,11 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
+import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationsService } from './collaborations/collaborations.service';
-import { RepositoriesService } from './repositories.service';
+import { CollaboratorRole } from './collaborations/collaborations.types';
 
 /**
  * This guard looks at the `repo_id` parameter for the current request as well as the current token from the
@@ -72,7 +73,12 @@ export class RepositoriesGuard implements CanActivate {
 				}
 			}
 
+			const collaboration = new TokenCollaboration();
+			collaboration.scopes = token.scopes as any;
+			collaboration.role = CollaboratorRole.Custom;
+
 			(request as any)._guardedRepository = token.repository;
+			(request as any)._guardedCollaboration = collaboration;
 
 			return true;
 		}
@@ -91,6 +97,14 @@ export class RepositoriesGuard implements CanActivate {
 		const scopesFromController = this.reflector.get<RepositoryScopeId[]>('auth.scopes', context.getClass()) ?? [];
 
 		return [...scopesFromController, ...scopesFromHandler];
+	}
+
+}
+
+export class TokenCollaboration extends Collaboration {
+
+	public override isToken(): this is TokenCollaboration {
+		return true;
 	}
 
 }

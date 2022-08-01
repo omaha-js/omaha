@@ -1,12 +1,21 @@
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 import { CollaboratorRole } from 'src/repositories/collaborations/collaborations.types';
+import { TokenCollaboration } from 'src/repositories/repositories.guard';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';
 
 @Entity({ name: 'collaborations' })
 export class Collaboration {
+
+	/**
+	 * Returns true if this collaboration is generated ephemerally from a token.
+	 * @returns
+	 */
+	public isToken(): this is TokenCollaboration {
+		return false;
+	}
 
 	@PrimaryGeneratedColumn({ unsigned: true })
 	@Expose({ groups: ['id'] })
