@@ -80,7 +80,7 @@ export class AttachmentsController {
 			mime: attachment.mime,
 			size: attachment.size,
 			download_url: url,
-			expires_in: expiration
+			expires_in: Math.floor(expiration / 1000)
 		};
 	}
 
