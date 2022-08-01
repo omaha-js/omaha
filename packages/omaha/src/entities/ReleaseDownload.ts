@@ -1,3 +1,4 @@
+import { Exclude, Expose } from 'class-transformer';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Release } from './Release';
 import { ReleaseAttachment } from './ReleaseAttachment';
@@ -37,10 +38,21 @@ export class ReleaseDownload {
 
 	@Column({ type: 'date' })
 	@Index()
+	@Exclude()
 	public date: Date;
 
 	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
 	@Index()
 	public time: Date;
+
+	@Expose({ name: 'release' })
+	protected get internPropRelease() {
+		return (this as any).__release__;
+	}
+
+	@Expose({ name: 'attachment' })
+	protected get internPropAttachment() {
+		return (this as any).__attachment__;
+	}
 
 }

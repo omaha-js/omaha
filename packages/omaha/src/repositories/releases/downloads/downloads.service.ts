@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 import { ReleaseDownload } from 'src/entities/ReleaseDownload';
 import { Token } from 'src/entities/Token';
-import { Repository as TypeOrmRepository, SelectQueryBuilder } from 'typeorm';
+import { Repository as TypeOrmRepository } from 'typeorm';
 import { Repository } from 'src/entities/Repository';
 import { Release } from 'src/entities/Release';
+import { DownloadLogsDto } from './dto/DownloadLogsDto';
 import moment from 'moment';
 
 @Injectable()
@@ -50,7 +51,7 @@ export class DownloadsService {
 	 * @returns
 	 */
 	public async getWeeklyDownloads(target: Repository | Release | ReleaseAttachment) {
-		const q = this.repository.createQueryBuilder();
+		const query = this.repository.createQueryBuilder();
 		const history = new Array<DownloadHistoryRecord>();
 
 		// Data ranges from one year ago (52 weeks = 364 days) to yesterday
@@ -58,23 +59,23 @@ export class DownloadsService {
 		const endDate = moment().subtract(1, 'day').format('YYYY-MM-DD');
 
 		// Group downloads on a weekly interval
-		q.select(`'${startDate}' + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_start`);
-		q.addSelect(`'${startDate}' + INTERVAL 6 DAY + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_end`);
-		q.addSelect(`COUNT(*) AS downloads`);
+		query.select(`'${startDate}' + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_start`);
+		query.addSelect(`'${startDate}' + INTERVAL 6 DAY + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_end`);
+		query.addSelect(`COUNT(*) AS downloads`);
 
 		// Target constraint
-		if (target instanceof Repository) q.where('repository_id = :id', target);
-		else if (target instanceof Release) q.where('release_id = :id', target);
-		else if (target instanceof ReleaseAttachment) q.where('attachment_id = :id', target);
+		if (target instanceof Repository) query.where('repository_id = :id', target);
+		else if (target instanceof Release) query.where('release_id = :id', target);
+		else if (target instanceof ReleaseAttachment) query.where('attachment_id = :id', target);
 
 		// Date range & grouping
-		q.andWhere(`date >= '${startDate}'`);
-		q.andWhere(`date <= '${endDate}'`);
-		q.groupBy(`date_start, date_end`);
+		query.andWhere(`date >= '${startDate}'`);
+		query.andWhere(`date <= '${endDate}'`);
+		query.groupBy(`date_start, date_end`);
 
 		// Compile the data
 		// Note: The download counts are returned as strings
-		const records = await q.getRawMany();
+		const records = await query.getRawMany();
 		const map = records.reduce((acc, curr) => (acc[curr.date_start] = curr, acc), {});
 
 		for (let weekNumber = 52; weekNumber >= 1; weekNumber--) {
@@ -91,6 +92,44 @@ export class DownloadsService {
 		}
 
 		return history;
+	}
+
+	public async getDownloadLogs(target: Repository | Release | ReleaseAttachment, params: DownloadLogsDto) {
+		const query = this.repository.createQueryBuilder('ReleaseDownload');
+		const page = params.page ?? 1;
+		const count = params.count ?? 25;
+
+		// Target constraint
+		if (target instanceof Repository) query.where('ReleaseDownload.repository = :id', target);
+		else if (target instanceof Release) query.where('ReleaseDownload.release_id = :id', target);
+		else if (target instanceof ReleaseAttachment) query.where('ReleaseDownload.attachment_id = :id', target);
+
+		// Left join tokens
+		query.leftJoinAndSelect('ReleaseDownload.token', 'Token');
+		query.leftJoinAndSelect('ReleaseDownload.release', 'Release');
+		query.leftJoinAndSelect('ReleaseDownload.attachment', 'ReleaseAttachment');
+
+		// Date range & grouping
+		query.orderBy('ReleaseDownload.id', 'DESC');
+
+		// Get total number of results
+		const total = await query.getCount();
+
+		// Pagination
+		query.take(count);
+		query.skip((count * page) - count);
+
+		const logs = await query.getMany();
+
+		return {
+			pagination: {
+				page,
+				page_count: Math.max(1, Math.ceil(total / count)),
+				page_size: count,
+				num_results: total
+			},
+			logs
+		};
 	}
 
 }
