@@ -23,13 +23,15 @@ export class TokensController {
 	@Post()
 	@UseScopes('account.tokens.manage')
 	public async createToken(@User() token: AccountToken, @Body() params: CreateAccountTokenDto) {
+		const scopes = params.scopes.filter(scope => token.hasPermission(scope));
+
 		return await this.service.createDatabaseToken({
 			name: params.name,
 			description: params.description,
 			expiration: params.expiration,
 			type: TokenType.Account,
 			account: token.account,
-			scopes: params.scopes
+			scopes
 		});
 	}
 
@@ -55,6 +57,7 @@ export class TokensController {
 			throw new NotFoundException('No token matching the given ID was found');
 		}
 
+		params.scopes = params.scopes.filter(scope => token.hasPermission(scope));
 		return await this.service.updateDatabaseToken(match, params);
 	}
 

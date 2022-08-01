@@ -2,7 +2,9 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, U
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { TokensService } from 'src/auth/tokens/tokens.service';
 import { TokenType } from 'src/auth/tokens/tokens.types';
+import { Collaboration } from 'src/entities/Collaboration';
 import { Repository } from 'src/entities/Repository';
+import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { RepositoriesGuard } from '../repositories.guard';
 import { CreateRepoTokenDto } from './dto/CreateRepoTokenDto';
@@ -24,14 +26,16 @@ export class TokensController {
 
 	@Post()
 	@UseScopes('repo.tokens.manage')
-	public async createToken(@Repo() repo: Repository, @Body() params: CreateRepoTokenDto) {
+	public async createToken(@Repo() repo: Repository, @Body() params: CreateRepoTokenDto, @Collab() collab: Collaboration) {
+		const scopes = params.scopes.filter(scope => collab.hasPermission(scope));
+
 		return await this.service.createDatabaseToken({
 			name: params.name,
 			description: params.description,
 			expiration: params.expiration,
 			type: TokenType.Repository,
 			repository: repo,
-			scopes: params.scopes
+			scopes
 		});
 	}
 
@@ -49,13 +53,19 @@ export class TokensController {
 
 	@Patch(':id')
 	@UseScopes('repo.tokens.manage')
-	public async updateToken(@Repo() repo: Repository, @Body() params: UpdateRepoTokenDto, @Param('id') id: string) {
+	public async updateToken(
+		@Repo() repo: Repository,
+		@Body() params: UpdateRepoTokenDto,
+		@Param('id') id: string,
+		@Collab() collab: Collaboration
+	) {
 		const token = await this.service.getDatabaseTokenForRepository(repo, id);
 
 		if (!token) {
 			throw new NotFoundException('No token matching the given ID was found');
 		}
 
+		params.scopes = params.scopes.filter(scope => collab.hasPermission(scope));
 		return await this.service.updateDatabaseToken(token, params);
 	}
 
