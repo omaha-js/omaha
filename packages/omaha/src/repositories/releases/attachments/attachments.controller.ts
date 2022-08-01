@@ -80,6 +80,7 @@ export class AttachmentsController {
 			file_name: attachment.file_name,
 			mime: attachment.mime,
 			size: attachment.size,
+			hash: attachment.hash.toString('hex'),
 			download_url: url,
 			expires_in: Math.floor(expiration / 1000)
 		};
