@@ -1,5 +1,5 @@
 /**
- * Describes the current status of a release (draft, published, archived).
+ * Defines the current status of a release (draft, published, archived).
  */
 export enum ReleaseStatus {
 

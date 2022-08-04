@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'src/entities/Repository';
 import { CreateRepoDto } from './dto/CreateRepoDto';
-import { RepoAccess } from './repositories.types';
+import { RepositoryAccessType } from '../entities/enum/RepositoryAccessType';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { Account } from 'src/entities/Account';
 import { CollaborationsService } from './collaborations/collaborations.service';
-import { CollaboratorRole } from './collaborations/collaborations.types';
+import { CollaborationRole } from '../entities/enum/CollaborationRole';
 import { instanceToPlain } from 'class-transformer';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { TagsService } from './tags/tags.service';
@@ -53,7 +53,7 @@ export class RepositoriesService {
 		const name = dto.name;
 		const description = dto.description ?? '';
 		const scheme = dto.scheme;
-		const access = dto.access ?? RepoAccess.Private;
+		const access = dto.access ?? RepositoryAccessType.Private;
 
 		// Create the repository
 		const repository = await this.repository.save(this.repository.create({
@@ -68,7 +68,7 @@ export class RepositoriesService {
 		const collaboration = await this.collaborations.create(
 			repository,
 			account,
-			CollaboratorRole.Owner
+			CollaborationRole.Owner
 		);
 
 		// Create the default tag

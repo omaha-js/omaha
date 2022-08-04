@@ -7,7 +7,7 @@ import { AccountsService } from 'src/accounts/accounts.service';
 import jwt from 'jsonwebtoken';
 import crypto, { randomBytes } from 'crypto';
 import { BaseToken } from './models/BaseToken';
-import { TokenType } from './tokens.types';
+import { TokenType } from '../../entities/enum/TokenType';
 import { Repository } from 'src/entities/Repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository as TypeOrmRepository } from 'typeorm';

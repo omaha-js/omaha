@@ -1,4 +1,7 @@
-export enum CollaboratorRole {
+/**
+ * Defines the role of a collaboration, which defines the scopes it can access.
+ */
+export enum CollaborationRole {
 
 	/**
 	 * Grants all permissions to the sole owner of a repository.

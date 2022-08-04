@@ -1,3 +1,6 @@
+/**
+ * Defines what type of entity (account, repository) a token should grant scopes and access for.
+ */
 export enum TokenType {
 
 	/**

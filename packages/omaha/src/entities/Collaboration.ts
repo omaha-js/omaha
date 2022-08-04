@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
-import { CollaboratorRole } from 'src/repositories/collaborations/collaborations.types';
+import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { TokenCollaboration } from 'src/repositories/repositories.guard';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Account } from './Account';
@@ -31,8 +31,8 @@ export class Collaboration {
 	@Exclude()
 	public account: Promise<Account>;
 
-	@Column({ type: 'enum', enum: CollaboratorRole })
-	public role: CollaboratorRole;
+	@Column({ type: 'enum', enum: CollaborationRole })
+	public role: CollaborationRole;
 
 	@Column({ type: 'json' })
 	@Exclude()
@@ -46,11 +46,11 @@ export class Collaboration {
 
 	@Expose({ name: 'scopes' })
 	public getFullScopes(): RepositoryScopeId[] {
-		if (this.role !== CollaboratorRole.Custom) {
+		if (this.role !== CollaborationRole.Custom) {
 			const scopes = [];
 
 			for (const scope of RepositoryScopes) {
-				const groups: CollaboratorRole[] = scope.groups as any;
+				const groups: CollaborationRole[] = scope.groups as any;
 
 				if (groups.includes(this.role)) {
 					scopes.push(scope.id);

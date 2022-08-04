@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { TokensService } from 'src/auth/tokens/tokens.service';
-import { TokenType } from 'src/auth/tokens/tokens.types';
+import { TokenType } from 'src/entities/enum/TokenType';
 import { Collaboration } from 'src/entities/Collaboration';
 import { Repository } from 'src/entities/Repository';
 import { Collab } from 'src/support/Collab';

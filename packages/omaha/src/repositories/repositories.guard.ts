@@ -5,7 +5,7 @@ import { RepositoryScopeId } from 'src/auth/auth.scopes';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationsService } from './collaborations/collaborations.service';
-import { CollaboratorRole } from './collaborations/collaborations.types';
+import { CollaborationRole } from '../entities/enum/CollaborationRole';
 
 /**
  * This guard looks at the `repo_id` parameter for the current request as well as the current token from the
@@ -75,7 +75,7 @@ export class RepositoriesGuard implements CanActivate {
 
 			const collaboration = new TokenCollaboration();
 			collaboration.scopes = token.scopes as any;
-			collaboration.role = CollaboratorRole.Custom;
+			collaboration.role = CollaborationRole.Custom;
 
 			(request as any)._guardedRepository = token.repository;
 			(request as any)._guardedCollaboration = collaboration;

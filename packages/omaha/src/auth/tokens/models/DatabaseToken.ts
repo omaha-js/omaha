@@ -1,7 +1,7 @@
 import { Account } from 'src/entities/Account';
 import { Repository } from 'src/entities/Repository';
 import { Token } from 'src/entities/Token';
-import { TokenType } from '../tokens.types';
+import { TokenType } from '../../../entities/enum/TokenType';
 import { BaseToken } from './BaseToken';
 
 /**

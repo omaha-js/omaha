@@ -8,7 +8,7 @@ import { Repository } from 'src/entities/Repository';
 import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { User } from 'src/support/User';
-import { CollaboratorRole } from './collaborations/collaborations.types';
+import { CollaborationRole } from '../entities/enum/CollaborationRole';
 import { CreateRepoDto } from './dto/CreateRepoDto';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { ReleasesService } from './releases/releases.service';
@@ -72,7 +72,7 @@ export class RepositoriesController {
 	@Delete(':repo_id')
 	@UseGuards(RepositoriesGuard)
 	public async deleteRepository(@Repo() repo: Repository, @Collab() collab?: Collaboration) {
-		if (collab?.role !== CollaboratorRole.Owner) {
+		if (collab?.role !== CollaborationRole.Owner) {
 			throw new ForbiddenException('Insufficient privileges');
 		}
 

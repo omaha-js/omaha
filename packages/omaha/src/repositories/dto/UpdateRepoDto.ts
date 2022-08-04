@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { RepoAccess, RepoVersionScheme } from '../repositories.types';
+import { RepositoryVersionScheme } from 'src/entities/enum/RepositoryVersionScheme';
+import { RepositoryAccessType } from '../../entities/enum/RepositoryAccessType';
 
 export class UpdateRepoDto {
 
@@ -13,11 +14,11 @@ export class UpdateRepoDto {
 	description?: string;
 
 	@IsOptional()
-	@IsEnum(RepoVersionScheme)
-	scheme: RepoVersionScheme;
+	@IsEnum(RepositoryVersionScheme)
+	scheme: RepositoryVersionScheme;
 
 	@IsOptional()
-	@IsEnum(RepoAccess)
-	access?: RepoAccess;
+	@IsEnum(RepositoryAccessType)
+	access?: RepositoryAccessType;
 
 }

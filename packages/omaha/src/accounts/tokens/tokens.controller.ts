@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post } 
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { TokensService } from 'src/auth/tokens/tokens.service';
-import { TokenType } from 'src/auth/tokens/tokens.types';
+import { TokenType } from 'src/entities/enum/TokenType';
 import { User } from 'src/support/User';
 import { CreateAccountTokenDto } from './dto/CreateAccountTokenDto';
 import { UpdateAccountTokenDto } from './dto/UpdateAccountTokenDto';

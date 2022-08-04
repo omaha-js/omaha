@@ -1,4 +1,4 @@
-import { RepoAccess, RepoVersionScheme } from 'src/repositories/repositories.types';
+import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
 import { Column, CreateDateColumn, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
 import { Release } from './Release';
@@ -9,6 +9,7 @@ import { VersionSchemeDrivers } from 'src/drivers/versions';
 import { Expose } from 'class-transformer';
 import { Token } from './Token';
 import { ReleaseDownload } from './ReleaseDownload';
+import { RepositoryVersionScheme } from './enum/RepositoryVersionScheme';
 
 @Entity({ name: 'repositories' })
 export class Repository {
@@ -22,11 +23,11 @@ export class Repository {
 	@Column({ type: 'text' })
 	public description: string;
 
-	@Column({ type: 'enum', enum: RepoVersionScheme })
-	public scheme: RepoVersionScheme;
+	@Column({ type: 'enum', enum: RepositoryVersionScheme })
+	public scheme: RepositoryVersionScheme;
 
-	@Column({ type: 'enum', enum: RepoAccess })
-	public access: RepoAccess;
+	@Column({ type: 'enum', enum: RepositoryAccessType })
+	public access: RepositoryAccessType;
 
 	@CreateDateColumn()
 	public created_at: Date;

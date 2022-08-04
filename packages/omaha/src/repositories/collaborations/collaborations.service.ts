@@ -5,7 +5,7 @@ import { Account } from 'src/entities/Account';
 import { Collaboration } from 'src/entities/Collaboration';
 import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
-import { CollaboratorRole } from './collaborations.types';
+import { CollaborationRole } from '../../entities/enum/CollaborationRole';
 
 @Injectable()
 export class CollaborationsService {
@@ -73,7 +73,7 @@ export class CollaborationsService {
 	 * @param role
 	 * @param scopes
 	 */
-	public create(repository: Repository, account: Account, role: CollaboratorRole, scopes?: RepositoryScopeId[]) {
+	public create(repository: Repository, account: Account, role: CollaborationRole, scopes?: RepositoryScopeId[]) {
 		const collab = this.repository.create({
 			role,
 			scopes: scopes ?? []
