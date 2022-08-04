@@ -311,7 +311,7 @@ export class ReleasesService {
 				},
 				status: In(statuses)
 			},
-			order: { created_at: params.sort_order }
+			order: { id: params.sort_order }
 		});
 
 		return releases.map(release => release.version);
