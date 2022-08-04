@@ -15,6 +15,8 @@ import { Request } from 'express';
 import fs from 'fs';
 import crypto from 'crypto';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
+import { Collab } from 'src/support/Collab';
+import { Collaboration } from 'src/entities/Collaboration';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -35,14 +37,24 @@ export class AttachmentsController {
 	 * @param repo
 	 * @param version
 	 * @param assetName
+	 * @param collab
 	 * @returns
 	 */
 	@Get()
-	public async getAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string) {
+	public async getAttachment(
+		@Repo() repo: Repository,
+		@Param('version') version: string,
+		@Param('asset') assetName: string,
+		@Collab() collab?: Collaboration
+	) {
 		const release = await this.releases.getFromVersionOrFail(repo, version);
 		const attachment = (await release.attachments).find(
 			attachment => attachment.asset.name.toLowerCase() === assetName.toLowerCase()
 		);
+
+		if (release.status === ReleaseStatus.Draft && !collab?.hasPermission('repo.releases.attachments.manage')) {
+			throw new NotFoundException(`No version matching '${version}' exists within the repository`);
+		}
 
 		if (!attachment) {
 			throw new NotFoundException(`The specified attachment was not found in the release`);
@@ -61,10 +73,11 @@ export class AttachmentsController {
 		@Param('version') version: string,
 		@Param('asset') assetName: string,
 		@User() token: BaseToken,
-		@Req() request: Request
+		@Req() request: Request,
+		@Collab() collab?: Collaboration
 	) {
 		const expiration = 600000;
-		const attachment = await this.getAttachment(repo, version, assetName);
+		const attachment = await this.getAttachment(repo, version, assetName, collab);
 		const disposition = `attachment; filename="${attachment.file_name}"`;
 		const release = await attachment.release;
 
