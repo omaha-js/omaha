@@ -1,7 +1,10 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
+import { Collaboration } from 'src/entities/Collaboration';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Repository } from 'src/entities/Repository';
+import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { User } from 'src/support/User';
 import { RepositoriesGuard } from '../repositories.guard';
@@ -19,14 +22,14 @@ export class ReleasesController {
 	) {}
 
 	@Get()
-	public async search(@Repo() repo: Repository, @Query() dto: SearchReleasesDto) {
+	public async search(@Repo() repo: Repository, @Query() dto: SearchReleasesDto, @Collab() collab?: Collaboration) {
 		const list = (input: string) => (input
 			.split(/(?: *, *)+/)
 			.map(tag => tag.trim())
 			.filter(tag => tag.length > 0)
 		);
 
-		return this.service.search(repo, {
+		return this.service.search(repo, collab, {
 			page: dto.page ? Number(dto.page) : 1,
 			count: dto.count ? Number(dto.count) : 25,
 			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
@@ -58,14 +61,18 @@ export class ReleasesController {
 	 *
 	 * @param repo
 	 * @param version
-	 * @param token
+	 * @param collab
 	 */
 	@Get(':version')
-	public async get(@Repo() repo: Repository, @Param('version') version: string, @User() token: BaseToken) {
+	public async get(@Repo() repo: Repository, @Param('version') version: string, @Collab() collab?: Collaboration) {
 		const release = await this.service.getFromVersionOrFail(repo, version);
 
-		// Require the "edit" privilege when reading a draft release
-		if (release.draft && !token.hasPermission('repo.releases.edit')) {
+		// Require relevant privileges when reading a draft release
+		if (
+			release.status === ReleaseStatus.Draft &&
+			!collab.hasPermission('repo.releases.create') &&
+			!collab.hasPermission('repo.releases.attachments.manage')
+		) {
 			throw new NotFoundException(`No version matching '${version}' exists within the repository`);
 		}
 

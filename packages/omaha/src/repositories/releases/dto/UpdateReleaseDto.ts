@@ -1,4 +1,5 @@
-import { ArrayNotEmpty, IsBoolean, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 
 export class UpdateReleaseDto {
 
@@ -7,8 +8,8 @@ export class UpdateReleaseDto {
 	description?: string;
 
 	@IsOptional()
-	@IsBoolean()
-	draft?: boolean;
+	@IsEnum(ReleaseStatus)
+	status?: ReleaseStatus;
 
 	@IsOptional()
 	@IsString({ each: true })

@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { ReleaseStatus } from './enum/ReleaseStatus';
 import { ReleaseAttachment } from './ReleaseAttachment';
 import { ReleaseDownload } from './ReleaseDownload';
 import { Repository } from './Repository';
@@ -24,10 +25,10 @@ export class Release {
 	public version: string;
 
 	/**
-	 * Whether or not this release is a draft.
+	 * The current status of the release.
 	 */
-	@Column({ default: true })
-	public draft: boolean;
+	@Column({ type: 'enum', enum: ReleaseStatus, default: 'draft' })
+	public status: ReleaseStatus;
 
 	/**
 	 * The description of the release in markdown format, often used as a changelog.

@@ -83,7 +83,7 @@ export class SearchReleasesDto {
 	 * @default 'published'
 	 */
 	@IsOptional()
-	@IsIn([ 'draft', 'published', 'all' ])
-	status?: 'draft' | 'published' | 'all';
+	@IsIn([ 'draft', 'published', 'archived', 'all' ])
+	status?: 'draft' | 'published' | 'archived' | 'all';
 
 }

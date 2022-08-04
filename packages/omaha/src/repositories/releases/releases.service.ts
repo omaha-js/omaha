@@ -8,6 +8,8 @@ import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
 import { ReleaseDownload } from 'src/entities/ReleaseDownload';
 import { instanceToPlain } from 'class-transformer';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
+import { Collaboration } from 'src/entities/Collaboration';
 
 @Injectable()
 export class ReleasesService {
@@ -50,8 +52,13 @@ export class ReleasesService {
 
 	/**
 	 * Searches for releases.
+	 *
+	 * @param repo
+	 * @param collaboration
+	 * @param params
+	 * @returns
 	 */
-	public async search(repo: Repository, params: ReleaseSearchParams) {
+	public async search(repo: Repository, collaboration: Collaboration | undefined, params: ReleaseSearchParams) {
 		// Get all available tag names
 		const tags = await this.tags.getAllTags(repo);
 
@@ -62,7 +69,7 @@ export class ReleasesService {
 		};
 
 		// Narrow down all version numbers matching our criteria
-		const matches = await this.getFilteredVersions(repo, params);
+		const matches = await this.getFilteredVersions(repo, params, collaboration);
 
 		// Narrow them down further with the version constraint and sort using the driver
 		const filtered = repo.driver.getVersionsFromConstraint(matches, params.constraint ?? '*');
@@ -156,7 +163,7 @@ export class ReleasesService {
 		// Create the release
 		const release = this.repository.create({
 			version,
-			draft: true,
+			status: ReleaseStatus.Draft,
 			description: dto.description,
 		});
 
@@ -182,39 +189,46 @@ export class ReleasesService {
 	public async update(repo: Repository, release: Release, dto: UpdateReleaseDto) {
 		release.description = dto.description;
 
-		// Check if the update is eligible for publishing when setting draft=false
-		if (release.draft && dto.draft === false) {
-			// Get the assets for both the repository and the release
-			const repoAssets = await repo.assets;
-			const attachments = await release.attachments;
+		// Handle publishing
+		if (dto.status === ReleaseStatus.Published) {
+			if (release.status === ReleaseStatus.Draft) {
+				// Get the assets for both the repository and the release
+				const repoAssets = await repo.assets;
+				const attachments = await release.attachments;
 
-			// Check if all required assets have an upload
-			for (const repoAsset of repoAssets) {
-				if (repoAsset.required) {
-					const asset = attachments.find(asset => asset.asset.id === repoAsset.id);
+				// Check if all required assets have an upload
+				for (const repoAsset of repoAssets) {
+					if (repoAsset.required) {
+						const asset = attachments.find(asset => asset.asset.id === repoAsset.id);
 
-					if (!asset) {
-						throw new BadRequestException(
-							`The ${repoAsset.name} attachment is required before this release can be published`
-						);
+						if (!asset) {
+							throw new BadRequestException(
+								`The ${repoAsset.name} attachment is required before this release can be published`
+							);
+						}
 					}
 				}
-			}
 
-			// Make sure at least one attachment is uploaded
-			if (attachments.length === 0) {
+				// Make sure at least one attachment is uploaded
+				if (attachments.length === 0) {
+					throw new BadRequestException(
+						`At least one attachment must be uploaded before this release can be published`
+					);
+				}
+
+				release.status = ReleaseStatus.Published;
+				release.published_at = new Date();
+			}
+			else if (release.status === ReleaseStatus.Archived) {
 				throw new BadRequestException(
-					`At least one attachment must be uploaded before this release can be published`
+					`Cannot republish an archived release`
 				);
 			}
-
-			release.draft = false;
-			release.published_at = new Date();
 		}
 
 		// Throw an error when attempting to unpublish
-		else if (!release.draft && dto.draft) {
-			throw new BadRequestException('Cannot change the draft status of a published release');
+		else if (release.status !== ReleaseStatus.Draft && dto.status === ReleaseStatus.Draft) {
+			throw new BadRequestException('Cannot revert a published release back into a draft');
 		}
 
 		// Resolve the tags
@@ -234,7 +248,7 @@ export class ReleasesService {
 	 * Deletes a release. This can only be done while it is in a draft state.
 	 */
 	public async delete(release: Release) {
-		if (!release.draft) {
+		if (release.status !== ReleaseStatus.Draft) {
 			throw new BadRequestException('Cannot delete a release after it has been published');
 		}
 
@@ -273,12 +287,19 @@ export class ReleasesService {
 	 *
 	 * @param repo
 	 * @param params
+	 * @param collab
 	 * @returns
 	 */
-	public async getFilteredVersions(repo: Repository, params: ReleaseFilterParams) {
-		const draft = params.status === 'all' ? undefined : (params.status === 'draft' ? true : false);
+	public async getFilteredVersions(repo: Repository, params: ReleaseFilterParams, collab?: Collaboration) {
+		let statuses = [];
 
-		// TODO: Disable draft forcefully if `repo.releases.create` and `repo.releases.attachments` are both missing
+		if (params.status === 'all') statuses.push('draft', 'published', 'archived');
+		else statuses.push(params.status);
+
+		// Require relevant scopes to view draft releases
+		if (!collab || !collab.hasPermission('repo.releases.create') || !collab.hasPermission('repo.releases.attachments.manage')) {
+			statuses = statuses.filter(status => status !== 'draft');
+		}
 
 		const releases = await this.repository.find({
 			select: ['version'],
@@ -288,7 +309,7 @@ export class ReleasesService {
 				attachments: params.assets.length === 0 ? undefined : {
 					asset: { name: In(params.assets) }
 				},
-				draft
+				status: In(statuses)
 			},
 			order: { created_at: params.sort_order }
 		});
@@ -313,7 +334,7 @@ export class ReleasesService {
 export interface ReleaseFilterParams {
 	tags: string[];
 	assets: string[];
-	status: 'draft' | 'published' | 'all';
+	status: 'draft' | 'published' | 'archived' | 'all';
 	sort_order: 'desc' | 'asc';
 }
 

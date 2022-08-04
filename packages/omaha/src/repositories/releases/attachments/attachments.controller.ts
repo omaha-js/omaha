@@ -14,6 +14,7 @@ import { DownloadsService } from '../downloads/downloads.service';
 import { Request } from 'express';
 import fs from 'fs';
 import crypto from 'crypto';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -65,16 +66,21 @@ export class AttachmentsController {
 		const expiration = 600000;
 		const attachment = await this.getAttachment(repo, version, assetName);
 		const disposition = `attachment; filename="${attachment.file_name}"`;
-		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
 		const release = await attachment.release;
 
-		if (token.isDatabaseToken() && !release.draft) {
+		if (release.status === ReleaseStatus.Archived) {
+			throw new BadRequestException('Archived releases cannot be downloaded');
+		}
+
+		if (token.isDatabaseToken() && release.status !== ReleaseStatus.Draft) {
 			await Promise.all([
 				this.downloads.recordDownload(repo, release, attachment, token.token, request.ip),
 				this.releases.recordDownload(release),
 				this.service.incrementDownloadCount(attachment)
 			]);
 		}
+
+		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
 
 		return {
 			file_name: attachment.file_name,
@@ -106,7 +112,7 @@ export class AttachmentsController {
 		// Preflight checks
 		if (!file) throw new BadRequestException(`Missing file upload`);
 		if (!repoAsset) throw new NotFoundException(`The specified asset was not found in the repository`);
-		if (!release.draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
+		if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
 
 		// Make sure the file exists
 		if (!fs.existsSync(file.path)) {
