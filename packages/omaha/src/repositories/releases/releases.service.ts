@@ -71,9 +71,14 @@ export class ReleasesService {
 		// Narrow down all version numbers matching our criteria
 		const matches = await this.getFilteredVersions(repo, params, collaboration);
 
+		// Ensure the versions are sorted in ascending order for the driver
+		if (params.sort_order === 'desc') matches.reverse();
+
 		// Narrow them down further with the version constraint and sort using the driver
 		const filtered = repo.driver.getVersionsFromConstraint(matches, params.constraint ?? '*');
-		const sorted = params.sort === 'version' ? repo.driver.getVersionsSorted(filtered, params.sort_order) : filtered;
+		const sorted = params.sort === 'version' ?
+			repo.driver.getVersionsSorted(filtered, params.sort_order) :
+			(params.sort_order === 'desc' ? filtered.reverse() : filtered);
 
 		// Artificial limiter when assets are enabled
 		if (params.includeAttachments) {

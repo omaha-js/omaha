@@ -15,7 +15,8 @@ export interface VersionSchemeDriver {
 
 	/**
 	 * Filters the given array of versions and returns a new array containing all versions that fit the given
-	 * constraint in their original orders.
+	 * constraint in their original orders. Note that the `versions` array will always be sorted by ID in ascending
+	 * order.
 	 *
 	 * @param versions
 	 * @param constraint
@@ -23,7 +24,8 @@ export interface VersionSchemeDriver {
 	getVersionsFromConstraint(versions: string[], constraint: string): string[];
 
 	/**
-	 * Returns a new array of all given versions sorted in the specified direction.
+	 * Returns a new array of all given versions sorted in the specified direction. Note that the `versions` array will
+	 * always be sorted by ID in ascending order.
 	 *
 	 * @param versions
 	 * @param direction

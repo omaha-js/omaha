@@ -15,6 +15,8 @@ export class SemanticVersionDriver implements VersionSchemeDriver {
 	}
 
 	public getVersionsFromConstraint(versions: string[], constraint: string): string[] {
+		console.log(versions);
+
 		if (semver.valid(constraint) === null && semver.validRange(constraint) === null) {
 			throw new BadRequestException(`The string '${constraint}' is not a valid semantic constraint`);
 		}
