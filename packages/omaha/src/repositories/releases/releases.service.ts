@@ -264,16 +264,15 @@ export class ReleasesService {
 	 * @param status
 	 * @returns
 	 */
-	public async getAllVersions(repo: Repository, status: 'all' | 'draft' | 'published' = 'published'): Promise<string[]> {
+	public async getAllVersions(repo: Repository, status: 'all' | 'draft' | 'published' | 'archived' = 'published'): Promise<string[]> {
 		const builder = this.repository.createQueryBuilder();
 
 		builder.select(['Release.version as version']);
 		builder.where('Release.repository_id = :id', repo);
+		builder.orderBy('Release.id', 'DESC');
 
 		if (status !== 'all') {
-			builder.andWhere('Release.draft = :draft', {
-				draft: status === 'draft' ? 1 : 0
-			});
+			builder.andWhere('Release.status = :status', { status });
 		}
 
 		const rows = await builder.getRawMany();

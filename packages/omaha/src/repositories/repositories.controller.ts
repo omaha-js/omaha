@@ -93,7 +93,7 @@ export class RepositoriesController {
 	@UseGuards(RepositoriesGuard)
 	public async getAllVersions(@Repo() repo: Repository) {
 		const versions = repo.driver.getVersionsSorted(
-			await this.releases.getAllVersions(repo),
+			await this.releases.getAllVersions(repo, 'all'),
 			'desc'
 		);
 
