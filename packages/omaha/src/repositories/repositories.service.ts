@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'src/entities/Repository';
 import { CreateRepoDto } from './dto/CreateRepoDto';
@@ -11,6 +11,7 @@ import { instanceToPlain } from 'class-transformer';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { TagsService } from './tags/tags.service';
 import { AssetsService } from './assets/assets.service';
+import { ReleasesService } from './releases/releases.service';
 
 @Injectable()
 export class RepositoriesService {
@@ -20,6 +21,7 @@ export class RepositoriesService {
 		private readonly collaborations: CollaborationsService,
 		private readonly tags: TagsService,
 		private readonly assets: AssetsService,
+		private readonly releases: ReleasesService,
 	) {}
 
 	/**
@@ -102,15 +104,21 @@ export class RepositoriesService {
 			repository.name = changes.name;
 		}
 
-		if (typeof changes.description === 'string') {
+		if (typeof changes.description === 'string' && repository.description !== changes.description) {
 			repository.description = changes.description;
 		}
 
-		if (typeof changes.scheme === 'string') {
+		if (typeof changes.scheme === 'string' && repository.scheme !== changes.scheme) {
+			if ((await this.releases.getAllVersions(repository, 'all')).length > 0) {
+				throw new BadRequestException(
+					'Cannot change the version scheme of a repository with one or more releases'
+				);
+			}
+
 			repository.scheme = changes.scheme;
 		}
 
-		if (typeof changes.access === 'string') {
+		if (typeof changes.access === 'string' && repository.access !== changes.access) {
 			repository.access = changes.access;
 		}
 
