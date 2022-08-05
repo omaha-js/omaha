@@ -12,6 +12,7 @@ import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { TagsService } from './tags/tags.service';
 import { AssetsService } from './assets/assets.service';
 import { ReleasesService } from './releases/releases.service';
+import { RepositorySettingsManager } from './settings/RepositorySettingsManager';
 
 @Injectable()
 export class RepositoriesService {
@@ -120,6 +121,13 @@ export class RepositoriesService {
 
 		if (typeof changes.access === 'string' && repository.access !== changes.access) {
 			repository.access = changes.access;
+		}
+
+		if (typeof changes.settings === 'object') {
+			repository.settings = {
+				...repository.settings,
+				...RepositorySettingsManager.sanitize(changes.settings)
+			};
 		}
 
 		return this.repository.save(repository);
