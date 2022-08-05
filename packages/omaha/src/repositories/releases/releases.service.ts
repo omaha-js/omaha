@@ -10,6 +10,7 @@ import { ReleaseDownload } from 'src/entities/ReleaseDownload';
 import { instanceToPlain } from 'class-transformer';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collaboration } from 'src/entities/Collaboration';
+import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
 
 @Injectable()
 export class ReleasesService {
@@ -69,16 +70,18 @@ export class ReleasesService {
 		};
 
 		// Narrow down all version numbers matching our criteria
-		const matches = await this.getFilteredVersions(repo, params, collaboration);
-
-		// Ensure the versions are sorted in ascending order for the driver
-		if (params.sort_order === 'desc') matches.reverse();
+		const versions = await this.getVersionList(repo, params, collaboration);
+		const selected = [...versions.selected];
 
 		// Narrow them down further with the version constraint and sort using the driver
-		const filtered = repo.driver.getVersionsFromConstraint(matches, params.constraint ?? '*');
+		const filtered = this.getVersionsFromConstraint(repo, versions, params.constraint ?? '*');
 		const sorted = params.sort === 'version' ?
-			repo.driver.getVersionsSorted(filtered, params.sort_order) :
-			(params.sort_order === 'desc' ? filtered.reverse() : filtered);
+			repo.driver.getVersionsSorted({ all: versions.all, selected: filtered }, params.sort_order) : filtered;
+
+		// Sort by date by matching the original selection order
+		if (params.sort === 'date') {
+			sorted.sort((a, b) => selected.indexOf(a) - selected.indexOf(b));
+		}
 
 		// Artificial limiter when assets are enabled
 		if (params.includeAttachments) {
@@ -267,18 +270,18 @@ export class ReleasesService {
 	 *
 	 * @param repo
 	 * @param status
+	 * @param collab
 	 * @returns
 	 */
-	public async getAllVersions(repo: Repository, status: 'all' | 'draft' | 'published' | 'archived' = 'published'): Promise<string[]> {
+	public async getAllVersions(repo: Repository, status: ReleaseStatusInput = 'published', collab: Collaboration): Promise<string[]> {
 		const builder = this.repository.createQueryBuilder();
 
-		builder.select(['Release.version as version']);
+		builder.select(['Release.id as id', 'Release.version as version']);
 		builder.where('Release.repository_id = :id', repo);
-		builder.orderBy('Release.id', 'DESC');
-
-		if (status !== 'all') {
-			builder.andWhere('Release.status = :status', { status });
-		}
+		builder.orderBy('Release.id', 'ASC');
+		builder.andWhere('Release.status IN (:statuses)', {
+			statuses: this.getReleaseStatusesForCollab(status, collab)
+		});
 
 		const rows = await builder.getRawMany();
 		const versions = rows.map(row => row.version);
@@ -294,18 +297,9 @@ export class ReleasesService {
 	 * @param collab
 	 * @returns
 	 */
-	public async getFilteredVersions(repo: Repository, params: ReleaseFilterParams, collab?: Collaboration) {
-		let statuses = [];
-
-		if (params.status === 'all') statuses.push('draft', 'published', 'archived');
-		else statuses.push(params.status);
-
-		// Require relevant scopes to view draft releases
-		if (!collab || !collab.hasPermission('repo.releases.create') || !collab.hasPermission('repo.releases.attachments.manage')) {
-			statuses = statuses.filter(status => status !== 'draft');
-		}
-
-		const releases = await this.repository.find({
+	public async getVersionList(repo: Repository, params: ReleaseFilterParams, collab?: Collaboration): Promise<VersionList> {
+		const allPromise = this.getAllVersions(repo, params.status, collab);
+		const selectedPromise = this.repository.find({
 			select: ['version'],
 			where: {
 				repository: { id: repo.id },
@@ -313,12 +307,41 @@ export class ReleasesService {
 				attachments: params.assets.length === 0 ? undefined : {
 					asset: { name: In(params.assets) }
 				},
-				status: In(statuses)
+				status: In(this.getReleaseStatusesForCollab(params.status, collab))
 			},
-			order: { id: params.sort_order }
+			order: {
+				created_at: params.sort_order
+			}
 		});
 
-		return releases.map(release => release.version);
+		const [all, selected] = await Promise.all([allPromise, selectedPromise]);
+
+		return {
+			all,
+			selected: selected.map(release => release.version),
+		};
+	}
+
+	/**
+	 * Compiles a list of statuses that we can pull from a repository's releases for the given collaborator (excludes
+	 * draft releases for those without permission).
+	 *
+	 * @param status
+	 * @param collab
+	 * @returns
+	 */
+	private getReleaseStatusesForCollab(status: ReleaseStatusInput, collab: Collaboration): string[] {
+		let statuses = [];
+
+		if (status === 'all') statuses.push('draft', 'published', 'archived');
+		else statuses.push(status);
+
+		// Require relevant scopes to view draft releases
+		if (!collab || !collab.hasPermission('repo.releases.create') || !collab.hasPermission('repo.releases.attachments.manage')) {
+			statuses = statuses.filter(status => status !== 'draft');
+		}
+
+		return statuses;
 	}
 
 	/**
@@ -333,12 +356,33 @@ export class ReleasesService {
 		});
 	}
 
+	/**
+	 * Returns a filtered list of versions (in no particular order) from the given repository's driver based on a
+	 * string constraint.
+	 *
+	 * @param repo
+	 * @param versions
+	 * @param constraint
+	 * @returns
+	 */
+	public getVersionsFromConstraint(repo: Repository, versions: VersionList, constraint: string) {
+		constraint = constraint.trim();
+
+		if (constraint === '*') {
+			return versions.selected;
+		}
+
+		return repo.driver.getVersionsFromConstraint(versions, constraint);
+	}
+
 }
+
+type ReleaseStatusInput = 'draft' | 'published' | 'archived' | 'all';
 
 export interface ReleaseFilterParams {
 	tags: string[];
 	assets: string[];
-	status: 'draft' | 'published' | 'archived' | 'all';
+	status: ReleaseStatusInput;
 	sort_order: 'desc' | 'asc';
 }
 

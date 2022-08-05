@@ -1,4 +1,4 @@
-import { VersionSchemeDriver } from '../interfaces/VersionSchemeDriver';
+import { VersionList, VersionSchemeDriver } from '../interfaces/VersionSchemeDriver';
 import { BadRequestException } from '@nestjs/common';
 import semver from 'semver';
 
@@ -57,30 +57,26 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 		return this.getMicrosoftFromSemantic(this.getSemanticFromMicrosoft(input));
 	}
 
-	public getVersionsFromConstraint(versions: string[], constraint: string): string[] {
-		if (constraint === '*') {
-			return versions;
-		}
-
+	public getVersionsFromConstraint(versions: VersionList, constraint: string): string[] {
 		constraint = this.getSemanticFromMicrosoft(constraint);
 
 		if (semver.valid(constraint) === null && semver.validRange(constraint) === null) {
 			throw new BadRequestException(`The string '${constraint}' is not a valid semantic constraint`);
 		}
 
-		return versions.filter(version => {
+		return versions.selected.filter(version => {
 			return semver.satisfies(this.getSemanticFromMicrosoft(version), constraint);
 		});
 	}
 
-	public getVersionsSorted(versions: string[], direction: 'asc' | 'desc'): string[] {
+	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[] {
 		// TODO: Refactor! This isn't the best way to do this!
-		const sorted = versions
+		const sorted = versions.selected
 			.map(version => this.getSemanticFromMicrosoft(version))
 			.sort(direction === 'asc' ? semver.compare : semver.rcompare)
 			.map(version => this.getMicrosoftFromSemantic(version));
 
-		return versions.sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b));
+		return versions.selected.sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b));
 	}
 
 }

@@ -14,22 +14,34 @@ export interface VersionSchemeDriver {
 	validateVersionString(input: string): string;
 
 	/**
-	 * Filters the given array of versions and returns a new array containing all versions that fit the given
-	 * constraint in their original orders. Note that the `versions` array will always be sorted by ID in ascending
-	 * order.
+	 * Filters the given versions and returns a new array containing all versions that fit the given constraint. The
+	 * order of the returned versions does not matter.
 	 *
 	 * @param versions
 	 * @param constraint
 	 */
-	getVersionsFromConstraint(versions: string[], constraint: string): string[];
+	getVersionsFromConstraint(versions: VersionList, constraint: string): string[];
 
 	/**
-	 * Returns a new array of all given versions sorted in the specified direction. Note that the `versions` array will
-	 * always be sorted by ID in ascending order.
+	 * Returns a new array of all given versions sorted in the specified direction.
 	 *
 	 * @param versions
 	 * @param direction
 	 */
-	getVersionsSorted(versions: string[], direction: 'asc' | 'desc'): string[];
+	getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[];
 
+}
+
+export interface VersionList {
+	/**
+	 * A list of all versions in the repository, sorted by ID in ascending order. This may not be useful to drivers but
+	 * is made available for edge cases.
+	 */
+	all: string[];
+
+	/**
+	 * A list of all versions that are being considered for the current query. Order is not guaranteed. This is
+	 * primarily what drivers should work with.
+	 */
+	selected: string[];
 }

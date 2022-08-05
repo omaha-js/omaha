@@ -1,4 +1,4 @@
-import { VersionSchemeDriver } from '../interfaces/VersionSchemeDriver';
+import { VersionList, VersionSchemeDriver } from '../interfaces/VersionSchemeDriver';
 import { BadRequestException } from '@nestjs/common';
 import semver from 'semver';
 
@@ -14,20 +14,18 @@ export class SemanticVersionDriver implements VersionSchemeDriver {
 		return version;
 	}
 
-	public getVersionsFromConstraint(versions: string[], constraint: string): string[] {
-		console.log(versions);
-
+	public getVersionsFromConstraint(versions: VersionList, constraint: string): string[] {
 		if (semver.valid(constraint) === null && semver.validRange(constraint) === null) {
 			throw new BadRequestException(`The string '${constraint}' is not a valid semantic constraint`);
 		}
 
-		return versions.filter(version => {
+		return versions.selected.filter(version => {
 			return semver.satisfies(version, constraint);
 		});
 	}
 
-	public getVersionsSorted(versions: string[], direction: 'asc' | 'desc'): string[] {
-		return versions.sort(direction === 'asc' ? semver.compare : semver.rcompare);
+	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[] {
+		return versions.selected.sort(direction === 'asc' ? semver.compare : semver.rcompare);
 	}
 
 }

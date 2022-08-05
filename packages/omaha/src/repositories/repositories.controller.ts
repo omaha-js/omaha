@@ -87,13 +87,15 @@ export class RepositoriesController {
 	 * descending order (highest version first).
 	 *
 	 * @param repo
+	 * @param collab
 	 * @returns
 	 */
 	@Get(':repo_id/versions')
 	@UseGuards(RepositoriesGuard)
-	public async getAllVersions(@Repo() repo: Repository) {
+	public async getAllVersions(@Repo() repo: Repository, @Collab() collab: Collaboration) {
+		const all = await this.releases.getAllVersions(repo, 'all', collab);
 		const versions = repo.driver.getVersionsSorted(
-			await this.releases.getAllVersions(repo, 'all'),
+			{ all, selected: all },
 			'desc'
 		);
 
