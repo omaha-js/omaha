@@ -6,10 +6,12 @@ import { Asset } from './Asset';
 import { Tag } from './Tag';
 import { VersionSchemeDriver } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { VersionSchemeDrivers } from 'src/drivers/versions';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { Token } from './Token';
 import { ReleaseDownload } from './ReleaseDownload';
 import { RepositoryVersionScheme } from './enum/RepositoryVersionScheme';
+import { RepositorySettingsObject } from 'src/repositories/settings/RepositorySettings';
+import { RepositorySettingsManager } from 'src/repositories/settings/RepositorySettingsManager';
 
 @Entity({ name: 'repositories' })
 export class Repository {
@@ -55,7 +57,8 @@ export class Repository {
 	public tokens: Promise<Token[]>;
 
 	@Column({ type: 'json' })
-	public settings: RepositorySettings;
+	@Transform(o => RepositorySettingsManager.transform(o.value))
+	public settings: Partial<RepositorySettingsObject>;
 
 	/**
 	 * The downloads for this repository.
@@ -80,10 +83,4 @@ export class Repository {
 		return true;
 	}
 
-}
-
-export interface RepositorySettings {
-	calver?: {
-		format?: string;
-	};
 }
