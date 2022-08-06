@@ -57,17 +57,17 @@ export type RepositorySettingParameters =
 type RepositorySettingNumberParameter = {
 	type: 'number';
 	default?: number;
-	validator?: (value: number) => boolean;
+	validator?: (value: any) => boolean;
 };
 
 type RepositorySettingBooleanParameter = {
 	type: 'boolean';
 	default?: boolean;
-	validator?: (value: number) => boolean;
+	validator?: (value: any) => boolean;
 };
 
 type RepositorySettingStringParameter = {
 	type: 'string';
 	default?: string;
-	validator?: (value: number) => boolean;
+	validator?: (value: any) => boolean;
 };

@@ -48,6 +48,12 @@ export class RepositorySettingsManager {
 				if (typeof input[name] !== params.type) {
 					return false;
 				}
+
+				if (typeof params.validator === 'function') {
+					if (!params.validator(input[name])) {
+						return false;
+					}
+				}
 			}
 		}
 
