@@ -56,7 +56,7 @@ export class RepositoriesController {
 	@UseGuards(RepositoriesGuard)
 	public async getRepository(@Repo() repo: Repository) {
 		return {
-			...repo,
+			...instanceToPlain(repo),
 			tags: await repo.tags,
 			assets: await repo.assets,
 		};
