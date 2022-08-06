@@ -44,8 +44,14 @@ export class LocalStorageDriver implements StorageDriver {
 		return exists(targetPath);
 	}
 
-	public delete(repo: Repository, name: string): Promise<void> {
-		throw new Error('Method not implemented.');
+	public async delete(repo: Repository, name: string): Promise<void> {
+		const targetPath = path.resolve(this.storagePath, repo.id, name);
+
+		if (!await exists(targetPath)) {
+			throw new Error('Target object does not exist: ' + name);
+		}
+
+		return fs.promises.unlink(targetPath);
 	}
 
 	public async getDownloadLink(repo: Repository, name: string, duration: number, disposition?: string): Promise<string> {

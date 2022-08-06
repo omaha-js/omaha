@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Release } from 'src/entities/Release';
 import { Repository } from 'src/entities/Repository';
 import { CreateReleaseDto } from './dto/CreateReleaseDto';
-import { In, Repository as TypeOrmRepository } from 'typeorm';
+import { In, IsNull, Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
 import { ReleaseDownload } from 'src/entities/ReleaseDownload';
@@ -12,15 +12,21 @@ import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collaboration } from 'src/entities/Collaboration';
 import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { RepositorySettingsManager } from '../settings/RepositorySettingsManager';
+import { Cron } from '@nestjs/schedule';
+import { StorageService } from 'src/storage/storage.service';
+import prettyBytes from 'pretty-bytes';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
 @Injectable()
 export class ReleasesService {
 
+	private logger = new Logger('ReleasesService');
+
 	public constructor(
 		@InjectRepository(Release) private readonly repository: TypeOrmRepository<Release>,
 		private readonly tags: TagsService,
+		private readonly storage: StorageService,
 	) {}
 
 	/**
@@ -499,6 +505,46 @@ export class ReleasesService {
 		}
 
 		return repo.driver.getVersionsFromConstraint(versions, constraint);
+	}
+
+	@Cron('0 0 * * * *')
+	protected async onMaintenanceRun() {
+		const releases = await this.repository.find({
+			where: {
+				status: ReleaseStatus.Archived,
+				purged_at: IsNull()
+			},
+			relations: {
+				repository: true
+			}
+		});
+
+		let totalFilesFreed = 0;
+		let totalBytesFreed = 0;
+
+		for (const release of releases) {
+			const repository = await release.repository;
+			const expirationDays = RepositorySettingsManager.get(repository, 'releases.archives.expiration');
+			const expiration = release.archived_at.getTime() + (expirationDays * 86400000);
+
+			if (expiration <= Date.now()) {
+				this.logger.log(`Purging expired attachments for release ${release.id} in ${repository.id}`);
+
+				for (const attachment of await release.attachments) {
+					await this.storage.delete(repository, attachment.object_name);
+
+					totalFilesFreed++;
+					totalBytesFreed += attachment.size;
+				}
+
+				release.purged_at = new Date();
+				await this.repository.save(release);
+			}
+		}
+
+		if (totalFilesFreed > 0) {
+			this.logger.log(`Cleared ${totalFilesFreed} objects for a total of ${prettyBytes(totalBytesFreed)}`);
+		}
 	}
 
 }

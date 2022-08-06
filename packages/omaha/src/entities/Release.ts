@@ -8,6 +8,7 @@ import { Tag } from './Tag';
 
 @Entity({ name: 'releases' })
 @Unique([ 'repository', 'version' ])
+@Index(['status', 'purged_at'])
 export class Release {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
@@ -64,8 +65,13 @@ export class Release {
 	 * The time when this release was archived (or `null` if it's in another state).
 	 */
 	@Column({ precision: 6, nullable: true, default: null })
-	@Index()
 	public archived_at: Date | null;
+
+	/**
+	 * The time when this release was purged (meaning its files have been removed from storage).
+	 */
+	@Column({ precision: 6, nullable: true, default: null })
+	public purged_at: Date | null;
 
 	/**
 	 * The tags that this release is assigned to.
