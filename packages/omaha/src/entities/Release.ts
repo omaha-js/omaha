@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { ReleaseStatus } from './enum/ReleaseStatus';
 import { ReleaseAttachment } from './ReleaseAttachment';
 import { ReleaseDownload } from './ReleaseDownload';
@@ -59,6 +59,13 @@ export class Release {
 	 */
 	@Column({ precision: 6, nullable: true, default: null })
 	public published_at: Date | null;
+
+	/**
+	 * The time when this release was archived (or `null` if it's in another state).
+	 */
+	@Column({ precision: 6, nullable: true, default: null })
+	@Index()
+	public archived_at: Date | null;
 
 	/**
 	 * The tags that this release is assigned to.

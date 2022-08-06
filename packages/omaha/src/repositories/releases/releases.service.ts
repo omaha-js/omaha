@@ -234,6 +234,15 @@ export class ReleasesService {
 			}
 		}
 
+		else if (dto.status === ReleaseStatus.Archived && release.status !== ReleaseStatus.Archived) {
+			if (release.status !== ReleaseStatus.Published) {
+				throw new BadRequestException('Only published releases can be archived');
+			}
+
+			release.status = ReleaseStatus.Archived;
+			release.archived_at = new Date();
+		}
+
 		// Throw an error when attempting to unpublish
 		else if (release.status !== ReleaseStatus.Draft && dto.status === ReleaseStatus.Draft) {
 			throw new BadRequestException('Cannot revert a published release back into a draft');
