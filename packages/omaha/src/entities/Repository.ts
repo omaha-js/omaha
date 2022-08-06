@@ -74,13 +74,4 @@ export class Repository {
 		return VersionSchemeDrivers[this.scheme];
 	}
 
-	/**
-	 * Whether or not the repository's scheme driver reports that it is ready. When false, the user must update the
-	 * repository's settings to satisfy the driver.
-	 */
-	@Expose()
-	public get ready() {
-		return true;
-	}
-
 }
