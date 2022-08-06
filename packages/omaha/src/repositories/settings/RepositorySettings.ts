@@ -3,6 +3,7 @@
  * and potentially other metadata.
  */
 export const RepositorySettings = {
+
 	/**
 	 * Whether new releases should automatically archive prior releases under the same major version.
 	 */
@@ -12,21 +13,23 @@ export const RepositorySettings = {
 	},
 
 	/**
-	 * The number of days after which an archived release's files will be deleted from storage.
+	 * The number of latest releases to allow per major version. The minimum value is 1, at which only the latest
+	 * published version will be preserved, and all others will be archived automatically.
 	 */
-	'releases.retention.days': {
+	'releases.rolling.buffer': {
+		type: 'number',
+		default: 10,
+		validator: (value: any) => typeof value === 'number' && value > 0
+	},
+
+	/**
+	 * The number of days after which an archived release's files will be expire and be deleted from storage.
+	 */
+	'releases.archives.expiration': {
 		type: 'number',
 		default: 14
 	},
 
-	/**
-	 * The number of the latest archived releases per major version whose files will be preserved, regardless of the
-	 * number of days that have elapsed.
-	 */
-	'releases.retention.number': {
-		type: 'number',
-		default: 10
-	},
 } as const;
 
 export type RepositorySettingsKeys = keyof typeof RepositorySettings;
@@ -54,14 +57,17 @@ export type RepositorySettingParameters =
 type RepositorySettingNumberParameter = {
 	type: 'number';
 	default?: number;
+	validator?: (value: number) => boolean;
 };
 
 type RepositorySettingBooleanParameter = {
 	type: 'boolean';
 	default?: boolean;
+	validator?: (value: number) => boolean;
 };
 
 type RepositorySettingStringParameter = {
 	type: 'string';
 	default?: string;
+	validator?: (value: number) => boolean;
 };

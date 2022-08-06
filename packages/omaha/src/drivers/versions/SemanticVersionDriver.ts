@@ -28,4 +28,9 @@ export class SemanticVersionDriver implements VersionSchemeDriver {
 		return versions.selected.sort(direction === 'asc' ? semver.compare : semver.rcompare);
 	}
 
+	public getVersionsFromSameMajor(versions: VersionList, version: string): string[] {
+		const major = semver.major(version);
+		return versions.selected.filter(version => semver.major(version) === major);
+	}
+
 }

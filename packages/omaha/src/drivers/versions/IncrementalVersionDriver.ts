@@ -61,4 +61,8 @@ export class IncrementalVersionDriver implements VersionSchemeDriver {
 		return selected;
 	}
 
+	public getVersionsFromSameMajor(versions: VersionList, version: string): string[] {
+		return versions.selected;
+	}
+
 }

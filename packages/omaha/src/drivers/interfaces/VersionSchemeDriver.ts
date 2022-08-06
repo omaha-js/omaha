@@ -30,6 +30,15 @@ export interface VersionSchemeDriver {
 	 */
 	getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[];
 
+	/**
+	 * Returns an array of all versions that are within the same major version as the given version string, regardless
+	 * of whether they are newer, older, or equal.
+	 *
+	 * @param versions
+	 * @param version
+	 */
+	getVersionsFromSameMajor(versions: VersionList, version: string): string[];
+
 }
 
 export interface VersionList {

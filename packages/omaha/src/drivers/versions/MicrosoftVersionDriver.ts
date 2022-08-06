@@ -79,4 +79,9 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 		return versions.selected.sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b));
 	}
 
+	public getVersionsFromSameMajor(versions: VersionList, version: string): string[] {
+		const major = semver.major(version);
+		return versions.selected.filter(version => semver.major(version) === major);
+	}
+
 }

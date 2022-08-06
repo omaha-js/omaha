@@ -11,6 +11,7 @@ import { instanceToPlain } from 'class-transformer';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collaboration } from 'src/entities/Collaboration';
 import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
+import { RepositorySettingsManager } from '../settings/RepositorySettingsManager';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -76,7 +77,7 @@ export class ReleasesService {
 		};
 
 		// Narrow down all version numbers matching our criteria
-		const versions = await this.getVersionList(repo, params, collaboration);
+		const versions = await this.getVersionListForCollaboration(repo, collaboration, params);
 		const selected = [...versions.selected];
 
 		// Narrow them down further with the version constraint and sort using the driver
@@ -204,6 +205,7 @@ export class ReleasesService {
 		release.description = dto.description;
 
 		// Handle publishing
+		let published = false;
 		if (dto.status === ReleaseStatus.Published) {
 			if (release.status === ReleaseStatus.Draft) {
 				// Get the assets for both the repository and the release
@@ -232,6 +234,7 @@ export class ReleasesService {
 
 				release.status = ReleaseStatus.Published;
 				release.published_at = new Date();
+				published = true;
 			}
 			else if (release.status === ReleaseStatus.Archived) {
 				throw new BadRequestException(
@@ -264,7 +267,59 @@ export class ReleasesService {
 		release.tags = Promise.resolve(tags);
 
 		// Save and return
-		return this.repository.save(release);
+		// Wrap in a transaction for rolling logic
+		return this.repository.manager.transaction(async manager => {
+			if (published && RepositorySettingsManager.get(repo.settings, 'releases.rolling')) {
+				const buffer = RepositorySettingsManager.get(repo.settings, 'releases.rolling.buffer') - 1;
+				const versions = await this.getAllVersions(repo, [ReleaseStatus.Published]);
+				const tags = await this.tags.getAllTags(repo);
+
+				// Get all versions in the same major version as a set
+				const targets = new Set(repo.driver.getVersionsFromSameMajor(
+					{ all: versions, selected: versions },
+					release.version
+				));
+
+				// Iterate over all tags
+				for (const tagName of tags) {
+					// Get all releases within the tag
+					const tagVersions = await this.getVersionsFromFilters(repo, {
+						assets: [],
+						tags: [tagName],
+						statuses: [ReleaseStatus.Published],
+						sort_order: 'asc'
+					});
+
+					// Get all releases in the same major version
+					const selected = repo.driver.getVersionsFromSameMajor(
+						{ all: versions, selected: tagVersions},
+						release.version
+					);
+
+					// Sort the releases in descending order
+					const sorted = repo.driver.getVersionsSorted({ all: versions, selected }, 'desc');
+
+					// Delete all releases within the buffer from our targets
+					for (const version of sorted.slice(0, buffer)) {
+						targets.delete(version);
+					}
+				}
+
+				// Update all remaining release targets to the 'archived' status
+				if (targets.size > 0) {
+					const query = manager.createQueryBuilder().update(Release, {
+						archived_at: () => 'CURRENT_TIMESTAMP',
+						updated_at: () => '`updated_at`',
+						status: ReleaseStatus.Archived
+					});
+
+					query.where('version IN (:versions)', { versions: [...targets] });
+					await query.execute();
+				}
+			}
+
+			return manager.save(release);
+		});
 	}
 
 	/**
@@ -285,28 +340,12 @@ export class ReleasesService {
 	 * collaborator.
 	 *
 	 * @param repo
-	 * @param statuses
 	 * @param collab
+	 * @param statuses
 	 * @returns
 	 */
-	public async getAllVersionsForCollaboration(
-		repo: Repository,
-		collab?: Collaboration,
-		statuses: ReleaseStatus[] = AllStatuses,
-	): Promise<string[]> {
-		const builder = this.repository.createQueryBuilder();
-
-		builder.select(['Release.id as id', 'Release.version as version']);
-		builder.where('Release.repository_id = :id', repo);
-		builder.orderBy('Release.id', 'ASC');
-		builder.andWhere('Release.status IN (:statuses)', {
-			statuses: this.getReleaseStatusesForCollab(statuses, collab)
-		});
-
-		const rows = await builder.getRawMany();
-		const versions = rows.map(row => row.version);
-
-		return versions;
+	public async getAllVersionsForCollaboration(repo: Repository, collab?: Collaboration, statuses: ReleaseStatus[] = AllStatuses) {
+		return this.getAllVersions(repo, this.getFilteredStatuses(statuses, collab));
 	}
 
 	/**
@@ -338,9 +377,39 @@ export class ReleasesService {
 	 * @param collab
 	 * @returns
 	 */
-	public async getVersionList(repo: Repository, params: ReleaseFilterParams, collab?: Collaboration): Promise<VersionList> {
-		const allPromise = this.getAllVersionsForCollaboration(repo, collab, params.statuses);
-		const selectedPromise = this.repository.find({
+	public async getVersionListForCollaboration(repo: Repository, collab: Collaboration | undefined, params: ReleaseFilterParams) {
+		return this.getVersionList(repo, {
+			...params,
+			statuses: this.getFilteredStatuses(params.statuses, collab),
+		});
+	}
+
+	/**
+	 * Returns an object containing all releases for the given repository, as well as releases that match the given
+	 * filters. This is primarily useful when working with version scheme drivers.
+	 *
+	 * @param repo
+	 * @param params
+	 * @returns
+	 */
+	public async getVersionList(repo: Repository, params: ReleaseFilterParams): Promise<VersionList> {
+		const [all, selected] = await Promise.all([
+			this.getAllVersions(repo, params.statuses),
+			this.getVersionsFromFilters(repo, params)
+		]);
+
+		return { all, selected };
+	}
+
+	/**
+	 * Returns an array of all version strings in a repository whose releases pass through the given filters.
+	 *
+	 * @param repo
+	 * @param params
+	 * @returns
+	 */
+	public async getVersionsFromFilters(repo: Repository, params: ReleaseFilterParams) {
+		return this.repository.find({
 			select: ['version'],
 			where: {
 				repository: { id: repo.id },
@@ -348,30 +417,23 @@ export class ReleasesService {
 				attachments: params.assets.length === 0 ? undefined : {
 					asset: { name: In(params.assets) }
 				},
-				status: In(this.getReleaseStatusesForCollab(params.statuses, collab))
+				status: In(params.statuses)
 			},
 			order: {
 				created_at: params.sort_order
 			}
-		});
-
-		const [all, selected] = await Promise.all([allPromise, selectedPromise]);
-
-		return {
-			all,
-			selected: selected.map(release => release.version),
-		};
+		}).then(releases => releases.map(release => release.version));
 	}
 
 	/**
-	 * Compiles a list of statuses that we can pull from a repository's releases for the given collaborator (excludes
-	 * draft releases for those without permission).
+	 * Filters the given array of statuses for a collaboration, removing the `draft` status unless permission is
+	 * explicitly granted. Returns a new array.
 	 *
 	 * @param statuses
 	 * @param collab
 	 * @returns
 	 */
-	private getReleaseStatusesForCollab(statuses: ReleaseStatus[], collab?: Collaboration): string[] {
+	private getFilteredStatuses(statuses: ReleaseStatus[], collab?: Collaboration) {
 		// Require relevant scopes to view draft releases
 		if (!collab || (!collab.hasPermission('repo.releases.create') && !collab.hasPermission('repo.releases.attachments.manage'))) {
 			statuses = statuses.filter(status => status !== ReleaseStatus.Draft);
