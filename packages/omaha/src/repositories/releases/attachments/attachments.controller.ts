@@ -118,21 +118,21 @@ export class AttachmentsController {
 	@UseScopes('repo.releases.attachments.manage')
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
 	public async uploadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
-		const release = await this.releases.getFromVersionOrFail(repo, version);
-		const repoAsset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
-		const attachment = (await release.attachments).find(attachment => attachment.asset.id === repoAsset.id);
-
-		// Preflight checks
-		if (!file) throw new BadRequestException(`Missing file upload`);
-		if (!repoAsset) throw new NotFoundException(`The specified asset was not found in the repository`);
-		if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
-
-		// Make sure the file exists
-		if (!fs.existsSync(file.path)) {
-			throw new InternalServerErrorException('File not found (internal)');
-		}
-
 		try {
+			const release = await this.releases.getFromVersionOrFail(repo, version);
+			const repoAsset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
+			const attachment = (await release.attachments).find(attachment => attachment.asset.id === repoAsset.id);
+
+			// Preflight checks
+			if (!file) throw new BadRequestException(`Missing file upload`);
+			if (!repoAsset) throw new NotFoundException(`The specified asset was not found in the repository`);
+			if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
+
+			// Make sure the file exists
+			if (!fs.existsSync(file.path)) {
+				throw new InternalServerErrorException('File not found (internal)');
+			}
+
 			// Create the read stream
 			const stream = fs.createReadStream(file.path, { encoding: 'binary' });
 			const name = `${release.version}/${repoAsset.name}`;
@@ -176,11 +176,14 @@ export class AttachmentsController {
 			}
 		}
 		catch (err) {
-			this.logger.error('Attachment upload failed:', err);
-
 			try { await fs.promises.unlink(file.path); }
 			catch (err) {}
 
+			if (err instanceof BadRequestException || err instanceof InternalServerErrorException || err instanceof NotFoundException) {
+				throw err;
+			}
+
+			this.logger.error('Attachment upload failed:', err);
 			throw new InternalServerErrorException();
 		}
 	}
