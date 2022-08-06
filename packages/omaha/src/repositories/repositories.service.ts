@@ -13,6 +13,7 @@ import { TagsService } from './tags/tags.service';
 import { AssetsService } from './assets/assets.service';
 import { ReleasesService } from './releases/releases.service';
 import { RepositorySettingsManager } from './settings/RepositorySettingsManager';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 
 @Injectable()
 export class RepositoriesService {
@@ -110,7 +111,7 @@ export class RepositoriesService {
 		}
 
 		if (typeof changes.scheme === 'string' && repository.scheme !== changes.scheme) {
-			if ((await this.releases.getAllVersions(repository, 'all')).length > 0) {
+			if ((await this.releases.getAllVersions(repository)).length > 0) {
 				throw new BadRequestException(
 					'Cannot change the version scheme of a repository with one or more releases'
 				);

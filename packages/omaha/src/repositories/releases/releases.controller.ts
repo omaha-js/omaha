@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
@@ -39,7 +39,14 @@ export class ReleasesController {
 			assets: list(dto.assets ?? ''),
 			sort: dto.sort ?? 'version',
 			sort_order: dto.sort_order ?? 'desc',
-			status: dto.status ?? 'published'
+			statuses: [...new Set(list(dto.status ?? 'published').map(value => {
+				switch (value.trim().toLowerCase()) {
+					case 'draft': return ReleaseStatus.Draft;
+					case 'published': return ReleaseStatus.Published;
+					case 'archived': return ReleaseStatus.Archived;
+					default: throw new BadRequestException(`Unknown status type "${value}"`);
+				}
+			}))]
 		});
 	}
 

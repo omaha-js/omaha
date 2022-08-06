@@ -93,7 +93,7 @@ export class RepositoriesController {
 	@Get(':repo_id/versions')
 	@UseGuards(RepositoriesGuard)
 	public async getAllVersions(@Repo() repo: Repository, @Collab() collab: Collaboration) {
-		const all = await this.releases.getAllVersionsForCollaboration(repo, 'all', collab);
+		const all = await this.releases.getAllVersionsForCollaboration(repo, collab);
 		const versions = repo.driver.getVersionsSorted(
 			{ all, selected: all },
 			'desc'

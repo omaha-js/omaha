@@ -1,4 +1,5 @@
-import { IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsIn, IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 
 export class SearchReleasesDto {
 
@@ -79,11 +80,11 @@ export class SearchReleasesDto {
 	sort_order?: 'desc' | 'asc';
 
 	/**
-	 * The type of release to search for. Note that a relevant permission scope is required to see draft releases.
+	 * A comma-delimited list of release statuses to include in the search.
 	 * @default 'published'
 	 */
 	@IsOptional()
-	@IsIn([ 'draft', 'published', 'archived', 'all' ])
-	status?: 'draft' | 'published' | 'archived' | 'all';
+	@IsString()
+	status?: string;
 
 }

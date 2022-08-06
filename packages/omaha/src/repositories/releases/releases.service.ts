@@ -12,6 +12,8 @@ import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collaboration } from 'src/entities/Collaboration';
 import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
 
+const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
+
 @Injectable()
 export class ReleasesService {
 
@@ -60,6 +62,10 @@ export class ReleasesService {
 	 * @returns
 	 */
 	public async search(repo: Repository, collaboration: Collaboration | undefined, params: ReleaseSearchParams) {
+		if (params.statuses.length === 0) {
+			params.statuses = AllStatuses;
+		}
+
 		// Get all available tag names
 		const tags = await this.tags.getAllTags(repo);
 
@@ -279,14 +285,14 @@ export class ReleasesService {
 	 * collaborator.
 	 *
 	 * @param repo
-	 * @param status
+	 * @param statuses
 	 * @param collab
 	 * @returns
 	 */
 	public async getAllVersionsForCollaboration(
 		repo: Repository,
-		status: ReleaseStatusInput = 'published',
-		collab?: Collaboration
+		collab?: Collaboration,
+		statuses: ReleaseStatus[] = AllStatuses,
 	): Promise<string[]> {
 		const builder = this.repository.createQueryBuilder();
 
@@ -294,7 +300,7 @@ export class ReleasesService {
 		builder.where('Release.repository_id = :id', repo);
 		builder.orderBy('Release.id', 'ASC');
 		builder.andWhere('Release.status IN (:statuses)', {
-			statuses: this.getReleaseStatusesForCollab(status, collab)
+			statuses: this.getReleaseStatusesForCollab(statuses, collab)
 		});
 
 		const rows = await builder.getRawMany();
@@ -307,18 +313,16 @@ export class ReleasesService {
 	 * Returns an array of all version strings available in this repository.
 	 *
 	 * @param repo
-	 * @param status
+	 * @param statuses
 	 * @returns
 	 */
-	public async getAllVersions(repo: Repository, status: ReleaseStatusInput = 'published'): Promise<string[]> {
+	public async getAllVersions(repo: Repository, statuses: ReleaseStatus[] = AllStatuses): Promise<string[]> {
 		const builder = this.repository.createQueryBuilder();
 
 		builder.select(['Release.id as id', 'Release.version as version']);
 		builder.where('Release.repository_id = :id', repo);
 		builder.orderBy('Release.id', 'ASC');
-		builder.andWhere('Release.status IN (:statuses)', {
-			statuses: this.getReleaseStatuses(status)
-		});
+		builder.andWhere('Release.status IN (:statuses)', { statuses });
 
 		const rows = await builder.getRawMany();
 		const versions = rows.map(row => row.version);
@@ -335,7 +339,7 @@ export class ReleasesService {
 	 * @returns
 	 */
 	public async getVersionList(repo: Repository, params: ReleaseFilterParams, collab?: Collaboration): Promise<VersionList> {
-		const allPromise = this.getAllVersionsForCollaboration(repo, params.status, collab);
+		const allPromise = this.getAllVersionsForCollaboration(repo, collab, params.statuses);
 		const selectedPromise = this.repository.find({
 			select: ['version'],
 			where: {
@@ -344,7 +348,7 @@ export class ReleasesService {
 				attachments: params.assets.length === 0 ? undefined : {
 					asset: { name: In(params.assets) }
 				},
-				status: In(this.getReleaseStatusesForCollab(params.status, collab))
+				status: In(this.getReleaseStatusesForCollab(params.statuses, collab))
 			},
 			order: {
 				created_at: params.sort_order
@@ -363,35 +367,15 @@ export class ReleasesService {
 	 * Compiles a list of statuses that we can pull from a repository's releases for the given collaborator (excludes
 	 * draft releases for those without permission).
 	 *
-	 * @param status
+	 * @param statuses
 	 * @param collab
 	 * @returns
 	 */
-	private getReleaseStatusesForCollab(status: ReleaseStatusInput, collab?: Collaboration): string[] {
-		let statuses = [];
-
-		if (status === 'all') statuses.push('draft', 'published', 'archived');
-		else statuses.push(status);
-
+	private getReleaseStatusesForCollab(statuses: ReleaseStatus[], collab?: Collaboration): string[] {
 		// Require relevant scopes to view draft releases
 		if (!collab || (!collab.hasPermission('repo.releases.create') && !collab.hasPermission('repo.releases.attachments.manage'))) {
-			statuses = statuses.filter(status => status !== 'draft');
+			statuses = statuses.filter(status => status !== ReleaseStatus.Draft);
 		}
-
-		return statuses;
-	}
-
-	/**
-	 * Compiles a list of statuses that we can pull from a repository's releases.
-	 *
-	 * @param status
-	 * @returns
-	 */
-	private getReleaseStatuses(status: ReleaseStatusInput): string[] {
-		let statuses = [];
-
-		if (status === 'all') statuses.push('draft', 'published', 'archived');
-		else statuses.push(status);
 
 		return statuses;
 	}
@@ -429,12 +413,10 @@ export class ReleasesService {
 
 }
 
-type ReleaseStatusInput = 'draft' | 'published' | 'archived' | 'all';
-
 export interface ReleaseFilterParams {
 	tags: string[];
 	assets: string[];
-	status: ReleaseStatusInput;
+	statuses: ReleaseStatus[];
 	sort_order: 'desc' | 'asc';
 }
 
