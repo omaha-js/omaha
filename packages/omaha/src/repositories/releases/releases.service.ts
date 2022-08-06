@@ -175,6 +175,34 @@ export class ReleasesService {
 			throw new BadRequestException('The specified version already exists within the repository');
 		}
 
+		// Check for violations of rolling release rules
+		if (RepositorySettingsManager.get(repo.settings, 'releases.rolling')) {
+			const versions = await this.getAllVersions(repo, [ReleaseStatus.Published, ReleaseStatus.Archived]);
+			const drafts = await this.getAllVersions(repo, [ReleaseStatus.Draft]);
+
+			// Find all versions within the same major family
+			const sameMajorVersions = repo.driver.getVersionsFromSameMajor({ all: versions, selected: versions }, version);
+			const sortedSameMajor = repo.driver.getVersionsSorted({
+				all: [...sameMajorVersions, version],
+				selected: [...sameMajorVersions, version]
+			}, 'desc');
+
+			// Ensure the new version is the greatest in its family
+			if (sortedSameMajor[0] !== version) {
+				throw new BadRequestException(
+					`New version (${version}) must be greater than the prior release (${sortedSameMajor[0]})`
+				);
+			}
+
+			// Ensure there are no other drafts in the same family
+			const sameMajorDrafts = repo.driver.getVersionsFromSameMajor({ all: drafts, selected: drafts }, version);
+			if (sameMajorDrafts.length > 0) {
+				throw new BadRequestException(
+					`A draft release (${sameMajorDrafts[0]}) already exists for the same major version`
+				);
+			}
+		}
+
 		// Create the release
 		const release = this.repository.create({
 			version,
