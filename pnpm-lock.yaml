@@ -97,8 +97,10 @@ importers:
       '@types/minio': ^7.0.13
       '@types/multer': ^1.4.7
       '@types/node': ^16.0.0
+      '@types/nodemailer': ^6.4.5
       '@types/passport-local': ^1.0.34
       '@types/semver': ^7.3.9
+      '@types/twig': ^1.12.9
       bcrypt: ^5.0.1
       class-transformer: ^0.5.1
       class-validator: ^0.13.2
@@ -107,6 +109,7 @@ importers:
       minio: ^7.0.30
       moment: ^2.29.4
       mysql2: ^2.3.3
+      nodemailer: ^6.7.7
       passport: ^0.5.2
       passport-local: ^1.0.0
       prettier: ^2.3.2
@@ -117,6 +120,7 @@ importers:
       semver: ^7.3.7
       source-map-support: ^0.5.20
       tsconfig-paths: ^3.10.1
+      twig: ^1.15.4
       typeorm: ^0.3.5
       typescript: ^4.3.5
     dependencies:
@@ -139,6 +143,7 @@ importers:
       minio: 7.0.30
       moment: 2.29.4
       mysql2: 2.3.3
+      nodemailer: 6.7.7
       passport: 0.5.2
       passport-local: 1.0.0
       pretty-bytes: 5.6.0
@@ -146,6 +151,7 @@ importers:
       rimraf: 3.0.2
       rxjs: 7.5.5
       semver: 7.3.7
+      twig: 1.15.4
       typeorm: 0.3.5_mysql2@2.3.3
     devDependencies:
       '@nestjs/cli': 8.2.5
@@ -157,8 +163,10 @@ importers:
       '@types/minio': 7.0.13
       '@types/multer': 1.4.7
       '@types/node': 16.11.26
+      '@types/nodemailer': 6.4.5
       '@types/passport-local': 1.0.34
       '@types/semver': 7.3.9
+      '@types/twig': 1.12.9
       prettier: 2.6.2
       source-map-support: 0.5.21
       tsconfig-paths: 3.14.1
@@ -526,6 +534,13 @@ packages:
       '@babel/core': 7.17.9
       '@babel/helper-plugin-utils': 7.16.7
     dev: true
+
+  /@babel/runtime/7.18.9:
+    resolution: {integrity: sha512-lkqXDcvlFT5rvEjiu6+QYO+1GXrEHRo2LOtS7E4GtX5ESIZOgepqsZBVIj6Pv+a6zqsya9VCgiK1KAK4BvJDAw==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.13.9
+    dev: false
 
   /@babel/standalone/7.17.9:
     resolution: {integrity: sha512-9wL9AtDlga8avxUrBvQJmhUtJWrelsUL0uV+TcP+49Sb6Pj8/bNIzQzU4dDp0NAPOvnZR/7msFIKsKoCl/W1/w==}
@@ -1259,6 +1274,12 @@ packages:
   /@types/node/17.0.23:
     resolution: {integrity: sha512-UxDxWn7dl97rKVeVS61vErvw086aCYhDLyvRQZ5Rk65rZKepaFdm53GeqXaKBuOhED4e9uWq34IC3TdSdJJ2Gw==}
 
+  /@types/nodemailer/6.4.5:
+    resolution: {integrity: sha512-zuP3nBRQHI6M2PkXnGGy1Ww4VB+MyYHGgnfV2T+JR9KLkeWqPJuyVUgLpKXuFnA/b7pZaIDFh2sV4759B7jK1g==}
+    dependencies:
+      '@types/node': 17.0.23
+    dev: true
+
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
     dev: true
@@ -1316,6 +1337,10 @@ packages:
 
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
+    dev: true
+
+  /@types/twig/1.12.9:
+    resolution: {integrity: sha512-dHQOzWNbS+GKIF1bfp+Zg8HK2n4XIfznXJMUfQpBpu4Tuw0JB//uo2Llg8TB33C4NOYhqVo/MTUUU9tI4KHUQQ==}
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -2212,7 +2237,7 @@ packages:
     dev: true
 
   /concat-map/0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   /concat-stream/1.6.2:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
@@ -3106,6 +3131,10 @@ packages:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
     dependencies:
       is-callable: 1.2.4
+    dev: false
+
+  /foreachasync/3.0.0:
+    resolution: {integrity: sha512-J+ler7Ta54FwwNcx6wQRDhTIbNeyDcARMkOcguEqnEdtm0jKvN3Li3PDAb2Du3ubJYEWfYL83XMROXdsXAXycw==}
     dev: false
 
   /fork-ts-checker-webpack-plugin/7.2.3_a4ckzxkumppc4bhjeqez2vksei:
@@ -4461,6 +4490,11 @@ packages:
       p-locate: 4.1.0
     dev: true
 
+  /locutus/2.0.16:
+    resolution: {integrity: sha512-pGfl6Hb/1mXLzrX5kl5lH7gz25ey0vwQssZp8Qo2CEF59di6KrAgdFm+0pW8ghLnvNzzJGj5tlWhhv2QbK3jeQ==}
+    engines: {node: '>= 10'}
+    dev: false
+
   /lodash.includes/4.3.0:
     resolution: {integrity: sha1-YLuYqHy5I8aMoeUTJUgzFISfVT8=}
     dev: false
@@ -4647,6 +4681,12 @@ packages:
     resolution: {integrity: sha512-JIYlbt6g8i5jKfJ3xz7rF0LXmv2TkDxBLUkiBeZ7bAx4GnnNMr8xFpGnOxn6GhTEHx3SjRrZEoU+j04prX1ktg==}
     dev: false
 
+  /minimatch/3.0.8:
+    resolution: {integrity: sha512-6FsRAQsxQ61mw+qP1ZzbL9Bc78x2p5OqNgNpnoAFLTrX8n5Kxph0CsnhmKKNXTWjXqU5L0pGPR7hYk+XWZr60Q==}
+    dependencies:
+      brace-expansion: 1.1.11
+    dev: false
+
   /minimatch/3.1.2:
     resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
     dependencies:
@@ -4815,6 +4855,11 @@ packages:
   /node-releases/2.0.2:
     resolution: {integrity: sha512-XxYDdcQ6eKqp/YjI+tb2C5WM2LgjnZrfYg4vgQt49EK268b6gYCHsBLrK2qvJo4FmCtqmKezb0WZFK4fkrZNsg==}
     dev: true
+
+  /nodemailer/6.7.7:
+    resolution: {integrity: sha512-pOLC/s+2I1EXuSqO5Wa34i3kXZG3gugDssH+ZNCevHad65tc8vQlCQpOLaUjopvkRQKm2Cki2aME7fEOPRy3bA==}
+    engines: {node: '>=6.0.0'}
+    dev: false
 
   /nopt/5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}
@@ -5304,7 +5349,6 @@ packages:
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
-    dev: true
 
   /regexp.prototype.flags/1.4.3:
     resolution: {integrity: sha512-fjggEOO3slI6Wvgjwflkc4NFRCTZAu5CnNfBd5qOMYhWdn67nJBBu34/TkD++eeFmd8C9r9jfXJ27+nSiRkSUA==}
@@ -6090,6 +6134,17 @@ packages:
   /tslib/2.3.1:
     resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
 
+  /twig/1.15.4:
+    resolution: {integrity: sha512-gRpGrpdf+MswqF6eSjEdYZTa/jt3ZWHK/NU59IbTYJMBQXJ1W+7IxaGEwLkQjd+mNT15j9sQTzQumxUBkuQueQ==}
+    engines: {node: '>=8.16'}
+    hasBin: true
+    dependencies:
+      '@babel/runtime': 7.18.9
+      locutus: 2.0.16
+      minimatch: 3.0.8
+      walk: 2.3.15
+    dev: false
+
   /type-check/0.3.2:
     resolution: {integrity: sha1-WITKtRLPHTVeP7eE8wgEsrUg23I=}
     engines: {node: '>= 0.8.0'}
@@ -6324,6 +6379,12 @@ packages:
     dependencies:
       xml-name-validator: 3.0.0
     dev: true
+
+  /walk/2.3.15:
+    resolution: {integrity: sha512-4eRTBZljBfIISK1Vnt69Gvr2w/wc3U6Vtrw7qiN5iqYJPH7LElcYh/iU4XWhdCy2dZqv1ToMyYlybDylfG/5Vg==}
+    dependencies:
+      foreachasync: 3.0.0
+    dev: false
 
   /walker/1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}

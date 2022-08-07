@@ -16,6 +16,7 @@ import { ReleaseDownload } from './entities/ReleaseDownload';
 import { Token } from './entities/Token';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReleaseJob } from './entities/ReleaseJob';
+import { EmailModule } from './email/email.module';
 
 @Module({
 	imports: [
@@ -44,7 +45,8 @@ import { ReleaseJob } from './entities/ReleaseJob';
 		}),
 		RepositoriesModule,
 		StorageModule,
-		ScheduleModule.forRoot()
+		ScheduleModule.forRoot(),
+		EmailModule
 	],
 })
 export class AppModule {}

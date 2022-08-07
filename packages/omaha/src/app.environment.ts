@@ -110,4 +110,51 @@ export const Environment = Env.rules({
 	 */
 	STORAGE_MAX_CONCURRENT_UPLOADS: Env.schema.number().optional(5),
 
+	/// =======================================================
+	/// == Email
+	/// =======================================================
+
+	/**
+	 * The hostname to use for SMTP. If not specified, outgoing emails will be disabled, and any
+	 * features that attempt to send mail will error.
+	 */
+	SMTP_HOST: Env.schema.string().optional(),
+
+	/**
+	 * The port number to use for SMTP.
+	 */
+	SMTP_PORT: Env.schema.number().optional(),
+
+	/**
+	 * The username to use for SMTP.
+	 */
+	SMTP_USERNAME: Env.schema.string().optional(),
+
+	/**
+	 * The password to use for SMTP.
+	 */
+	SMTP_PASSWORD: Env.schema.string().optional(),
+
+	/**
+	 * The "from address" to use for outgoing emails.
+	 */
+	SMTP_FROM_ADDRESS: Env.schema.string().optional(),
+
+	/**
+	 * The "from name" to use for outgoing emails.
+	 */
+	SMTP_FROM_NAME: Env.schema.string().optional(),
+
+	/**
+	 * Whether or not to use TLS for the initial connection. In most cases set this to `true` for port 465, or set it
+	 * to `false` for port 587 or 25.
+	 */
+	SMTP_SECURE: Env.schema.boolean().optional(false),
+
+	/**
+	 * Whether or not to require TLS for the connection. If `SMTP_SECURE` is disabled then `STARTTLS` will be used to
+	 * upgrade after initial connection.
+	 */
+	SMTP_REQUIRE_TLS: Env.schema.boolean().optional(false)
+
 });
