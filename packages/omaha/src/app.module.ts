@@ -15,6 +15,7 @@ import { StorageModule } from './storage/storage.module';
 import { ReleaseDownload } from './entities/ReleaseDownload';
 import { Token } from './entities/Token';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ReleaseJob } from './entities/ReleaseJob';
 
 @Module({
 	imports: [
@@ -37,7 +38,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 				Release,
 				ReleaseAttachment,
 				ReleaseDownload,
-				Token
+				Token,
+				ReleaseJob,
 			],
 		}),
 		RepositoriesModule,

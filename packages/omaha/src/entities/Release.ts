@@ -3,6 +3,7 @@ import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToM
 import { ReleaseStatus } from './enum/ReleaseStatus';
 import { ReleaseAttachment } from './ReleaseAttachment';
 import { ReleaseDownload } from './ReleaseDownload';
+import { ReleaseJob } from './ReleaseJob';
 import { Repository } from './Repository';
 import { Tag } from './Tag';
 
@@ -91,6 +92,12 @@ export class Release {
 	public attachments: Promise<ReleaseAttachment[]>;
 
 	/**
+	 * The queued jobs for this release.
+	 */
+	@OneToMany(() => ReleaseJob, job => job.release)
+	public queue: Promise<ReleaseJob[]>;
+
+	/**
 	 * The names of the tags that this release is assigned to. Requires the tags to have already been loaded.
 	 */
 	@Expose({ name: 'tags' })
@@ -99,6 +106,13 @@ export class Release {
 		if (!tags) return;
 		return tags.map(tag => tag.name);
 	}
+
+	/**
+	 * The downloads for this release.
+	 */
+	@OneToMany(() => ReleaseDownload, download => download.release)
+	@JoinTable()
+	public downloads: Promise<ReleaseDownload[]>;
 
 	/**
 	 * The names of the tags that this release is assigned to. Requires the tags to have already been loaded.
@@ -111,10 +125,13 @@ export class Release {
 	}
 
 	/**
-	 * The downloads for this release.
+	 * The active queue, if applicable.
 	 */
-	@OneToMany(() => ReleaseDownload, download => download.release)
-	@JoinTable()
-	public downloads: Promise<ReleaseDownload[]>;
+	@Expose({ name: 'queue' })
+	public get jsonQueueProp() {
+		const jobs: Tag[] = (this as any).__queue__;
+		if (!jobs) return;
+		return jobs;
+	}
 
 }

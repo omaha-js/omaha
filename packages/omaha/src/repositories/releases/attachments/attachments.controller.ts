@@ -17,6 +17,9 @@ import crypto from 'crypto';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collab } from 'src/support/Collab';
 import { Collaboration } from 'src/entities/Collaboration';
+import { QueueService } from '../queue/queue.service';
+import { exists } from 'src/support/utilities/exists';
+import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -28,7 +31,8 @@ export class AttachmentsController {
 		private readonly service: AttachmentsService,
 		private readonly releases: ReleasesService,
 		private readonly storage: StorageService,
-		private readonly downloads: DownloadsService
+		private readonly downloads: DownloadsService,
+		private readonly queue: QueueService,
 	) {}
 
 	/**
@@ -82,7 +86,19 @@ export class AttachmentsController {
 		const release = await attachment.release;
 
 		if (release.status === ReleaseStatus.Archived) {
-			throw new BadRequestException('Archived releases cannot be downloaded');
+			if (!collab?.hasPermission('repo.releases.attachments.manage')) {
+				throw new BadRequestException('Archived releases cannot be downloaded');
+			}
+
+			if (release.purged_at) {
+				throw new BadRequestException(
+					'The files for this release have been purged and can no longer be downloaded'
+				);
+			}
+		}
+
+		if (attachment.status !== ReleaseAttachmentStatus.Ready) {
+			throw new BadRequestException('This release has not finished processing, try again shortly');
 		}
 
 		if (token.isDatabaseToken() && release.status !== ReleaseStatus.Draft) {
@@ -129,50 +145,66 @@ export class AttachmentsController {
 			if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
 
 			// Make sure the file exists
-			if (!fs.existsSync(file.path)) {
+			if (!await exists(file.path)) {
 				throw new InternalServerErrorException('File not found (internal)');
 			}
 
 			// Create the read stream
 			const stream = fs.createReadStream(file.path, { encoding: 'binary' });
-			const name = `${release.version}/${repoAsset.name}`;
 
-			// Compute a SHA-256 hash for the file by intercepting the stream
-			const hash = crypto.createHash('sha256');
-			stream.on('data', data => {
-				if (typeof data === 'string') hash.update(data, 'binary');
-				else hash.update(data);
-			});
+			// Compute a SHA-256 hash for the file using the stream
+			const hash = crypto.createHash('sha256', { encoding: 'binary' });
+			const promise = new Promise(r => stream.once('end', r));
+			stream.pipe(hash);
 
-			// Write the file to storage
-			const saveName = await this.storage.write(repo, name, stream);
-
-			// Clean up the file
-			await fs.promises.unlink(file.path);
+			// Wait for hashing
+			await promise;
 
 			// Update an existing attachment
 			if (attachment) {
+				if (attachment.status === ReleaseAttachmentStatus.Pending) {
+					throw new BadRequestException('This attachment is currently pending, please try again shortly');
+				}
+
+				// Delete old objects
+				if (typeof attachment.object_name === 'string') {
+					try {
+						await this.storage.delete(repo, attachment.object_name);
+					}
+					catch (err) {
+						this.logger.error('Failed to delete old object', err);
+					}
+				}
+
 				attachment.file_name = file.originalname,
-				attachment.object_name = saveName;
+				attachment.object_name = null;
 				attachment.mime = file.mimetype;
 				attachment.size = file.size;
 				attachment.hash = hash.digest();
+				attachment.status = ReleaseAttachmentStatus.Pending;
 
-				return await this.service.save(attachment);
+				await this.service.save(attachment);
+				await this.queue.addAttachmentUpload(attachment, file.path);
+
+				return attachment;
 			}
 
 			// Create a new attachment
 			else {
 				const attachment = await this.service.create();
 				attachment.file_name = file.originalname;
-				attachment.object_name = saveName;
+				attachment.object_name = null;
 				attachment.size = file.size;
 				attachment.mime = file.mimetype;
 				attachment.release = Promise.resolve(release);
 				attachment.asset = repoAsset;
 				attachment.hash = hash.digest();
+				attachment.status = ReleaseAttachmentStatus.Pending;
 
-				return await this.service.save(attachment);
+				await this.service.save(attachment);
+				await this.queue.addAttachmentUpload(attachment, file.path);
+
+				return attachment;
 			}
 		}
 		catch (err) {

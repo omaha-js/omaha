@@ -1,6 +1,7 @@
 import { Exclude, Transform } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { Asset } from './Asset';
+import { ReleaseAttachmentStatus } from './enum/ReleaseAttachmentStatus';
 import { Release } from './Release';
 import { ReleaseDownload } from './ReleaseDownload';
 
@@ -37,7 +38,7 @@ export class ReleaseAttachment {
 	 * The name of the file within the storage system. This does not include the directory or path to the file, which
 	 * will be the repository's unique ID.
 	 */
-	@Column({ length: 256 })
+	@Column({ length: 256, default: null })
 	@Exclude()
 	public object_name: string;
 
@@ -52,6 +53,13 @@ export class ReleaseAttachment {
 	 */
 	@Column({ unsigned: true })
 	public size: number;
+
+	/**
+	 * The status of the file upload into storage.
+	 */
+	@Column({ type: 'enum', enum: ReleaseAttachmentStatus, default: ReleaseAttachmentStatus.Pending })
+	@Index()
+	public status: ReleaseAttachmentStatus;
 
 	/**
 	 * The SHA-256 digest hash for the file's contents.

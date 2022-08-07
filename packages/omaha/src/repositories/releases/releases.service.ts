@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Release } from 'src/entities/Release';
 import { Repository } from 'src/entities/Repository';
 import { CreateReleaseDto } from './dto/CreateReleaseDto';
-import { In, IsNull, Repository as TypeOrmRepository } from 'typeorm';
+import { EntityManager, In, IsNull, Repository as TypeOrmRepository } from 'typeorm';
 import { TagsService } from '../tags/tags.service';
 import { UpdateReleaseDto } from './dto/UpdateReleaseDto';
 import { ReleaseDownload } from 'src/entities/ReleaseDownload';
@@ -15,6 +15,8 @@ import { RepositorySettingsManager } from '../settings/RepositorySettingsManager
 import { Cron } from '@nestjs/schedule';
 import { StorageService } from 'src/storage/storage.service';
 import prettyBytes from 'pretty-bytes';
+import { QueueService } from './queue/queue.service';
+import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -27,6 +29,7 @@ export class ReleasesService {
 		@InjectRepository(Release) private readonly repository: TypeOrmRepository<Release>,
 		private readonly tags: TagsService,
 		private readonly storage: StorageService,
+		private readonly queue: QueueService,
 	) {}
 
 	/**
@@ -266,9 +269,28 @@ export class ReleasesService {
 					);
 				}
 
-				release.status = ReleaseStatus.Published;
-				release.published_at = new Date();
-				published = true;
+				// Check for pending and failed attachments
+				const pending = attachments.filter(a => a.status === ReleaseAttachmentStatus.Pending);
+				const failed = attachments.filter(a => a.status === ReleaseAttachmentStatus.Failed);
+
+				if (failed.length > 0) {
+					throw new BadRequestException(
+						`One or more attachments in this release are marked as failed, reupload them and try again`
+					);
+				}
+
+				// Queue the publish if there are pending attachments
+				if (pending.length > 0) {
+					await this.queue.addPublishRelease(release);
+					await release.queue;
+				}
+
+				// Otherwise publish immediately
+				else {
+					release.status = ReleaseStatus.Published;
+					release.published_at = new Date();
+					published = true;
+				}
 			}
 			else if (release.status === ReleaseStatus.Archived) {
 				throw new BadRequestException(
@@ -304,52 +326,7 @@ export class ReleasesService {
 		// Wrap in a transaction for rolling logic
 		return this.repository.manager.transaction(async manager => {
 			if (published && RepositorySettingsManager.get(repo.settings, 'releases.rolling')) {
-				const buffer = RepositorySettingsManager.get(repo.settings, 'releases.rolling.buffer') - 1;
-				const versions = await this.getAllVersions(repo, [ReleaseStatus.Published]);
-				const tags = await this.tags.getAllTags(repo);
-
-				// Get all versions in the same major version as a set
-				const targets = new Set(repo.driver.getVersionsFromSameMajor(
-					{ all: versions, selected: versions },
-					release.version
-				));
-
-				// Iterate over all tags
-				for (const tagName of tags) {
-					// Get all releases within the tag
-					const tagVersions = await this.getVersionsFromFilters(repo, {
-						assets: [],
-						tags: [tagName],
-						statuses: [ReleaseStatus.Published],
-						sort_order: 'asc'
-					});
-
-					// Get all releases in the same major version
-					const selected = repo.driver.getVersionsFromSameMajor(
-						{ all: versions, selected: tagVersions},
-						release.version
-					);
-
-					// Sort the releases in descending order
-					const sorted = repo.driver.getVersionsSorted({ all: versions, selected }, 'desc');
-
-					// Delete all releases within the buffer from our targets
-					for (const version of sorted.slice(0, buffer)) {
-						targets.delete(version);
-					}
-				}
-
-				// Update all remaining release targets to the 'archived' status
-				if (targets.size > 0) {
-					const query = manager.createQueryBuilder().update(Release, {
-						archived_at: () => 'CURRENT_TIMESTAMP',
-						updated_at: () => '`updated_at`',
-						status: ReleaseStatus.Archived
-					});
-
-					query.where('version IN (:versions)', { versions: [...targets] });
-					await query.execute();
-				}
+				await this.internRollReleases(repo, release, manager);
 			}
 
 			return manager.save(release);
@@ -544,6 +521,55 @@ export class ReleasesService {
 
 		if (totalFilesFreed > 0) {
 			this.logger.log(`Cleared ${totalFilesFreed} objects for a total of ${prettyBytes(totalBytesFreed)}`);
+		}
+	}
+
+	public async internRollReleases(repo: Repository, release: Release, manager: EntityManager) {
+		const buffer = RepositorySettingsManager.get(repo.settings, 'releases.rolling.buffer') - 1;
+		const versions = await this.getAllVersions(repo, [ReleaseStatus.Published]);
+		const tags = await this.tags.getAllTags(repo);
+
+		// Get all versions in the same major version as a set
+		const targets = new Set(repo.driver.getVersionsFromSameMajor(
+			{ all: versions, selected: versions },
+			release.version
+		));
+
+		// Iterate over all tags
+		for (const tagName of tags) {
+			// Get all releases within the tag
+			const tagVersions = await this.getVersionsFromFilters(repo, {
+				assets: [],
+				tags: [tagName],
+				statuses: [ReleaseStatus.Published],
+				sort_order: 'asc'
+			});
+
+			// Get all releases in the same major version
+			const selected = repo.driver.getVersionsFromSameMajor(
+				{ all: versions, selected: tagVersions},
+				release.version
+			);
+
+			// Sort the releases in descending order
+			const sorted = repo.driver.getVersionsSorted({ all: versions, selected }, 'desc');
+
+			// Delete all releases within the buffer from our targets
+			for (const version of sorted.slice(0, buffer)) {
+				targets.delete(version);
+			}
+		}
+
+		// Update all remaining release targets to the 'archived' status
+		if (targets.size > 0) {
+			const query = manager.createQueryBuilder().update(Release, {
+				archived_at: () => 'CURRENT_TIMESTAMP',
+				updated_at: () => '`updated_at`',
+				status: ReleaseStatus.Archived
+			});
+
+			query.where('version IN (:versions)', { versions: [...targets] });
+			await query.execute();
 		}
 	}
 

@@ -73,20 +73,25 @@ export class ReleasesController {
 	@Get(':version')
 	public async get(@Repo() repo: Repository, @Param('version') version: string, @Collab() collab?: Collaboration) {
 		const release = await this.service.getFromVersionOrFail(repo, version);
+		const promises = new Array<Promise<any>>();
 
-		// Require relevant privileges when reading a draft release
-		if (
-			release.status === ReleaseStatus.Draft &&
-			!collab.hasPermission('repo.releases.create') &&
-			!collab.hasPermission('repo.releases.attachments.manage')
-		) {
-			throw new NotFoundException(`No version matching '${version}' exists within the repository`);
+		if (release.status === ReleaseStatus.Draft && collab) {
+			// Require relevant privileges when reading a draft release
+			if (!collab.hasPermission('repo.releases.create') && !collab.hasPermission('repo.releases.attachments.manage')) {
+				throw new NotFoundException(`No version matching '${version}' exists within the repository`);
+			}
+
+			// Lazy load queue for relevant privileges
+			if (collab.hasPermission('repo.releases.create') || collab.hasPermission('repo.releases.attachments.manage')) {
+				promises.push(release.queue);
+			}
 		}
 
 		// Lazy load tags and assets
 		await Promise.all([
 			release.tags,
-			release.attachments
+			release.attachments,
+			...promises
 		]);
 
 		return release;

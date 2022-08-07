@@ -100,4 +100,9 @@ export const Environment = Env.rules({
 	 */
 	STORAGE_S3_SSL: Env.schema.boolean().optional(true),
 
+	/**
+	 * The maximum number of simultaneous uploads allowed for the storage driver.
+	 */
+	STORAGE_MAX_CONCURRENT_UPLOADS: Env.schema.number().optional(5),
+
 });

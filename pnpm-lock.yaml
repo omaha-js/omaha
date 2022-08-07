@@ -79,6 +79,9 @@ importers:
     specifiers:
       '@baileyherbert/env': ^1.3.1
       '@baileyherbert/logging': ^2.1.0
+      '@baileyherbert/nested-collections': ^1.3.0
+      '@baileyherbert/queue': ^2.1.1
+      '@baileyherbert/reflection': ^1.2.4
       '@nestjs/cli': ^8.0.0
       '@nestjs/common': ^8.0.0
       '@nestjs/core': ^8.0.0
@@ -117,6 +120,9 @@ importers:
     dependencies:
       '@baileyherbert/env': 1.3.1
       '@baileyherbert/logging': 2.1.0
+      '@baileyherbert/nested-collections': 1.3.0
+      '@baileyherbert/queue': 2.1.1
+      '@baileyherbert/reflection': 1.2.4
       '@nestjs/common': 8.4.4_kgmvgmqc4iohdboj3f7yqhrie4
       '@nestjs/core': 8.4.4_wy6cne2gpevj2v6pvodnemcq2i
       '@nestjs/passport': 8.2.1_tys52mabdspwpuru4mnhbd7smy
@@ -570,6 +576,26 @@ packages:
     dependencies:
       '@baileyherbert/events': 1.0.1
       chalk: 4.1.2
+    dev: false
+
+  /@baileyherbert/nested-collections/1.3.0:
+    resolution: {integrity: sha512-apYKV8ScmM35tU8LF4FO7QEjtHqGSYH7ADm16Fj4PxQtBRZAaI8MIYIl4KtqafY47CvZxp55GPF7s/DlaZRWAg==}
+    dev: false
+
+  /@baileyherbert/queue/2.1.1:
+    resolution: {integrity: sha512-iaXWRsuqVYQh9gmMXJvtupPLp7++/7asqjfMtCytxn5ssAp3OHbu3dWK5yGEPc1nbdGIOwQInsceijDIvdrBMA==}
+    dev: false
+
+  /@baileyherbert/reflection/1.2.4:
+    resolution: {integrity: sha512-OsY3h7URYoCnsk1vpUfwYGSF3f4ZgFmDXr5sayxNDjkMfHVS2xCmn/WE8t3SKrROaqGf0lL1U/IsmFABfw8nBw==}
+    dependencies:
+      '@baileyherbert/events': 1.0.1
+      '@baileyherbert/types': 1.0.1
+      reflect-metadata: 0.1.13
+    dev: false
+
+  /@baileyherbert/types/1.0.1:
+    resolution: {integrity: sha512-l6CkYuLCjKaHze8N9u9VYKbIYp9V8FGH1KtFYpm4pMXQ0z6bmHToDNRbTVFnr2MRlYzkq2zItc1GyV63FoIiDA==}
     dev: false
 
   /@bcoe/v8-coverage/0.2.3:
