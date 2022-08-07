@@ -524,7 +524,7 @@ export class ReleasesService {
 
 		for (const release of releases) {
 			const repository = await release.repository;
-			const expirationDays = RepositorySettingsManager.get(repository, 'releases.archives.expiration');
+			const expirationDays = RepositorySettingsManager.get(repository.settings, 'releases.archives.expiration');
 			const expiration = release.archived_at.getTime() + (expirationDays * 86400000);
 
 			if (expiration <= Date.now()) {
