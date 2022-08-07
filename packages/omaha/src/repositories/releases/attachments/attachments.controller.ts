@@ -109,7 +109,11 @@ export class AttachmentsController {
 			]);
 		}
 
-		const url = await this.storage.getDownloadLink(repo, attachment.object_name, expiration, disposition);
+		const url = await this.storage.getDownloadLink(
+			this.storage.getObjectName(repo, attachment.object_name),
+			expiration,
+			disposition
+		);
 
 		return {
 			file_name: attachment.file_name,
@@ -169,7 +173,7 @@ export class AttachmentsController {
 				// Delete old objects
 				if (typeof attachment.object_name === 'string') {
 					try {
-						await this.storage.delete(repo, attachment.object_name);
+						await this.storage.delete(this.storage.getObjectName(repo, attachment.object_name));
 					}
 					catch (err) {
 						this.logger.error('Failed to delete old object', err);

@@ -508,7 +508,7 @@ export class ReleasesService {
 				this.logger.log(`Purging expired attachments for release ${release.id} in ${repository.id}`);
 
 				for (const attachment of await release.attachments) {
-					await this.storage.delete(repository, attachment.object_name);
+					await this.storage.delete(this.storage.getObjectName(repository, attachment.object_name));
 
 					totalFilesFreed++;
 					totalBytesFreed += attachment.size;

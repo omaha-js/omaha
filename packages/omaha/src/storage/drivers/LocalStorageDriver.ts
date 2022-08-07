@@ -22,8 +22,8 @@ export class LocalStorageDriver implements StorageDriver {
 		}
 	}
 
-	public async write(repo: Repository, name: string, stream: ReadStream): Promise<string> {
-		const targetPath = path.resolve(this.storagePath, repo.id, name);
+	public async write(name: string, size: number, stream: ReadStream): Promise<void> {
+		const targetPath = path.resolve(this.storagePath, name);
 		const targetDir = path.dirname(targetPath);
 
 		if (!await exists(targetDir)) {
@@ -35,17 +35,15 @@ export class LocalStorageDriver implements StorageDriver {
 
 		stream.pipe(target);
 		await finished;
-
-		return name;
 	}
 
-	public exists(repo: Repository, name: string): Promise<boolean> {
-		const targetPath = path.resolve(this.storagePath, repo.id, name);
+	public exists(name: string): Promise<boolean> {
+		const targetPath = path.resolve(this.storagePath, name);
 		return exists(targetPath);
 	}
 
-	public async delete(repo: Repository, name: string): Promise<void> {
-		const targetPath = path.resolve(this.storagePath, repo.id, name);
+	public async delete(name: string): Promise<void> {
+		const targetPath = path.resolve(this.storagePath, name);
 
 		if (!await exists(targetPath)) {
 			throw new Error('Target object does not exist: ' + name);
@@ -54,11 +52,10 @@ export class LocalStorageDriver implements StorageDriver {
 		return fs.promises.unlink(targetPath);
 	}
 
-	public async getDownloadLink(repo: Repository, name: string, duration: number, disposition?: string): Promise<string> {
-		const objectName = `${repo.id}/${name}`;
-		const url = new URL('v1/storage/download/' + objectName, Environment.APP_URL);
+	public async getDownloadLink(name: string, duration: number, disposition?: string): Promise<string> {
+		const url = new URL('v1/storage/download/' + name, Environment.APP_URL);
 		const expiration = Math.ceil((Date.now() + duration) / 1000);
-		const signature = this.getDownloadSignature(objectName, expiration, disposition);
+		const signature = this.getDownloadSignature(name, expiration, disposition);
 
 		url.searchParams.append('signature', signature);
 		url.searchParams.append('expires', expiration.toString());
@@ -73,7 +70,6 @@ export class LocalStorageDriver implements StorageDriver {
 	/**
 	 * Generates and returns a `sha256` hash to sign the given download parameters.
 	 *
-	 * @param repoId
 	 * @param fileName
 	 * @param expiration
 	 * @param disposition

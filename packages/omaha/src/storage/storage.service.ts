@@ -33,59 +33,51 @@ export class StorageService implements OnModuleInit {
 	/**
 	 * Writes a file to storage from a readstream.
 	 *
-	 * @param repo
-	 *   The repository that this file belongs to. This could be used to organize and group files within the storage
-	 *   system by their associated repository.
-	 *
 	 * @param name
-	 *   The name to use for the file in storage.
+	 *   The full name of the object in storage.
+	 *
+	 * @param size
+	 *   The total size of the file in bytes.
 	 *
 	 * @param stream
 	 *   A readable stream for the file that will be consumed during upload. The source for the stream should be from
 	 *   the application's temporary storage directory.
-	 *
-	 * @returns
-	 *   The relative name of the file within the storage system. This should be stored as it will be required to
-	 *   access and manage the file later.
 	 */
-	public write(repo: Repository, name: string, stream: ReadStream): Promise<string> {
-		return this.driver.write(repo, name, stream);
+	public write(name: string, size: number, stream: ReadStream): Promise<void> {
+		return this.driver.write(name, size, stream);
 	}
 
 	/**
 	 * Returns true if the specified file exists within the storage system.
 	 *
-	 * @param repo The repository the file belongs to.
-	 * @param name The name of the file.
+	 * @param name The full name of the object in storage.
 	 */
-	public exists(repo: Repository, name: string): Promise<boolean> {
-		return this.driver.exists(repo, name);
+	public exists(name: string): Promise<boolean> {
+		return this.driver.exists(name);
 	}
 
 	/**
 	 * Deletes the specified file from the storage system if it exists.
 	 *
-	 * @param repo The repository the file belongs to.
-	 * @param name The name of the file.
+	 * @param name The full name of the object in storage.
 	 */
-	public delete(repo: Repository, name: string): Promise<void> {
-		return this.driver.delete(repo, name);
+	public delete(name: string): Promise<void> {
+		return this.driver.delete(name);
 	}
 
 	/**
 	 * Generates a secure link to download the specified file. This link should expire after the specified duration.
 	 * The client will be redirected to this link when attempting to download the file.
 	 *
-	 * @param repo The repository the file belongs to.
-	 * @param name The name of the file.
+	 * @param name The full name of the object in storage.
 	 * @param duration The number of milliseconds (from now) until the link expires.
 	 * @param disposition The original name of the file (optional).
 	 * @returns
 	 *   A link to the file with query parameters that enable temporary access. Depending on the storage driver, this
 	 *   link may be either absolute or root-relative.
 	 */
-	public getDownloadLink(repo: Repository, name: string, duration: number, disposition?: string): Promise<string> {
-		return this.driver.getDownloadLink(repo, name, duration, disposition);
+	public getDownloadLink(name: string, duration: number, disposition?: string): Promise<string> {
+		return this.driver.getDownloadLink(name, duration, disposition);
 	}
 
 	/**
@@ -95,6 +87,17 @@ export class StorageService implements OnModuleInit {
 	 */
 	public getDriver() {
 		return this.driver;
+	}
+
+	/**
+	 * Builds an object name for storage from the given repository and file name.
+	 *
+	 * @param repository
+	 * @param fileName
+	 * @returns
+	 */
+	public getObjectName(repository: Repository, fileName: string) {
+		return `${repository.id}/${fileName}`;
 	}
 
 }
