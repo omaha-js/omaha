@@ -87,7 +87,12 @@ export class EmailService implements OnModuleInit {
 	 */
 	private render(options: SendMailOptions) {
 		return new Promise((resolve, reject) => {
-			twig.renderFile(path.resolve(this.templatesDir, options.template), options.context ?? {}, (err, html) => {
+			const context = {
+				...(options.context ?? {}),
+				env: Environment
+			};
+
+			twig.renderFile(path.resolve(this.templatesDir, options.template), context, (err, html) => {
 				if (err) reject(err);
 				else resolve(html);
 			});
