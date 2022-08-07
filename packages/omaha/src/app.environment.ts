@@ -83,7 +83,7 @@ export const Environment = Env.rules({
 	/**
 	 * The port number to use. Defaults to 80 for HTTP and 443 for HTTPS.
 	 */
-	STORAGE_S3_PORT: Env.schema.number().optional(),
+	STORAGE_S3_PORT: Env.schema.number().optional(443),
 
 	/**
 	 * The access key (user ID) for the storage account.
@@ -94,6 +94,11 @@ export const Environment = Env.rules({
 	 * The secret key (password) for the storage account.
 	 */
 	STORAGE_S3_SECRETKEY: Env.schema.string().optional(),
+
+	/**
+	 * The name of the bucket to use for storage.
+	 */
+	STORAGE_S3_BUCKET: Env.schema.string().optional(),
 
 	/**
 	 * Whether or not to use SSL for the connection.
