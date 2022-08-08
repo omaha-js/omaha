@@ -1,4 +1,5 @@
 import { Controller, Get, NotFoundException, Param, Query, UseGuards } from '@nestjs/common';
+import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Repository } from 'src/entities/Repository';
 import { RepositoriesGuard } from 'src/repositories/repositories.guard';
 import { Repo } from 'src/support/Repo';
@@ -24,6 +25,7 @@ export class DownloadsController {
 	}
 
 	@Get('logs')
+	@UseScopes('repo.audit.downloads')
 	public async getRepositoryDownloadLogs(@Repo() repository: Repository, @Query() params: DownloadLogsDto) {
 		const { pagination, logs } = await this.downloads.getDownloadLogs(repository, params);
 
@@ -46,6 +48,7 @@ export class DownloadsController {
 	}
 
 	@Get('logs/:version')
+	@UseScopes('repo.audit.downloads')
 	public async getReleaseDownloadLogs(
 		@Repo() repo: Repository,
 		@Param('version') version: string,
@@ -83,6 +86,7 @@ export class DownloadsController {
 	}
 
 	@Get('logs/:version/:asset')
+	@UseScopes('repo.audit.downloads')
 	public async getAttachmentDownloadLogs(
 		@Repo() repo: Repository,
 		@Param('version') version: string,

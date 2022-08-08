@@ -99,7 +99,13 @@ export const RepositoryScopes = [
 		name: 'Manage assets',
 		description: `Allows clients to create, edit, and delete release assets for the repository`,
 		groups: ['owner', 'manager']
-	}
+	},
+	{
+		id: 'repo.audit.downloads',
+		name: 'View download logs',
+		description: `Allows clients to view the download logs for all releases in a repository`,
+		groups: ['owner', 'manager']
+	},
 ] as const;
 
 /**
