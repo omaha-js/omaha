@@ -6,6 +6,8 @@ import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationsService } from './collaborations/collaborations.service';
 import { CollaborationRole } from '../entities/enum/CollaborationRole';
+import { RepositoriesService } from './repositories.service';
+import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
 
 /**
  * This guard looks at the `repo_id` parameter for the current request as well as the current token from the
@@ -17,6 +19,7 @@ export class RepositoriesGuard implements CanActivate {
 	public constructor(
 		private readonly reflector: Reflector,
 		private readonly collaborations: CollaborationsService,
+		private readonly repositories: RepositoriesService,
 	) {}
 
 	public async canActivate(context: ExecutionContext) {
@@ -24,7 +27,7 @@ export class RepositoriesGuard implements CanActivate {
 		const token = request.user as BaseToken;
 		const scopes = this.getScopesFromContext(context);
 
-		if (!token) {
+		if (!token && scopes.length > 0) {
 			throw new UnauthorizedException('Token is missing');
 		}
 
@@ -34,6 +37,19 @@ export class RepositoriesGuard implements CanActivate {
 
 		if (typeof request.params.repo_id !== 'string') {
 			throw new InternalServerErrorException('Invalid repository id');
+		}
+
+		// Public repositories
+		if (!token) {
+			const repoId = request.params.repo_id;
+			const repo = await this.repositories.getRepository(repoId);
+
+			if (repo.access !== RepositoryAccessType.Public) {
+				throw new UnauthorizedException('Missing access token');
+			}
+
+			(request as any)._guardedRepository = repo;
+			return true;
 		}
 
 		if (token.isForAccount()) {

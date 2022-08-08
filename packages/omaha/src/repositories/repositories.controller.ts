@@ -1,5 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
+import { Private } from 'src/auth/decorators/private.decorator';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
@@ -32,15 +33,17 @@ export class RepositoriesController {
 	 * @returns
 	 */
 	@Get()
-	public getRepositoryList(@User() token: BaseToken) {
-		if (token.isForAccount()) {
-			return this.service.getRepositoriesForAccount(token.account);
-		}
-		else if (token.isForRepository()) {
-			return [token.repository];
+	public getRepositoryList(@User() token?: BaseToken) {
+		if (token) {
+			if (token.isForAccount()) {
+				return this.service.getRepositoriesForAccount(token.account);
+			}
+			else if (token.isForRepository()) {
+				return [token.repository];
+			}
 		}
 
-		throw new NotFoundException();
+		return [];
 	}
 
 	@Post()
@@ -72,6 +75,7 @@ export class RepositoriesController {
 	}
 
 	@Delete(':repo_id')
+	@Private()
 	@UseGuards(RepositoriesGuard)
 	public async deleteRepository(@Repo() repo: Repository, @User() token: BaseToken, @Collab() collab?: Collaboration) {
 		if (collab?.role !== CollaborationRole.Owner) {
@@ -90,6 +94,7 @@ export class RepositoriesController {
 	}
 
 	@Patch('restore/:repo_id')
+	@Private()
 	public async restoreRepository(@Param('repo_id') id: string, @User() token: BaseToken) {
 		const repo = await this.service.getDeletedRepository(id);
 

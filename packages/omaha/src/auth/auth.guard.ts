@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
 
 		const scopes = this.getScopesFromContext(context);
 		const guests = this.getGuestFromContext(context);
+		const isPrivate = this.reflector.get('auth.private', context.getHandler());
 
 		// Set the token on the request
 		request.user = token;
@@ -40,7 +41,7 @@ export class AuthGuard implements CanActivate {
 		}
 
 		// Block the request if not authenticated
-		if (!token) {
+		if (!token && (scopes.length > 0 || isPrivate)) {
 			throw new UnauthorizedException('Missing access token');
 		}
 
