@@ -6,7 +6,7 @@ import { Asset } from './Asset';
 import { Tag } from './Tag';
 import { VersionSchemeDriver } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { VersionSchemeDrivers } from 'src/drivers/versions';
-import { Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { Token } from './Token';
 import { ReleaseDownload } from './ReleaseDownload';
 import { RepositoryVersionScheme } from './enum/RepositoryVersionScheme';
@@ -39,6 +39,7 @@ export class Repository {
 
 	@DeleteDateColumn()
 	@Index()
+	@Exclude()
 	public deleted_at?: Date;
 
 	@OneToMany(() => Collaboration, collab => collab.repository)
