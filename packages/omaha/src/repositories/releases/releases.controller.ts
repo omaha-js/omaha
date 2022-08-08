@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
@@ -106,9 +106,28 @@ export class ReleasesController {
 	 * @returns
 	 */
 	@Patch(':version')
-	@UseScopes('repo.releases.edit')
-	public async update(@Repo() repo: Repository, @Param('version') version: string, @Body() dto: UpdateReleaseDto) {
+	public async update(
+		@Repo() repo: Repository,
+		@Param('version') version: string,
+		@Body() dto: UpdateReleaseDto,
+		@Collab() collab?: Collaboration
+	) {
+		if (!collab) {
+			throw new ForbiddenException('You do not have privileges to access this endpoint');
+		}
+
 		const release = await this.service.getFromVersionOrFail(repo, version);
+
+		// Require the 'create' privilege when editing drafts
+		if (release.status === ReleaseStatus.Draft) {
+			collab.requirePermission('repo.releases.create');
+		}
+
+		// Require the 'edit' privilege when editing published and archived releases
+		else {
+			collab.requirePermission('repo.releases.edit');
+		}
+
 		return this.service.update(repo, release, dto);
 	}
 

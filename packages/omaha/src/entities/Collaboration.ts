@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
@@ -69,6 +70,17 @@ export class Collaboration {
 	 */
 	public hasPermission(scope: RepositoryScopeId) {
 		return (this.getFullScopes().includes(scope));
+	}
+
+	/**
+	 * Throws an error if the collaboration does not have the specified permission.
+	 *
+	 * @param scope
+	 */
+	public requirePermission(scope: RepositoryScopeId) {
+		if (!this.hasPermission(scope)) {
+			throw new ForbiddenException('You do not have privileges to access this endpoint');
+		}
 	}
 
 	@Expose({ name: 'account' })
