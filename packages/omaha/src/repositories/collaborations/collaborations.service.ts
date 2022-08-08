@@ -145,6 +145,28 @@ export class CollaborationsService {
 	/**
 	 * Gets a specific collaboration invite.
 	 *
+	 * @param repository
+	 * @param id
+	 * @returns
+	 */
+	public getInviteForRepositoryById(repository: string | Repository, id: string) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
+		}
+
+		return this.invites.findOne({
+			where: {
+				id,
+				repository: {
+					id: repository
+				}
+			}
+		});
+	}
+
+	/**
+	 * Gets a specific collaboration invite. Dangerous!
+	 *
 	 * @param id
 	 * @returns
 	 */
@@ -152,6 +174,28 @@ export class CollaborationsService {
 		return this.invites.findOne({
 			where: {
 				id
+			}
+		});
+	}
+
+	/**
+	 * Gets a specific collaboration.
+	 *
+	 * @param repository
+	 * @param id
+	 * @returns
+	 */
+	public getForRepositoryById(repository: string | Repository, id: string) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
+		}
+
+		return this.collaborations.findOne({
+			where: {
+				id,
+				repository: {
+					id: repository
+				}
 			}
 		});
 	}
@@ -254,6 +298,32 @@ export class CollaborationsService {
 	}
 
 	/**
+	 * Saves changes to the given collaboration instance.
+	 *
+	 * @param collab
+	 * @param role
+	 * @param scopes
+	 * @returns
+	 */
+	public async update(collab: Collaboration, role?: CollaborationRole, scopes?: RepositoryScopeId[]) {
+		if (collab.role === CollaborationRole.Custom && role !== CollaborationRole.Custom) {
+			collab.scopes = [];
+		}
+
+		const effectiveRole = role ?? collab.role;
+		const effectiveScopes = scopes ?? collab.scopes;
+
+		if (effectiveScopes.length > 0 && effectiveRole !== CollaborationRole.Custom) {
+			throw new BadRequestException(`You cannot provide scopes when 'role' does not equal 'custom'`);
+		}
+
+		collab.role = effectiveRole;
+		collab.scopes = effectiveScopes;
+
+		return this.collaborations.save(collab);
+	}
+
+	/**
 	 * Deletes the given invite instance.
 	 *
 	 * @param invite
@@ -265,6 +335,21 @@ export class CollaborationsService {
 		return {
 			success: true,
 			message: 'Invite has been deleted successfully.'
+		}
+	}
+
+	/**
+	 * Deletes the given collaboration instance.
+	 *
+	 * @param collab
+	 * @returns
+	 */
+	public async delete(collab: Collaboration) {
+		await this.collaborations.delete(collab.id);
+
+		return {
+			success: true,
+			message: 'Collaboration has been deleted successfully.'
 		}
 	}
 
