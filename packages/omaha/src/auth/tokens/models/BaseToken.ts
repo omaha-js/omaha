@@ -63,14 +63,14 @@ export abstract class BaseToken {
 
 }
 
-interface TokenForAccount extends BaseToken {
+export interface TokenForAccount extends BaseToken {
 	account: Account;
 }
 
-interface TokenForRepository extends BaseToken {
+export interface TokenForRepository extends BaseToken {
 	repository: Repository;
 }
 
-interface TokenFromDatabase extends BaseToken {
+export interface TokenFromDatabase extends BaseToken {
 	token: Token;
 }

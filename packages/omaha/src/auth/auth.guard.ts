@@ -14,6 +14,13 @@ export class AuthGuard implements CanActivate {
 	) {}
 
 	public async canActivate(context: ExecutionContext) {
+		switch (context.getType()) {
+			case 'http': return this.validateForHttp(context);
+			default: throw new BadRequestException('Unsupported request type');
+		}
+	}
+
+	private async validateForHttp(context: ExecutionContext) {
 		const request = context.switchToHttp().getRequest<Request>();
 		const token = await this.getToken(request);
 
@@ -94,7 +101,7 @@ export class AuthGuard implements CanActivate {
 			const token = header.substring(7).trim();
 
 			if (token.length > 0) {
-				return this.tokens.getToken(token);
+				return this.tokens.getTokenOrFail(token);
 			}
 		}
 

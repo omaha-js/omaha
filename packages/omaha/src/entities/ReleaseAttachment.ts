@@ -1,4 +1,4 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
 import { Asset } from './Asset';
 import { ReleaseAttachmentStatus } from './enum/ReleaseAttachmentStatus';
@@ -92,5 +92,13 @@ export class ReleaseAttachment {
 	@OneToMany(() => ReleaseDownload, download => download.attachment)
 	@JoinTable()
 	public downloads: Promise<ReleaseDownload[]>;
+
+	/**
+	 * The underlying release.
+	 */
+	@Expose({ name: 'release', groups: ['ws'] })
+	public get jsonReleaseProp() {
+		return (this as any).__release__;
+	}
 
 }

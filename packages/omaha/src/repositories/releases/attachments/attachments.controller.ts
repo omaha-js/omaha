@@ -20,6 +20,7 @@ import { Collaboration } from 'src/entities/Collaboration';
 import { QueueService } from '../queue/queue.service';
 import { exists } from 'src/support/utilities/exists';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
+import { RealtimeService } from 'src/realtime/realtime.service';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -33,6 +34,7 @@ export class AttachmentsController {
 		private readonly storage: StorageService,
 		private readonly downloads: DownloadsService,
 		private readonly queue: QueueService,
+		private readonly ws: RealtimeService,
 	) {}
 
 	/**
@@ -187,6 +189,11 @@ export class AttachmentsController {
 				attachment.hash = hash.digest();
 				attachment.status = ReleaseAttachmentStatus.Pending;
 
+				await attachment.release;
+				this.ws.emit(repo, 'attachment_updated', { attachment }, [
+					'repo.releases.attachments.manage'
+				]);
+
 				await this.service.save(attachment);
 				await this.queue.addAttachmentUpload(attachment, file.path);
 
@@ -206,6 +213,11 @@ export class AttachmentsController {
 				attachment.status = ReleaseAttachmentStatus.Pending;
 
 				await this.service.save(attachment);
+
+				this.ws.emit(repo, 'attachment_created', { attachment }, [
+					'repo.releases.attachments.manage'
+				]);
+
 				await this.queue.addAttachmentUpload(attachment, file.path);
 
 				return attachment;

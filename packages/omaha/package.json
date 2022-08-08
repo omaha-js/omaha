@@ -23,8 +23,10 @@
 		"@nestjs/core": "^9.0.8",
 		"@nestjs/passport": "^9.0.0",
 		"@nestjs/platform-express": "^9.0.8",
+		"@nestjs/platform-socket.io": "^9.0.8",
 		"@nestjs/schedule": "^2.1.0",
 		"@nestjs/typeorm": "^9.0.0",
+		"@nestjs/websockets": "^9.0.8",
 		"bcrypt": "^5.0.1",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.13.2",
@@ -41,6 +43,7 @@
 		"rimraf": "^3.0.2",
 		"rxjs": "^7.5.6",
 		"semver": "^7.3.7",
+		"socket.io": "^4.5.1",
 		"twig": "^1.15.4",
 		"typeorm": "^0.3.7"
 	},

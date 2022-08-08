@@ -73,12 +73,8 @@ export class RepositoriesGuard implements CanActivate {
 				}
 			}
 
-			const collaboration = new TokenCollaboration();
-			collaboration.scopes = token.scopes as any;
-			collaboration.role = CollaborationRole.Custom;
-
 			(request as any)._guardedRepository = token.repository;
-			(request as any)._guardedCollaboration = collaboration;
+			(request as any)._guardedCollaboration = this.collaborations.getForToken(token);
 
 			return true;
 		}
@@ -97,14 +93,6 @@ export class RepositoriesGuard implements CanActivate {
 		const scopesFromController = this.reflector.get<RepositoryScopeId[]>('auth.scopes', context.getClass()) ?? [];
 
 		return [...scopesFromController, ...scopesFromHandler];
-	}
-
-}
-
-export class TokenCollaboration extends Collaboration {
-
-	public override isToken(): this is TokenCollaboration {
-		return true;
 	}
 
 }

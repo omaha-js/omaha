@@ -17,6 +17,7 @@ import { StorageService } from 'src/storage/storage.service';
 import prettyBytes from 'pretty-bytes';
 import { QueueService } from './queue/queue.service';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
+import { RealtimeService } from 'src/realtime/realtime.service';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -30,6 +31,7 @@ export class ReleasesService {
 		private readonly tags: TagsService,
 		private readonly storage: StorageService,
 		private readonly queue: QueueService,
+		private readonly ws: RealtimeService,
 	) {}
 
 	/**
@@ -231,8 +233,16 @@ export class ReleasesService {
 		// Attach the tags
 		release.tags = Promise.resolve(tags);
 
-		// Save and return
-		return this.repository.save(release);
+		// Save entity
+		await this.repository.save(release);
+
+		// Emit ws event
+		this.ws.emit(repo, 'release_created', { release }, [
+			'repo.releases.create',
+			'repo.releases.attachments.manage'
+		]);
+
+		return release;
 	}
 
 	/**
@@ -322,15 +332,33 @@ export class ReleasesService {
 		// Attach the tags
 		release.tags = Promise.resolve(tags);
 
-		// Save and return
+		// Save the entity
 		// Wrap in a transaction for rolling logic
-		return this.repository.manager.transaction(async manager => {
+		await this.repository.manager.transaction(async manager => {
 			if (published && RepositorySettingsManager.get(repo.settings, 'releases.rolling')) {
 				await this.internRollReleases(repo, release, manager);
 			}
 
 			return manager.save(release);
 		});
+
+		// Emit the updated event
+		if (release.status === ReleaseStatus.Draft) {
+			this.ws.emit(repo, 'release_updated', { release }, [
+				'repo.releases.create',
+				'repo.releases.attachments.manage'
+			]);
+		}
+		else {
+			this.ws.emit(repo, 'release_updated', { release });
+		}
+
+		// Emit the published event
+		if (published) {
+			this.ws.emit(repo, 'release_published', { release });
+		}
+
+		return release;
 	}
 
 	/**
@@ -341,9 +369,17 @@ export class ReleasesService {
 			throw new BadRequestException('Cannot delete a release after it has been published');
 		}
 
-		return this.repository.delete({
+		const repo = await release.repository;
+		await this.repository.delete({
 			id: release.id
 		});
+
+		this.ws.emit(repo, 'release_deleted', { release }, [
+			'repo.releases.create',
+			'repo.releases.attachments.manage'
+		]);
+
+		return;
 	}
 
 	/**
@@ -524,6 +560,15 @@ export class ReleasesService {
 		}
 	}
 
+	/**
+	 * Rolls a repository to automatically archive any releases outside the configured retention. Returns an array of
+	 * affected version strings.
+	 *
+	 * @param repo
+	 * @param release
+	 * @param manager
+	 * @returns
+	 */
 	public async internRollReleases(repo: Repository, release: Release, manager: EntityManager) {
 		const buffer = RepositorySettingsManager.get(repo.settings, 'releases.rolling.buffer') - 1;
 		const versions = await this.getAllVersions(repo, [ReleaseStatus.Published]);
@@ -569,8 +614,15 @@ export class ReleasesService {
 			});
 
 			query.where('version IN (:versions)', { versions: [...targets] });
+			query.andWhere('repository = :id', repo);
+
 			await query.execute();
+
+			// Return targets
+			return [...targets];
 		}
+
+		return [];
 	}
 
 }

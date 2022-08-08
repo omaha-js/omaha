@@ -124,14 +124,4 @@ export class Release {
 		return files;
 	}
 
-	/**
-	 * The active queue, if applicable.
-	 */
-	@Expose({ name: 'queue' })
-	public get jsonQueueProp() {
-		const jobs: Tag[] = (this as any).__queue__;
-		if (!jobs) return;
-		return jobs;
-	}
-
 }

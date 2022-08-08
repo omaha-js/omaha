@@ -16,6 +16,7 @@ import { exists } from 'src/support/utilities/exists';
 import { RepositorySettingsManager } from 'src/repositories/settings/RepositorySettingsManager';
 import { ReleasesService } from '../releases.service';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
+import { RealtimeService } from 'src/realtime/realtime.service';
 
 @Injectable()
 export class QueueService implements OnModuleInit, OnModuleDestroy {
@@ -39,6 +40,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 		@InjectRepository(ReleaseAttachment) private readonly attachments: TypeOrmRepository<ReleaseAttachment>,
 		@InjectRepository(Release) private readonly releases: TypeOrmRepository<Release>,
 		private readonly storage: StorageService,
+		private readonly ws: RealtimeService,
 
 		@Inject(forwardRef(() => ReleasesService))
 		private readonly releaseService: ReleasesService,
@@ -116,7 +118,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 		attachment.status = ReleaseAttachmentStatus.Ready;
 		attachment.object_name = name;
 
-		return this.attachments.save(attachment);
+		await this.attachments.save(attachment);
+		await attachment.release;
+
+		this.ws.emit(repo, 'attachment_updated', { attachment });
+
+		return attachment;
 	}
 
 	/**
@@ -181,17 +188,29 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 			);
 		}
 
+		let archivedReleaseVersions = new Array<string>();
+
 		await this.releases.manager.transaction(async manager => {
 			release.status = ReleaseStatus.Published;
 			release.published_at = new Date();
 
 			if (RepositorySettingsManager.get(repo.settings, 'releases.rolling')) {
-				await this.releaseService.internRollReleases(repo, release, manager);
+				archivedReleaseVersions = await this.releaseService.internRollReleases(repo, release, manager);
 			}
 
-			await this.releases.save(release);
-			this.logger.log(`Published "${release.version}" from queue for ${repo.id}`);
+			await manager.save(release);
 		});
+
+		this.logger.log(`Published "${release.version}" from queue for ${repo.id}`);
+		this.ws.emit(repo, 'release_published', { release });
+
+		for (const version of archivedReleaseVersions) {
+			const release = await this.releaseService.getFromVersion(repo, version);
+
+			if (release) {
+				this.ws.emit(repo, 'release_updated', { release })
+			}
+		}
 	}
 
 	/**

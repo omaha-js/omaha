@@ -2,7 +2,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
-import { TokenCollaboration } from 'src/repositories/repositories.guard';
+import { TokenCollaboration } from 'src/repositories/collaborations/collaborations.service';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';

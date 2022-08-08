@@ -205,12 +205,38 @@ export class TokensService {
 	}
 
 	/**
+	 * Verifies and parses the given token. Returns `undefined` if it's not valid.
+	 *
+	 * @param token
+	 */
+	public async getToken(token: string): Promise<BaseToken | undefined> {
+		const delimiterOffset = token.indexOf('.');
+
+		if (delimiterOffset > 0) {
+			const type = Buffer.from(token.substring(0, delimiterOffset), 'base64').toString('ascii');
+			const data = token.substring(delimiterOffset + 1);
+
+			try {
+				switch (type) {
+					case 'jsonwebtoken': return this.getTokenFromJWT(data);
+					case 'token': return this.getTokenFromDatabase(data);
+				}
+			}
+			catch (_) {
+				return;
+			}
+		}
+
+		return;
+	}
+
+	/**
 	 * Verifies and parses the given token.
 	 *
 	 * @param token
 	 * @throws UnauthorizedException
 	 */
-	public async getToken(token: string): Promise<BaseToken> {
+	public async getTokenOrFail(token: string): Promise<BaseToken> {
 		const delimiterOffset = token.indexOf('.');
 
 		if (delimiterOffset > 0) {

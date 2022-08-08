@@ -18,6 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ReleaseJob } from './entities/ReleaseJob';
 import { EmailModule } from './email/email.module';
 import { CollaborationInvite } from './entities/CollaborationInvite';
+import { RealtimeModule } from './realtime/realtime.module';
 
 @Module({
 	imports: [
@@ -48,7 +49,8 @@ import { CollaborationInvite } from './entities/CollaborationInvite';
 		RepositoriesModule,
 		StorageModule,
 		ScheduleModule.forRoot(),
-		EmailModule
+		EmailModule,
+		RealtimeModule,
 	],
 })
 export class AppModule {}

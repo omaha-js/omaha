@@ -10,6 +10,8 @@ import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { CollaborationRole } from '../../entities/enum/CollaborationRole';
 import crypto from 'crypto';
+import { BaseToken, TokenForRepository } from 'src/auth/tokens/models/BaseToken';
+import { DatabaseToken } from 'src/auth/tokens/models/DatabaseToken';
 
 @Injectable()
 export class CollaborationsService {
@@ -95,6 +97,31 @@ export class CollaborationsService {
 				id: 'asc'
 			}
 		});
+	}
+
+	/**
+	 * Returns an array of collaborations for the given token. Depending on the type of token, more than one
+	 * collaboration could be returned.
+	 *
+	 * Note that collaborations for repository-based tokens are created in-memory and are not full instances (only the
+	 * `scopes` and `role` properties are set).
+	 *
+	 * @param token
+	 * @returns
+	 */
+	public async getForToken(token: BaseToken): Promise<Collaboration[]> {
+		if (token.isForAccount()) {
+			return this.getForAccount(token.account);
+		}
+		else if (token.isForRepository()) {
+			const collaboration = new TokenCollaboration(token);
+
+			collaboration.scopes = token.scopes as any;
+			collaboration.role = CollaborationRole.Custom;
+			collaboration.repository = Promise.resolve(token.repository);
+
+			return [collaboration];
+		}
 	}
 
 	/**
@@ -351,6 +378,19 @@ export class CollaborationsService {
 			success: true,
 			message: 'Collaboration has been deleted successfully.'
 		}
+	}
+
+}
+
+
+export class TokenCollaboration extends Collaboration {
+
+	public constructor(public readonly token: TokenForRepository) {
+		super();
+	}
+
+	public override isToken(): this is TokenCollaboration {
+		return true;
 	}
 
 }
