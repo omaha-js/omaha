@@ -48,9 +48,21 @@ export const RepositoryScopes = [
 	},
 	{
 		id: 'repo.tokens.manage',
-		name: 'List tokens',
+		name: 'Manage tokens',
 		description: `Allows clients to create, edit, and delete tokens generated for the repository`,
 		groups: ['owner', 'manager']
+	},
+	{
+		id: 'repo.collaborations.list',
+		name: 'List collaborators',
+		description: `Allows clients to view a list of all collaborators in the repository`,
+		groups: ['owner', 'manager']
+	},
+	{
+		id: 'repo.collaborations.manage',
+		name: 'Manage collaborators',
+		description: `Allows clients to add new or manage existing collaborators in the repository`,
+		groups: ['owner']
 	},
 	{
 		id: 'repo.releases.create',

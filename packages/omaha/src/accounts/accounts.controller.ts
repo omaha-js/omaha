@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
+import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
 import { User } from 'src/support/User';
 import { AccountsService } from './accounts.service';
 import { UpdateAccountDto } from './dto/UpdateAccountDto';
@@ -8,7 +9,10 @@ import { UpdateAccountDto } from './dto/UpdateAccountDto';
 @Controller('account')
 export class AccountsController {
 
-	public constructor(private readonly service: AccountsService) {}
+	public constructor(
+		private readonly service: AccountsService,
+		private readonly collaborations: CollaborationsService,
+	) {}
 
 	@Get()
 	@UseScopes('account.settings.read')
@@ -32,6 +36,37 @@ export class AccountsController {
 		}
 
 		return token.account;
+	}
+
+	@Post('accept_invitation/:invite_id')
+	@UseScopes('account.repos.manage')
+	public async acceptInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
+		const account = token.account;
+		const invite = await this.collaborations.getInviteById(id);
+
+		if (!invite) {
+			throw new NotFoundException('The invitation does not exist or was already accepted');
+		}
+
+		if (invite.expires_at.getTime() <= Date.now()) {
+			throw new BadRequestException('The invitation has expired');
+		}
+
+		const repository = await invite.repository;
+		const existing = await this.collaborations.getForAccountAndRepository(account, repository);
+
+		if (existing) {
+			throw new BadRequestException('You are already a collaborator of that repository');
+		}
+
+		const collab = await this.collaborations.create(
+			repository,
+			account,
+			invite.role,
+			invite.scopes
+		);
+
+		return collab;
 	}
 
 }

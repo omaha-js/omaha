@@ -17,9 +17,8 @@ export class Collaboration {
 		return false;
 	}
 
-	@PrimaryGeneratedColumn({ unsigned: true })
-	@Expose({ groups: ['id'] })
-	public id: number;
+	@PrimaryGeneratedColumn('uuid')
+	public id: string;
 
 	@ManyToOne(() => Repository, repo => repo.collaborators, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'repository_id' })
@@ -70,6 +69,11 @@ export class Collaboration {
 	 */
 	public hasPermission(scope: RepositoryScopeId) {
 		return (this.getFullScopes().includes(scope));
+	}
+
+	@Expose({ name: 'account' })
+	public get jsonAccountProp() {
+		return (this as any).__account__;
 	}
 
 }

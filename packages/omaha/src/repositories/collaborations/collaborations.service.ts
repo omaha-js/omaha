@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Environment } from 'src/app.environment';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
+import { EmailService } from 'src/email/email.service';
 import { Account } from 'src/entities/Account';
 import { Collaboration } from 'src/entities/Collaboration';
+import { CollaborationInvite } from 'src/entities/CollaborationInvite';
 import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { CollaborationRole } from '../../entities/enum/CollaborationRole';
+import crypto from 'crypto';
 
 @Injectable()
 export class CollaborationsService {
 
 	public constructor(
-		@InjectRepository(Collaboration) private readonly repository: TypeOrmRepository<Collaboration>
+		@InjectRepository(Collaboration) private readonly collaborations: TypeOrmRepository<Collaboration>,
+		@InjectRepository(CollaborationInvite) private readonly invites: TypeOrmRepository<CollaborationInvite>,
+		private readonly email: EmailService,
 	) {}
 
 	/**
@@ -21,7 +27,7 @@ export class CollaborationsService {
 	 * @returns
 	 */
 	public getForAccount(account: Account) {
-		return this.repository.find({
+		return this.collaborations.find({
 			where: {
 				account: {
 					id: account.id
@@ -42,25 +48,110 @@ export class CollaborationsService {
 	 * Finds the collaboration for the given account and repository.
 	 *
 	 * @param account
-	 * @param repositoryId
+	 * @param repository
 	 * @returns
 	 */
-	public getForAccountAndRepository(account: Account, repositoryId: string) {
-		if (typeof repositoryId !== 'string') {
-			throw new Error('Got a non-string repository ID');
+	public getForAccountAndRepository(account: Account, repository: string | Repository) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
 		}
 
-		return this.repository.findOne({
+		return this.collaborations.findOne({
 			where: {
 				account: {
 					id: account.id
 				},
 				repository: {
-					id: repositoryId
+					id: repository
 				}
 			},
 			relations: {
 				repository: true
+			}
+		});
+	}
+
+	/**
+	 * Gets all collaborations for a repository.
+	 *
+	 * @param repository
+	 * @returns
+	 */
+	public getForRepository(repository: string | Repository) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
+		}
+
+		return this.collaborations.find({
+			where: {
+				repository: {
+					id: repository
+				}
+			},
+			relations: {
+				account: true
+			},
+			order: {
+				id: 'asc'
+			}
+		});
+	}
+
+	/**
+	 * Gets all collaboration invites for a repository.
+	 *
+	 * @param repository
+	 * @returns
+	 */
+	public getInvitesForRepository(repository: string | Repository) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
+		}
+
+		return this.invites.find({
+			where: {
+				repository: {
+					id: repository
+				}
+			},
+			order: {
+				id: 'asc'
+			}
+		});
+	}
+
+	/**
+	 * Gets a specific collaboration invite for a repository based on its email.
+	 *
+	 * @param repository
+	 * @param email
+	 * @returns
+	 */
+	public getInviteForRepositoryAndEmail(repository: string | Repository, email: string) {
+		if (typeof repository !== 'string') {
+			repository = repository.id;
+		}
+
+		return this.invites.findOne({
+			where: {
+				email,
+				repository: {
+					id: repository
+				}
+			}
+		});
+	}
+
+	/**
+	 * Gets a specific collaboration invite.
+	 *
+	 * @param id
+	 * @returns
+	 */
+	public getInviteById(id: string) {
+		return this.invites.findOne({
+			where: {
+				id
 			}
 		});
 	}
@@ -74,7 +165,7 @@ export class CollaborationsService {
 	 * @param scopes
 	 */
 	public create(repository: Repository, account: Account, role: CollaborationRole, scopes?: RepositoryScopeId[]) {
-		const collab = this.repository.create({
+		const collab = this.collaborations.create({
 			role,
 			scopes: scopes ?? []
 		});
@@ -82,7 +173,99 @@ export class CollaborationsService {
 		collab.repository = Promise.resolve(repository);
 		collab.account = Promise.resolve(account);
 
-		return this.repository.save(collab);
+		return this.collaborations.save(collab);
+	}
+
+	/**
+	 * Creates a new invitation for the given email to become a collaborator.
+	 *
+	 * @param repository
+	 * @param email
+	 * @param role
+	 * @param scopes
+	 */
+	public async createInvite(repository: Repository, email: string, role: CollaborationRole, scopes?: RepositoryScopeId[]) {
+		if (!this.email.enabled) {
+			throw new BadRequestException('Cannot send invite because this server is not configured to send email');
+		}
+
+		const expires = new Date();
+		expires.setDate(expires.getDate() + 14);
+
+		const invite = this.invites.create({
+			email,
+			role,
+			scopes: scopes ?? [],
+			expires_at: expires
+		});
+
+		invite.repository = Promise.resolve(repository);
+		await this.invites.save(invite);
+
+		const url = new URL(`invitation/${invite.id}`, Environment.APP_URL);
+		const payload = Environment.APP_SECRET + invite.id + invite.expires_at.getTime();
+		const token = crypto.createHash('sha1').update(payload).digest('hex');
+
+		url.searchParams.append('token', token);
+
+		try {
+			await this.email.send({
+				to: email,
+				subject: `New invitation to collaborate on ${repository.name}`,
+				template: 'collaborator_invitation',
+				context: {
+					repository,
+					link: url.href
+				}
+			});
+
+			return invite;
+		}
+		catch (error) {
+			await this.invites.delete(invite.id);
+			throw new BadRequestException('Failed to send invitation to the specified email address');
+		}
+	}
+
+	/**
+	 * Saves changes to the given invite instance.
+	 *
+	 * @param invite
+	 * @param role
+	 * @param scopes
+	 * @returns
+	 */
+	public async updateInvite(invite: CollaborationInvite, role?: CollaborationRole, scopes?: RepositoryScopeId[]) {
+		if (invite.role === CollaborationRole.Custom && role !== CollaborationRole.Custom) {
+			invite.scopes = [];
+		}
+
+		const effectiveRole = role ?? invite.role;
+		const effectiveScopes = scopes ?? invite.scopes;
+
+		if (effectiveScopes.length > 0 && effectiveRole !== CollaborationRole.Custom) {
+			throw new BadRequestException(`You cannot provide scopes when 'role' does not equal 'custom'`);
+		}
+
+		invite.role = effectiveRole;
+		invite.scopes = effectiveScopes;
+
+		return this.invites.save(invite);
+	}
+
+	/**
+	 * Deletes the given invite instance.
+	 *
+	 * @param invite
+	 * @returns
+	 */
+	public async deleteInvite(invite: CollaborationInvite) {
+		await this.invites.delete(invite.id);
+
+		return {
+			success: true,
+			message: 'Invite has been deleted successfully.'
+		}
 	}
 
 }

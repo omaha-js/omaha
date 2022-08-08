@@ -3,14 +3,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from 'src/auth/dto/RegisterDto';
 import { Account } from 'src/entities/Account';
 import { Repository } from 'typeorm';
-import bcrypt from 'bcrypt';
 import { LoginDto } from 'src/auth/dto/LoginDto';
+import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
+import { CollaborationInvite } from 'src/entities/CollaborationInvite';
+import { Environment } from 'src/app.environment';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 @Injectable()
 export class AccountsService {
 
 	public constructor(
-		@InjectRepository(Account) private readonly repository: Repository<Account>
+		@InjectRepository(Account) private readonly repository: Repository<Account>,
+		private readonly collaborations: CollaborationsService
 	) {}
 
 	/**
@@ -33,8 +38,67 @@ export class AccountsService {
 			password: hash
 		});
 
-		// Save it to the database
-		return this.repository.save(account);
+		// Save to the database
+		await this.repository.save(account);
+
+		// Automatically accept invitations
+		if (typeof dto.invitation === 'string') {
+			const invite = await this.collaborations.getInviteById(dto.invitation);
+
+			if (invite) {
+				try {
+					await this.acceptInvite(account, invite);
+
+					// Automatically verify email address
+					if (typeof dto.invitationToken === 'string') {
+						const payload = Environment.APP_SECRET + invite.id + invite.expires_at.getTime();
+						const token = crypto.createHash('sha1').update(payload).digest('hex');
+
+						if (token === dto.invitationToken) {
+							account.verified = true;
+							await this.repository.save(account);
+						}
+					}
+				}
+				catch (err) {
+					// Silently fail to avoid disrupting registration
+				}
+			}
+		}
+
+		// Return the account model
+		return account;
+	}
+
+	/**
+	 * Accepts the given collaboration invite for the account.
+	 *
+	 * @param account
+	 * @param invite
+	 * @returns
+	 */
+	public async acceptInvite(account: Account, invite: CollaborationInvite) {
+		if (invite.expires_at.getTime() <= Date.now()) {
+			throw new BadRequestException('The invitation has expired');
+		}
+
+		const repository = await invite.repository;
+		const existing = await this.collaborations.getForAccountAndRepository(account, repository);
+
+		if (existing) {
+			throw new BadRequestException('You are already a collaborator of that repository');
+		}
+
+		const collab = await this.collaborations.create(
+			repository,
+			account,
+			invite.role,
+			invite.scopes
+		);
+
+		await this.collaborations.deleteInvite(invite);
+
+		return collab;
 	}
 
 	/**

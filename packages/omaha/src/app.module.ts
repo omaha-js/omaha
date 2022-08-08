@@ -17,6 +17,7 @@ import { Token } from './entities/Token';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReleaseJob } from './entities/ReleaseJob';
 import { EmailModule } from './email/email.module';
+import { CollaborationInvite } from './entities/CollaborationInvite';
 
 @Module({
 	imports: [
@@ -34,6 +35,7 @@ import { EmailModule } from './email/email.module';
 				Account,
 				Repository,
 				Collaboration,
+				CollaborationInvite,
 				Tag,
 				Asset,
 				Release,
