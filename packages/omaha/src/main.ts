@@ -7,6 +7,7 @@ import './app.environment';
 import { TrimPipe } from './support/TrimPipe';
 import { ClassSerializerInterceptor, LoggerService, ValidationPipe, VersioningType } from '@nestjs/common';
 import { CustomLogger } from './app.logger';
+import { EntityNotFoundExceptionFilter } from './support/filters/entities';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -38,6 +39,8 @@ async function bootstrap() {
 
 		// TODO: Implement the logic for production.
 	}
+
+	app.useGlobalFilters(new EntityNotFoundExceptionFilter());
 
 	app.useGlobalPipes(new TrimPipe());
 	app.useGlobalPipes(new ValidationPipe({
