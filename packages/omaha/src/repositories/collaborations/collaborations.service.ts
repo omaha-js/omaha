@@ -40,7 +40,7 @@ export class CollaborationsService {
 			},
 			order: {
 				repository: {
-					name: 'desc'
+					name: 'asc'
 				}
 			}
 		});

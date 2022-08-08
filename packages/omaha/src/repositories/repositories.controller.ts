@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
@@ -9,6 +9,7 @@ import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { User } from 'src/support/User';
 import { CollaborationRole } from '../entities/enum/CollaborationRole';
+import { CollaborationsService } from './collaborations/collaborations.service';
 import { CreateRepoDto } from './dto/CreateRepoDto';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { ReleasesService } from './releases/releases.service';
@@ -20,7 +21,8 @@ export class RepositoriesController {
 
 	public constructor(
 		private readonly service: RepositoriesService,
-		private readonly releases: ReleasesService
+		private readonly releases: ReleasesService,
+		private readonly collaborations: CollaborationsService,
 	) {}
 
 	/**
@@ -71,15 +73,50 @@ export class RepositoriesController {
 
 	@Delete(':repo_id')
 	@UseGuards(RepositoriesGuard)
-	public async deleteRepository(@Repo() repo: Repository, @Collab() collab?: Collaboration) {
+	public async deleteRepository(@Repo() repo: Repository, @User() token: BaseToken, @Collab() collab?: Collaboration) {
 		if (collab?.role !== CollaborationRole.Owner) {
 			throw new ForbiddenException('Insufficient privileges');
 		}
 
-		return {
-			success: true,
-			message: 'Repository has been deleted successfully.'
-		};
+		if (!token || !token.isForAccount()) {
+			throw new ForbiddenException('You cannot delete repositories with your current mode of authentication');
+		}
+
+		if (!token.hasPermission('account.repos.manage')) {
+			throw new ForbiddenException('You do not have access to the requested repository');
+		}
+
+		return this.service.scheduleDeletion(repo, token.account);
+	}
+
+	@Patch('restore/:repo_id')
+	public async restoreRepository(@Param('repo_id') id: string, @User() token: BaseToken) {
+		const repo = await this.service.getDeletedRepository(id);
+
+		if ((!token || !token.isForAccount()) || token.isDatabaseToken()) {
+			throw new BadRequestException('Deleted repositories can only be restored from a web session');
+		}
+
+		const collabs = await repo.collaborators;
+
+		for (const collab of collabs) {
+			const account = await collab.account;
+
+			if (account.id === token.account.id) {
+				if (collab.role === CollaborationRole.Owner) {
+					await this.service.restoreRepository(id);
+
+					return {
+						success: true,
+						message: 'Repository has been restored successfully'
+					}
+				}
+
+				break;
+			}
+		}
+
+		throw new ForbiddenException('You do not have permission to perform this operation');
 	}
 
 	/**

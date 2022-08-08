@@ -7,6 +7,7 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 import { exists } from 'src/support/utilities/exists';
+import { ObjectNotFoundError } from '../errors/ObjectNotFoundError';
 
 export class LocalStorageDriver implements StorageDriver {
 
@@ -46,7 +47,7 @@ export class LocalStorageDriver implements StorageDriver {
 		const targetPath = path.resolve(this.storagePath, name);
 
 		if (!await exists(targetPath)) {
-			throw new Error('Target object does not exist: ' + name);
+			throw new ObjectNotFoundError('Target object does not exist: ' + name);
 		}
 
 		return fs.promises.unlink(targetPath);

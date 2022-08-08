@@ -1,5 +1,5 @@
 import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
-import { Column, CreateDateColumn, Entity, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
 import { Release } from './Release';
 import { Asset } from './Asset';
@@ -36,6 +36,10 @@ export class Repository {
 
 	@UpdateDateColumn()
 	public updated_at: Date;
+
+	@DeleteDateColumn()
+	@Index()
+	public deleted_at?: Date;
 
 	@OneToMany(() => Collaboration, collab => collab.repository)
 	@JoinTable()

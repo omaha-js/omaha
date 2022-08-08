@@ -1,0 +1,10 @@
+Hi {{ name }},
+
+We've been asked to delete the "{{ repository.name }}" repository for which you are marked as an owner. This action was requested by {{ account.name == name ? "your account" : name }}.
+
+The deletion is scheduled for {{ date }}. If you change your mind before then, click the link below to restore it:
+
+{{ link }}
+
+Thanks,
+{{ env.APP_NAME }}

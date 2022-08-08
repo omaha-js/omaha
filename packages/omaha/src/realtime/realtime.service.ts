@@ -47,6 +47,11 @@ export class RealtimeService {
 
 		for (const collab of collaborations) {
 			const repo = await collab.repository;
+
+			if (!repo) {
+				continue;
+			}
+
 			const connection: RealtimeConnection = {
 				socket,
 				collaboration: collab,
