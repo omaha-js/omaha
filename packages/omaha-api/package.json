@@ -1,10 +1,7 @@
 {
-	"name": "omaha",
+	"name": "@omaha/omaha-api",
 	"version": "0.0.1",
-	"description": "",
-	"author": "",
 	"private": true,
-	"license": "UNLICENSED",
 	"scripts": {
 		"build": "rimraf dist && nest build",
 		"format": "prettier --write \"src/**/*.ts\"",
@@ -27,6 +24,7 @@
 		"@nestjs/schedule": "^2.1.0",
 		"@nestjs/typeorm": "^9.0.0",
 		"@nestjs/websockets": "^9.0.8",
+		"@omaha/omaha-web": "workspace:*",
 		"bcrypt": "^5.0.1",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.13.2",
