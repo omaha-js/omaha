@@ -21,6 +21,7 @@ import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStat
 import { RealtimeService } from 'src/realtime/realtime.service';
 import fs from 'fs';
 import crypto from 'crypto';
+import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -178,7 +179,9 @@ export class AttachmentsController {
 						await this.storage.delete(this.storage.getObjectName(repo, attachment.object_name));
 					}
 					catch (err) {
-						this.logger.error('Failed to delete old object', err);
+						if (!(err instanceof ObjectNotFoundError)) {
+							this.logger.error('Failed to delete old object', err);
+						}
 					}
 				}
 
