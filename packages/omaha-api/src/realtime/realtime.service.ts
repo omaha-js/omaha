@@ -4,7 +4,6 @@ import { instanceToPlain } from 'class-transformer';
 import { Socket } from 'socket.io';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
-import { TokensService } from 'src/auth/tokens/tokens.service';
 import { Collaboration } from 'src/entities/Collaboration';
 import { Release } from 'src/entities/Release';
 import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';

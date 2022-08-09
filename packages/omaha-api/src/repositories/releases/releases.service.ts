@@ -14,10 +14,10 @@ import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { RepositorySettingsManager } from '../settings/RepositorySettingsManager';
 import { Cron } from '@nestjs/schedule';
 import { StorageService } from 'src/storage/storage.service';
-import prettyBytes from 'pretty-bytes';
 import { QueueService } from './queue/queue.service';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
+import prettyBytes from 'pretty-bytes';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 

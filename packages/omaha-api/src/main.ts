@@ -1,11 +1,11 @@
+import './app.environment';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { NextFunction, Request, Response } from 'express';
-import './app.environment';
 import { TrimPipe } from './support/TrimPipe';
-import { ClassSerializerInterceptor, LoggerService, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe, VersioningType } from '@nestjs/common';
 import { CustomLogger } from './app.logger';
 import { EntityNotFoundExceptionFilter } from './support/filters/entities';
 

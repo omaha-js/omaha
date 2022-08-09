@@ -14,13 +14,13 @@ import { AssetsService } from './assets/assets.service';
 import { ReleasesService } from './releases/releases.service';
 import { RepositorySettingsManager } from './settings/RepositorySettingsManager';
 import { EmailService } from 'src/email/email.service';
-import moment from 'moment';
 import { Environment } from 'src/app.environment';
 import { Cron } from '@nestjs/schedule';
 import { AttachmentsService } from './releases/attachments/attachments.service';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { StorageService } from 'src/storage/storage.service';
 import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
+import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
 
 @Injectable()

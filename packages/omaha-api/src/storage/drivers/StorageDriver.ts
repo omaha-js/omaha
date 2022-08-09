@@ -1,5 +1,4 @@
 import { ReadStream } from 'fs';
-import { Repository } from 'src/entities/Repository';
 
 /**
  * This interface defines a storage driver.

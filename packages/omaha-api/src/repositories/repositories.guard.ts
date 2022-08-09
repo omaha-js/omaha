@@ -3,9 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
-import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationsService } from './collaborations/collaborations.service';
-import { CollaborationRole } from '../entities/enum/CollaborationRole';
 import { RepositoriesService } from './repositories.service';
 import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
 

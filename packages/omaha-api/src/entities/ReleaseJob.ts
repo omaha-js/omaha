@@ -1,7 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Release } from './Release';
-import { Repository } from './Repository';
 
 @Entity({ name: 'release_jobs' })
 export class ReleaseJob {

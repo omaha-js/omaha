@@ -6,7 +6,7 @@ import { Asset } from './Asset';
 import { Tag } from './Tag';
 import { VersionSchemeDriver } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { VersionSchemeDrivers } from 'src/drivers/versions';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { Token } from './Token';
 import { ReleaseDownload } from './ReleaseDownload';
 import { RepositoryVersionScheme } from './enum/RepositoryVersionScheme';

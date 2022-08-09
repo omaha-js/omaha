@@ -1,4 +1,4 @@
-import { ArrayNotEmpty, IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 
 export class UpdateReleaseDto {

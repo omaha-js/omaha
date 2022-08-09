@@ -1,4 +1,3 @@
-
 /**
  * An array of scopes that grant access to accounts.
  */

@@ -1,12 +1,10 @@
 import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
-import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { Repository } from 'src/entities/Repository';
 import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
-import { User } from 'src/support/User';
 import { RepositoriesGuard } from '../repositories.guard';
 import { CollaborationsService } from './collaborations.service';
 import { CreateCollaborationDto } from './dto/CreateCollaborationDto';

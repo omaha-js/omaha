@@ -1,4 +1,4 @@
-import { IsBoolean, IsDefined, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 
 export class UpdateRepoTokenDto {

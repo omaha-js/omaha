@@ -4,8 +4,6 @@ import { Environment } from 'src/app.environment';
 import { AllScopeIds, AuthScopeId, RepositoryScopeId } from '../auth.scopes';
 import { AccountToken } from './models/AccountToken';
 import { AccountsService } from 'src/accounts/accounts.service';
-import jwt from 'jsonwebtoken';
-import crypto, { randomBytes } from 'crypto';
 import { BaseToken } from './models/BaseToken';
 import { TokenType } from '../../entities/enum/TokenType';
 import { Repository } from 'src/entities/Repository';
@@ -13,6 +11,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { Token } from 'src/entities/Token';
 import { DatabaseToken } from './models/DatabaseToken';
+import jwt from 'jsonwebtoken';
+import crypto, { randomBytes } from 'crypto';
 
 @Injectable()
 export class TokensService {

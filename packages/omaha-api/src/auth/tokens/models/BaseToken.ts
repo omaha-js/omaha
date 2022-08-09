@@ -2,7 +2,6 @@ import { AuthScopeId } from 'src/auth/auth.scopes';
 import { Account } from 'src/entities/Account';
 import { Repository } from 'src/entities/Repository';
 import { Token } from 'src/entities/Token';
-import { AccountToken } from './AccountToken';
 
 export abstract class BaseToken {
 

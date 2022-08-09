@@ -9,9 +9,8 @@ import { CollaborationInvite } from 'src/entities/CollaborationInvite';
 import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { CollaborationRole } from '../../entities/enum/CollaborationRole';
-import crypto from 'crypto';
 import { BaseToken, TokenForRepository } from 'src/auth/tokens/models/BaseToken';
-import { DatabaseToken } from 'src/auth/tokens/models/DatabaseToken';
+import crypto from 'crypto';
 
 @Injectable()
 export class CollaborationsService {

@@ -12,8 +12,6 @@ import { User } from 'src/support/User';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { DownloadsService } from '../downloads/downloads.service';
 import { Request } from 'express';
-import fs from 'fs';
-import crypto from 'crypto';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collab } from 'src/support/Collab';
 import { Collaboration } from 'src/entities/Collaboration';
@@ -21,6 +19,8 @@ import { QueueService } from '../queue/queue.service';
 import { exists } from 'src/support/utilities/exists';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
+import fs from 'fs';
+import crypto from 'crypto';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)

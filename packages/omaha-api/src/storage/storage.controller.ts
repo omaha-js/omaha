@@ -3,9 +3,9 @@ import { Guest } from 'src/auth/decorators/guest.decorator';
 import { DownloadQueryDto } from './dto/DownloadQueryDto';
 import { StorageService } from './storage.service';
 import { LocalStorageDriver } from './drivers/LocalStorageDriver';
+import { stat } from 'src/support/utilities/stat';
 import fs from 'fs';
 import path from 'path';
-import { stat } from 'src/support/utilities/stat';
 
 @Controller('storage')
 export class StorageController {

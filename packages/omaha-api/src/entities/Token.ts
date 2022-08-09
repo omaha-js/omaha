@@ -1,7 +1,7 @@
 import { Exclude, Transform } from 'class-transformer';
 import { AuthScopeId } from 'src/auth/auth.scopes';
 import { TokenType } from 'src/entities/enum/TokenType';
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';
 

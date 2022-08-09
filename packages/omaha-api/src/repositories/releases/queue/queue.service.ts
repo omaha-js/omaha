@@ -11,12 +11,12 @@ import { NestedSet } from '@baileyherbert/nested-collections';
 import { QueueCleaner, QueueWorker } from './queue.decorator';
 import { ReflectionClass, ReflectionMethod } from '@baileyherbert/reflection';
 import { StorageService } from 'src/storage/storage.service';
-import fs from 'fs';
 import { exists } from 'src/support/utilities/exists';
 import { RepositorySettingsManager } from 'src/repositories/settings/RepositorySettingsManager';
 import { ReleasesService } from '../releases.service';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
+import fs from 'fs';
 
 @Injectable()
 export class QueueService implements OnModuleInit, OnModuleDestroy {
