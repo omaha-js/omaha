@@ -32,7 +32,7 @@ const config = <UserConfig> defineConfig({
 		svelte({
 			emitCss: production,
 			preprocess: sveltePreprocess(),
-			hot: !production ? { injectCss: true } : null,
+			hot: !production ? { injectCss: true } : false,
 			compilerOptions: {
 				dev: !production,
 			},
@@ -56,7 +56,7 @@ const config = <UserConfig> defineConfig({
 
 // Babel
 if (useBabel) {
-	config.plugins.unshift(
+	config.plugins?.unshift(
 		legacy({
 			targets: pkg.browserslist
 		})
