@@ -1,3 +1,4 @@
+import 'source-map-support/register';
 import './app.environment';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';

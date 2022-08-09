@@ -1,0 +1,5 @@
+.env
+node_modules/
+dist/
+packages/omaha-api/storage/
+packages/omaha-api/temp/
