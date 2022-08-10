@@ -9,7 +9,7 @@ export class SearchReleasesDto {
 	@IsOptional()
 	@IsNumberString()
 	@IsNotEmpty()
-	page?: number;
+	page: number = 1;
 
 	/**
 	 * The number of results to show per page. This can be set to `0` to show all results when `assets=1`.
@@ -18,7 +18,7 @@ export class SearchReleasesDto {
 	@IsOptional()
 	@IsNumberString()
 	@IsNotEmpty()
-	count?: number;
+	count: number = 25;
 
 	/**
 	 * Whether or not to include attachments in the results.
@@ -26,7 +26,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsIn([ 'true', '1', 'false', '0' ])
-	include_attachments?: 'true' | '1' | 'false' | '0';
+	include_attachments: 'true' | '1' | 'false' | '0' = '0';
 
 	/**
 	 * Whether or not to include 7-day download statistics in the results.
@@ -34,7 +34,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsIn([ 'true', '1', 'false', '0' ])
-	include_downloads?: 'true' | '1' | 'false' | '0';
+	include_downloads: 'true' | '1' | 'false' | '0' = '0';
 
 	/**
 	 * Search for a version. This can be an exact version number, a version constraint (based on the driver used for
@@ -51,7 +51,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsString()
-	tags?: string;
+	tags: string = '';
 
 	/**
 	 * A comma-delimited list of assets to look for. When multiple assets are defined, releases that match any of them
@@ -60,7 +60,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsString()
-	assets?: string;
+	assets: string = '';
 
 	/**
 	 * The sorting algorithm to use for results.
@@ -68,7 +68,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsIn([ 'version', 'date' ])
-	sort?: 'version' | 'date';
+	sort: 'version' | 'date' = 'version';
 
 	/**
 	 * The direction to use for the sorting algorithm.
@@ -76,7 +76,7 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsIn([ 'desc', 'asc' ])
-	sort_order?: 'desc' | 'asc';
+	sort_order: 'desc' | 'asc' = 'desc';
 
 	/**
 	 * A comma-delimited list of release statuses to include in the search.
@@ -84,6 +84,6 @@ export class SearchReleasesDto {
 	 */
 	@IsOptional()
 	@IsString()
-	status?: string;
+	status: string = 'published';
 
 }

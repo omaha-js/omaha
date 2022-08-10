@@ -5,15 +5,15 @@ export class CreateAssetDto {
 	@IsDefined()
 	@IsString()
 	@MaxLength(32)
-	name: string;
+	name!: string;
 
 	@IsOptional()
 	@IsString()
 	@MaxLength(2048)
-	description?: string;
+	description: string = '';
 
 	@IsDefined()
 	@IsBoolean()
-	required: boolean;
+	required!: boolean;
 
 }

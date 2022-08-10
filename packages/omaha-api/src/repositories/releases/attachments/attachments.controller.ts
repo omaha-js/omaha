@@ -114,7 +114,7 @@ export class AttachmentsController {
 		}
 
 		const url = await this.storage.getDownloadLink(
-			this.storage.getObjectName(repo, attachment.object_name),
+			this.storage.getObjectName(repo, attachment.object_name!),
 			expiration,
 			disposition
 		);
@@ -142,15 +142,20 @@ export class AttachmentsController {
 	@Post()
 	@UseScopes('repo.releases.attachments.manage')
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
-	public async uploadAttachment(@Repo() repo: Repository, @Param('version') version: string, @Param('asset') assetName: string, @UploadedFile() file: Express.Multer.File) {
+	public async uploadAttachment(
+		@Repo() repo: Repository,
+		@Param('version') version: string,
+		@Param('asset') assetName: string,
+		@UploadedFile() file: Express.Multer.File
+	) {
 		try {
 			const release = await this.releases.getFromVersionOrFail(repo, version);
-			const repoAsset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
-			const attachment = (await release.attachments).find(attachment => attachment.asset.id === repoAsset.id);
+			const asset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
+			const attachment = (await release.attachments).find(attachment => attachment.asset.id === asset?.id);
 
 			// Preflight checks
 			if (!file) throw new BadRequestException(`Missing file upload`);
-			if (!repoAsset) throw new NotFoundException(`The specified asset was not found in the repository`);
+			if (!asset) throw new NotFoundException(`The specified asset was not found in the repository`);
 			if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
 
 			// Make sure the file exists
@@ -222,7 +227,7 @@ export class AttachmentsController {
 				attachment.size = file.size;
 				attachment.mime = file.mimetype;
 				attachment.release = Promise.resolve(release);
-				attachment.asset = repoAsset;
+				attachment.asset = asset;
 				attachment.hash_sha1 = sha1.digest();
 				attachment.hash_md5 = md5.digest();
 				attachment.status = ReleaseAttachmentStatus.Pending;

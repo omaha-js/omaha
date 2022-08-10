@@ -121,6 +121,8 @@ export class CollaborationsService {
 
 			return [collaboration];
 		}
+
+		return [];
 	}
 
 	/**

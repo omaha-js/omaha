@@ -17,60 +17,60 @@ import { RepositorySettingsManager } from 'src/repositories/settings/RepositoryS
 export class Repository {
 
 	@PrimaryGeneratedColumn('uuid')
-	public id: string;
+	public id!: string;
 
 	@Column({ length: 64 })
-	public name: string;
+	public name!: string;
 
-	@Column({ type: 'text' })
-	public description: string;
+	@Column({ length: 2048, default: '' })
+	public description!: string;
 
 	@Column({ type: 'enum', enum: RepositoryVersionScheme })
-	public scheme: RepositoryVersionScheme;
+	public scheme!: RepositoryVersionScheme;
 
 	@Column({ type: 'enum', enum: RepositoryAccessType })
-	public access: RepositoryAccessType;
+	public access!: RepositoryAccessType;
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at: Date;
+	public updated_at!: Date;
 
 	@DeleteDateColumn()
 	@Index()
 	@Exclude()
-	public deleted_at?: Date;
+	public deleted_at!: Date | null;
 
 	@OneToMany(() => Collaboration, collab => collab.repository)
 	@JoinTable()
-	public collaborators: Promise<Collaboration[]>;
+	public collaborators!: Promise<Collaboration[]>;
 
 	@OneToMany(() => Tag, tag => tag.repository)
 	@JoinTable()
-	public tags: Promise<Tag[]>;
+	public tags!: Promise<Tag[]>;
 
 	@OneToMany(() => Asset, asset => asset.repository)
 	@JoinTable()
-	public assets: Promise<Asset[]>;
+	public assets!: Promise<Asset[]>;
 
 	@OneToMany(() => Release, release => release.repository)
 	@JoinTable()
-	public releases: Promise<Release[]>;
+	public releases!: Promise<Release[]>;
 
 	@OneToMany(() => Token, token => token.repository)
-	public tokens: Promise<Token[]>;
+	public tokens!: Promise<Token[]>;
 
 	@Column({ type: 'json' })
 	@Transform(o => RepositorySettingsManager.transform(o.value))
-	public settings: Partial<RepositorySettingsObject>;
+	public settings!: Partial<RepositorySettingsObject>;
 
 	/**
 	 * The downloads for this repository.
 	 */
 	@OneToMany(() => ReleaseDownload, download => download.repository)
 	@JoinTable()
-	public downloads: Promise<ReleaseDownload[]>;
+	public downloads!: Promise<ReleaseDownload[]>;
 
 	/**
 	 * The version driver for this repository.

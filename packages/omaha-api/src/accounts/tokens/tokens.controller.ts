@@ -57,7 +57,7 @@ export class TokensController {
 			throw new NotFoundException('No token matching the given ID was found');
 		}
 
-		params.scopes = params.scopes.filter(scope => token.hasPermission(scope));
+		params.scopes = params.scopes?.filter(scope => token.hasPermission(scope));
 		return await this.service.updateDatabaseToken(match, params);
 	}
 

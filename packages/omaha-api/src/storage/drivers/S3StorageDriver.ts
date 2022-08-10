@@ -7,8 +7,8 @@ import { Env } from '@baileyherbert/env';
 export class S3StorageDriver implements StorageDriver {
 
 	private logger = new Logger('S3StorageDriver');
-	private client: Client;
-	private bucket: string;
+	private client!: Client;
+	private bucket!: string;
 
 	public async init(): Promise<void> {
 		const env = Env.rules({
@@ -38,7 +38,7 @@ export class S3StorageDriver implements StorageDriver {
 			}
 		}
 		catch (error) {
-			this.logger.error(`Error when connecting to S3 endpoint: ${error.message}`);
+			this.logger.error(`Error when connecting to S3 endpoint: ${error}`);
 			throw new Error('S3 storage configuration is invalid');
 		}
 	}

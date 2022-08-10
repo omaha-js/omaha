@@ -23,21 +23,21 @@ export class ReleasesController {
 	public async search(@Repo() repo: Repository, @Query() dto: SearchReleasesDto, @Collab() collab?: Collaboration) {
 		const list = (input: string) => (input
 			.split(/(?: *, *)+/)
-			.map(tag => tag.trim())
+			.map(tag => tag.trim().toLowerCase())
 			.filter(tag => tag.length > 0)
 		);
 
 		return this.service.search(repo, collab, {
-			page: dto.page ? Number(dto.page) : 1,
-			count: dto.count ? Number(dto.count) : 25,
-			includeAttachments: ['1', 'true'].includes(dto.include_attachments ?? '0'),
-			includeDownloads: ['1', 'true'].includes(dto.include_downloads ?? '0'),
+			page: Number(dto.page),
+			count: Number(dto.count),
+			includeAttachments: ['1', 'true'].includes(dto.include_attachments),
+			includeDownloads: ['1', 'true'].includes(dto.include_downloads),
 			constraint: dto.constraint ?? undefined,
-			tags: list(dto.tags ?? 'latest'),
-			assets: list(dto.assets ?? ''),
-			sort: dto.sort ?? 'version',
-			sort_order: dto.sort_order ?? 'desc',
-			statuses: [...new Set(list(dto.status ?? 'published').map(value => {
+			tags: list(dto.tags),
+			assets: list(dto.assets),
+			sort: dto.sort,
+			sort_order: dto.sort_order,
+			statuses: [...new Set(list(dto.status).map(value => {
 				switch (value.trim().toLowerCase()) {
 					case 'draft': return ReleaseStatus.Draft;
 					case 'published': return ReleaseStatus.Published;

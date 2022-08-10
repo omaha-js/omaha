@@ -8,32 +8,32 @@ export class Account {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
 	@Exclude()
-	public id: number;
+	public id!: number;
 
 	@Column({ length: 32 })
-	public name: string;
+	public name!: string;
 
 	@Column()
 	@Index({ unique: true })
-	public email: string;
+	public email!: string;
 
 	@Column()
 	@Exclude()
-	public password: string;
+	public password!: string;
 
 	@Column({ default: false })
-	public verified: boolean;
+	public verified!: boolean;
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at: number;
+	public updated_at!: number;
 
 	@OneToMany(() => Collaboration, collab => collab.account)
-	public collaborations: Promise<Collaboration[]>;
+	public collaborations!: Promise<Collaboration[]>;
 
 	@OneToMany(() => Token, token => token.account)
-	public tokens: Promise<Token[]>;
+	public tokens!: Promise<Token[]>;
 
 }

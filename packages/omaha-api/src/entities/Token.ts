@@ -10,40 +10,40 @@ export class Token {
 
 	@PrimaryColumn({ type: 'binary', length: 5 })
 	@Transform(params => params.value.toString('hex'))
-	public id: Buffer;
+	public id!: Buffer;
 
 	@Column({ length: 64 })
-	public name: string;
+	public name!: string;
 
-	@Column({ type: 'text' })
-	public description: string;
+	@Column({ length: 2048, default: '' })
+	public description!: string;
 
 	@Column({ type: 'binary', length: 48 })
 	@Exclude()
-	public hash: Buffer;
+	public hash!: Buffer;
 
 	@Column({ type: 'enum', enum: TokenType })
-	public type: TokenType;
+	public type!: TokenType;
 
 	@ManyToOne(() => Account, account => account.tokens, { nullable: true, onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'account_id' })
-	public account: Promise<Account | null>;
+	public account!: Promise<Account | null>;
 
 	@ManyToOne(() => Repository, repository => repository.tokens, { nullable: true, onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'repository_id' })
-	public repository: Promise<Repository | null>;
+	public repository!: Promise<Repository | null>;
 
 	@Column({ type: 'json' })
-	public scopes: AuthScopeId[];
+	public scopes!: AuthScopeId[];
 
 	@Column({ nullable: true, default: null })
 	@Index()
-	public expires_at: Date | null;
+	public expires_at!: Date | null;
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at: Date;
+	public updated_at!: Date;
 
 }

@@ -82,7 +82,7 @@ export class ReleasesService {
 		const tags = await this.tags.getAllTags(repo);
 
 		// Allow constraints to be set to a tag name
-		if (tags.includes(params.constraint?.toLowerCase().trim())) {
+		if (typeof params.constraint === 'string' && tags.includes(params.constraint?.toLowerCase().trim())) {
 			params.tags = [params.constraint.toLowerCase().trim()];
 			params.constraint = undefined;
 		};
@@ -249,7 +249,9 @@ export class ReleasesService {
 	 * Updates an existing release. This can also be used to publish it.
 	 */
 	public async update(repo: Repository, release: Release, dto: UpdateReleaseDto) {
-		release.description = dto.description;
+		if (typeof dto.description === 'string') {
+			release.description = dto.description;
+		}
 
 		// Handle publishing
 		let published = false;
@@ -323,14 +325,16 @@ export class ReleasesService {
 			throw new BadRequestException('Cannot revert a published release back into a draft');
 		}
 
-		// Resolve the tags
-		// This will throw errors if the tag(s) don't exist, so we'll await it
-		const tags = await Promise.all(
-			dto.tags.map(tag => this.tags.getTag(repo, tag))
-		);
+		// Update tags
+		if (dto.tags && dto.tags.length > 0) {
+			// This will throw errors if the tag(s) don't exist, so we'll await it
+			const tags = await Promise.all(
+				dto.tags.map(tag => this.tags.getTag(repo, tag))
+			);
 
-		// Attach the tags
-		release.tags = Promise.resolve(tags);
+			// Attach the tags
+			release.tags = Promise.resolve(tags);
+		}
 
 		// Save the entity
 		// Wrap in a transaction for rolling logic
@@ -538,16 +542,18 @@ export class ReleasesService {
 		for (const release of releases) {
 			const repository = await release.repository;
 			const expirationDays = RepositorySettingsManager.get(repository.settings, 'releases.archives.expiration');
-			const expiration = release.archived_at.getTime() + (expirationDays * 86400000);
+			const expiration = release.archived_at!.getTime() + (expirationDays * 86400000);
 
 			if (expiration <= Date.now()) {
 				this.logger.log(`Purging expired attachments for release ${release.id} in ${repository.id}`);
 
 				for (const attachment of await release.attachments) {
-					await this.storage.delete(this.storage.getObjectName(repository, attachment.object_name));
+					if (attachment.object_name) {
+						await this.storage.delete(this.storage.getObjectName(repository, attachment.object_name));
 
-					totalFilesFreed++;
-					totalBytesFreed += attachment.size;
+						totalFilesFreed++;
+						totalBytesFreed += attachment.size;
+					}
 				}
 
 				release.purged_at = new Date();

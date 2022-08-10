@@ -16,7 +16,7 @@ export enum RepositoryVersionScheme {
 	 *
 	 * @see https://calver.org/
 	 */
-	Calendar = 'calendar',
+	// Calendar = 'calendar',
 
 	/**
 	 * For repositories that use Microsoft versioning. This behaves similarly to semantic versioning, except it has

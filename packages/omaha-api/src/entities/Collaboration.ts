@@ -19,35 +19,35 @@ export class Collaboration {
 	}
 
 	@PrimaryGeneratedColumn('uuid')
-	public id: string;
+	public id!: string;
 
 	@ManyToOne(() => Repository, repo => repo.collaborators, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'repository_id' })
 	@Exclude()
-	public repository: Promise<Repository>;
+	public repository!: Promise<Repository>;
 
 	@ManyToOne(() => Account, account => account.collaborations, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'account_id' })
 	@Exclude()
-	public account: Promise<Account>;
+	public account!: Promise<Account>;
 
 	@Column({ type: 'enum', enum: CollaborationRole })
-	public role: CollaborationRole;
+	public role!: CollaborationRole;
 
 	@Column({ type: 'json' })
 	@Exclude()
-	public scopes: RepositoryScopeId[];
+	public scopes!: RepositoryScopeId[];
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at: Date;
+	public updated_at!: Date;
 
 	@Expose({ name: 'scopes' })
 	public getFullScopes(): RepositoryScopeId[] {
 		if (this.role !== CollaborationRole.Custom) {
-			const scopes = [];
+			const scopes = new Array<RepositoryScopeId>();
 
 			for (const scope of RepositoryScopes) {
 				const groups: CollaborationRole[] = scope.groups as any;
@@ -84,7 +84,7 @@ export class Collaboration {
 	}
 
 	@Expose({ name: 'account' })
-	public get jsonAccountProp() {
+	public get jsonPropAccount() {
 		return (this as any).__account__;
 	}
 

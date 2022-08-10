@@ -10,7 +10,7 @@ import crypto from 'crypto';
 
 export class LocalStorageDriver implements StorageDriver {
 
-	public storagePath: string;
+	public storagePath!: string;
 	private logger = new Logger('LocalStorageDriver');
 
 	public async init(): Promise<void> {

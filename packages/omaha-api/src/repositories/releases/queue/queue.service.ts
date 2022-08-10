@@ -54,12 +54,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
 		for (const method of methods) {
 			if (method.hasAttribute(QueueWorker)) {
-				const worker = method.getAttribute(QueueWorker);
+				const worker = method.getAttribute(QueueWorker)!;
 				this.workers.set(worker.job, method);
 			}
 
 			else if (method.hasAttribute(QueueCleaner)) {
-				const cleaner = method.getAttribute(QueueCleaner);
+				const cleaner = method.getAttribute(QueueCleaner)!;
 				this.cleaners.set(cleaner.job, method);
 			}
 		}
@@ -288,7 +288,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
 			// Check on waiters
 			if (this.waiting.hasKey([release.id])) {
-				for (const waiter of this.waiting.get([release.id])) {
+				for (const waiter of this.waiting.get([release.id])!) {
 					try {
 						if (await waiter.fn()) {
 							this.waiting.delete([release.id], waiter);

@@ -9,31 +9,31 @@ import { Repository } from './Repository';
 export class CollaborationInvite {
 
 	@PrimaryGeneratedColumn('uuid')
-	public id: string;
+	public id!: string;
 
 	@ManyToOne(() => Repository, repo => repo.collaborators, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'repository_id' })
 	@Exclude()
-	public repository: Promise<Repository>;
+	public repository!: Promise<Repository>;
 
 	@Column()
-	public email: string;
+	public email!: string;
 
 	@Column({ type: 'enum', enum: CollaborationRole })
-	public role: CollaborationRole;
+	public role!: CollaborationRole;
 
 	@Column({ type: 'json' })
-	public scopes: RepositoryScopeId[];
+	public scopes!: RepositoryScopeId[];
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@Column({ type: 'datetime', precision: 6 })
 	@Index()
-	public expires_at: Date;
+	public expires_at!: Date;
 
 	@Expose({ name: 'repository' })
-	public get jsonRepositoryProp() {
+	public get jsonPropRepository() {
 		return (this as any).__repository__;
 	}
 

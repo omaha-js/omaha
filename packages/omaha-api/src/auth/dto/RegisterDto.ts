@@ -7,7 +7,7 @@ export class RegisterDto {
 	 */
 	@IsDefined()
 	@IsNotEmpty()
-	name: string;
+	name!: string;
 
 	/**
 	 * The email address of the user.
@@ -15,7 +15,7 @@ export class RegisterDto {
 	@IsDefined()
 	@IsNotEmpty()
 	@IsEmail()
-	email: string;
+	email!: string;
 
 	/**
 	 * The password of the user.
@@ -23,7 +23,7 @@ export class RegisterDto {
 	@IsDefined()
 	@IsNotEmpty()
 	@MinLength(8)
-	password: string;
+	password!: string;
 
 	/**
 	 * The invitation ID if applicable. The new account will automatically accept the invitation.

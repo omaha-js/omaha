@@ -8,25 +8,25 @@ export class Asset {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
 	@Exclude()
-	public id: number;
+	public id!: number;
 
 	@ManyToOne(() => Repository, repo => repo.assets, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'repository_id' })
-	public repository: Promise<Repository>;
+	public repository!: Promise<Repository>;
 
 	@Column({ length: 32 })
-	public name: string;
+	public name!: string;
 
 	@Column({ length: 2048, default: '' })
-	public description: string;
+	public description!: string;
 
 	@Column({ type: 'boolean' })
-	public required: boolean;
+	public required!: boolean;
 
 	@CreateDateColumn()
-	public created_at: Date;
+	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at: Date;
+	public updated_at!: Date;
 
 }

@@ -45,6 +45,7 @@ async function bootstrap() {
 
 	app.useGlobalPipes(new TrimPipe());
 	app.useGlobalPipes(new ValidationPipe({
+		transform: true,
 		forbidUnknownValues: true,
 		skipMissingProperties: false,
 		skipUndefinedProperties: false,

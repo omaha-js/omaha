@@ -5,15 +5,15 @@ export class UpdateAssetDto {
 	@IsOptional()
 	@IsString()
 	@MaxLength(32)
-	name: string;
+	name!: string;
 
 	@IsOptional()
 	@IsString()
 	@MaxLength(2048)
-	description?: string;
+	description: string = '';
 
 	@IsOptional()
 	@IsBoolean()
-	required: boolean;
+	required!: boolean;
 
 }

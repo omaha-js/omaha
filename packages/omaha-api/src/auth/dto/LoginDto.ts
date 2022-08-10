@@ -7,13 +7,13 @@ export class LoginDto {
 	 */
 	@IsDefined()
 	@IsString()
-	email: string;
+	email!: string;
 
 	/**
 	 * The password of the user.
 	 */
 	@IsDefined()
 	@IsString()
-	password: string;
+	password!: string;
 
 }

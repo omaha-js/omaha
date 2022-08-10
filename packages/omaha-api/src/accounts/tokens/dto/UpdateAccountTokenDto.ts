@@ -12,11 +12,11 @@ export class UpdateAccountTokenDto {
 	@IsOptional()
 	@IsString()
 	@MaxLength(2048)
-	description?: string;
+	description: string = '';
 
 	@IsOptional()
 	@IsEnum(AuthScopes.map(scope => scope.id), { each: true })
-	scopes: AuthScopeId[];
+	scopes?: AuthScopeId[];
 
 	@IsOptional()
 	@IsBoolean()

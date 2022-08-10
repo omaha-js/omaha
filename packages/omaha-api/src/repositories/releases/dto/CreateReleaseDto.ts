@@ -5,15 +5,15 @@ export class CreateReleaseDto {
 	@IsDefined()
 	@IsNotEmpty()
 	@IsString()
-	version: string;
+	version!: string;
 
 	@IsOptional()
 	@IsString()
-	description?: string;
+	description: string = '';
 
 	@IsDefined()
 	@IsString({ each: true })
 	@ArrayNotEmpty()
-	tags: string[];
+	tags!: string[];
 
 }

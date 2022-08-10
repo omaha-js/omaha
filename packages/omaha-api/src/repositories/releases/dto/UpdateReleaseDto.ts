@@ -14,6 +14,6 @@ export class UpdateReleaseDto {
 	@IsOptional()
 	@IsString({ each: true })
 	@ArrayNotEmpty()
-	tags: string[];
+	tags?: string[];
 
 }

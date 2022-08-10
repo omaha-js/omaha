@@ -48,7 +48,7 @@ export class AuthGuard implements CanActivate {
 		// Check for required scopes
 		if (scopes.length > 0) {
 			for (const scope of scopes) {
-				if (!token.hasPermission(scope)) {
+				if (!token!.hasPermission(scope)) {
 					throw new ForbiddenException('You do not have privileges to access this endpoint');
 				}
 			}

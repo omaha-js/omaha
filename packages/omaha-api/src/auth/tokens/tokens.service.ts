@@ -36,7 +36,9 @@ export class TokensService {
 
 		const token = await new Promise<string>((resolve, reject) => {
 			jwt.sign(payload, Environment.APP_SECRET, { expiresIn }, function(err, token) {
-				err ? reject(err) : resolve(token);
+				if (err) return reject(err);
+				if (!token) return reject(new Error('Token was undefined - this should never happen!'));
+				resolve(token);
 			});
 		});
 
@@ -79,7 +81,7 @@ export class TokensService {
 		const token = this.repository.create({
 			id,
 			name: params.name,
-			description: params.description ?? '',
+			description: params.description,
 			expires_at: params.expiration ? new Date(params.expiration) : undefined,
 			hash,
 			type: params.type,
@@ -351,7 +353,7 @@ interface WebTokenPayload {
 interface BaseTokenParams {
 	name: string;
 	description?: string;
-	expiration: number;
+	expiration?: number;
 	type: TokenType;
 }
 

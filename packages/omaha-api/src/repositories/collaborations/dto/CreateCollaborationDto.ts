@@ -7,14 +7,14 @@ export class CreateCollaborationDto {
 	@IsDefined()
 	@IsString()
 	@IsEmail()
-	email: string;
+	email!: string;
 
 	@IsDefined()
 	@IsEnum(CollaborationRole)
-	role: CollaborationRole;
+	role!: CollaborationRole;
 
 	@IsOptional()
 	@IsEnum(RepositoryScopes.map(scope => scope.id), { each: true })
-	scopes?: RepositoryScopeId[];
+	scopes: RepositoryScopeId[] = [];
 
 }

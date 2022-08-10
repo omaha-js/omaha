@@ -6,7 +6,6 @@ import { SemanticVersionDriver } from './SemanticVersionDriver';
 
 export const VersionSchemeDrivers: Record<RepositoryVersionScheme, VersionSchemeDriver> = {
 	semantic: new SemanticVersionDriver(),
-	calendar: null,
 	incremental: new IncrementalVersionDriver(),
 	microsoft: new MicrosoftVersionDriver(),
 };

@@ -60,17 +60,17 @@ export class EmailService implements OnModuleInit {
 			options.template += '.twig';
 		}
 
-		if (!this.enabled) {
+		if (!this.transport) {
 			throw new BadRequestException('Email is not enabled on this server');
 		}
 
 		const addresses = Array.isArray(options.to) ? options.to : [options.to];
 		const text = await this.render(options);
-		const promises = addresses.map(to => this.transport.sendMail({
+		const promises = addresses.map(to => this.transport!.sendMail({
 			to,
 			from: {
-				name: this.fromName,
-				address: this.fromAddress
+				name: this.fromName!,
+				address: this.fromAddress!
 			},
 			subject: options.subject,
 			text
@@ -86,7 +86,7 @@ export class EmailService implements OnModuleInit {
 	 * @returns
 	 */
 	private render(options: SendMailOptions) {
-		return new Promise((resolve, reject) => {
+		return new Promise<string>((resolve, reject) => {
 			const context = {
 				...(options.context ?? {}),
 				env: Environment

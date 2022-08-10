@@ -22,6 +22,7 @@ import { StorageService } from 'src/storage/storage.service';
 import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
 import moment from 'moment';
 import prettyBytes from 'pretty-bytes';
+import { Collaboration } from 'src/entities/Collaboration';
 
 @Injectable()
 export class RepositoriesService {
@@ -46,7 +47,7 @@ export class RepositoriesService {
 	 * @returns
 	 */
 	public async getRepositoriesForAccount(account: Account): Promise<Repository[]> {
-		const results = [];
+		const results = new Array<any>();
 		const collabs = await this.collaborations.getForAccount(account);
 
 		for (const collab of collabs) {
@@ -72,9 +73,9 @@ export class RepositoriesService {
 	 */
 	public async createRepository(dto: CreateRepoDto, account: Account) {
 		const name = dto.name;
-		const description = dto.description ?? '';
+		const description = dto.description;
 		const scheme = dto.scheme;
-		const access = dto.access ?? RepositoryAccessType.Private;
+		const access = dto.access;
 
 		// Create the repository
 		const repository = await this.repository.save(this.repository.create({
@@ -258,6 +259,10 @@ export class RepositoriesService {
 			let failed = false;
 
 			for (const attachment of attachments) {
+				if (!attachment.object_name) {
+					continue;
+				}
+
 				const objectName = this.storage.getObjectName(repo, attachment.object_name);
 
 				try {
@@ -286,4 +291,8 @@ export class RepositoriesService {
 		}
 	}
 
+}
+
+export interface RepositoryWithCollab extends Repository {
+	collaboration: Collaboration;
 }

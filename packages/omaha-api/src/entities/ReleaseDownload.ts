@@ -12,46 +12,46 @@ import { Token } from './Token';
 export class ReleaseDownload {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
-	public id: number;
+	public id!: number;
 
 	@ManyToOne(() => ReleaseAttachment, attachment => attachment.downloads, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'attachment_id' })
 	@Index()
-	public attachment: Promise<ReleaseAttachment>;
+	public attachment!: Promise<ReleaseAttachment>;
 
 	@ManyToOne(() => Release, release => release.downloads, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'release_id' })
 	@Index()
-	public release: Promise<Release>;
+	public release!: Promise<Release>;
 
 	@ManyToOne(() => Repository, repo => repo.downloads, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'repository_id' })
 	@Index()
-	public repository: Promise<Repository>;
+	public repository!: Promise<Repository>;
 
 	@ManyToOne(() => Token, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'token_id' })
-	public token: Token;
+	public token!: Token;
 
 	@Column({ type: 'varchar', length: 45 })
-	public ip: string;
+	public ip!: string;
 
 	@Column({ type: 'date' })
 	@Index()
 	@Exclude()
-	public date: Date;
+	public date!: Date;
 
 	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
 	@Index()
-	public time: Date;
+	public time!: Date;
 
 	@Expose({ name: 'release' })
-	protected get internPropRelease() {
+	protected get jsonPropRelease() {
 		return (this as any).__release__;
 	}
 
 	@Expose({ name: 'attachment' })
-	protected get internPropAttachment() {
+	protected get jsonPropAttachment() {
 		return (this as any).__attachment__;
 	}
 

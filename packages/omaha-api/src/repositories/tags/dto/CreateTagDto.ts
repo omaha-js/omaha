@@ -4,11 +4,11 @@ export class CreateTagDto {
 
 	@IsDefined()
 	@IsString()
-	name: string;
+	name!: string;
 
 	@IsOptional()
 	@IsString()
 	@MaxLength(2048)
-	description?: string;
+	description: string = '';
 
 }

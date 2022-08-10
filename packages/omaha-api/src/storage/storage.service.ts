@@ -10,7 +10,7 @@ import { StorageDriver } from './drivers/StorageDriver';
 @Injectable()
 export class StorageService implements OnModuleInit {
 
-	private driver: StorageDriver;
+	private driver!: StorageDriver;
 
 	/**
 	 * Resolves and initializes the storage driver.

@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, Validate } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength, Validate } from 'class-validator';
 import { RepositoryVersionScheme } from 'src/entities/enum/RepositoryVersionScheme';
 import { RepositoryAccessType } from '../../entities/enum/RepositoryAccessType';
 import { RepositorySettingsObject } from '../settings/RepositorySettings';
@@ -9,10 +9,11 @@ export class UpdateRepoDto {
 	@IsOptional()
 	@IsNotEmpty()
 	@IsString()
-	name: string;
+	name!: string;
 
 	@IsOptional()
 	@IsString()
+	@MaxLength(2048)
 	description?: string;
 
 	@IsOptional()

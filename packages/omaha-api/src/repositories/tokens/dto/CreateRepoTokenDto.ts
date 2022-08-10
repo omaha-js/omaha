@@ -7,19 +7,19 @@ export class CreateRepoTokenDto {
 	@IsString()
 	@MinLength(1)
 	@MaxLength(64)
-	name: string;
+	name!: string;
 
 	@IsOptional()
 	@IsString()
 	@MaxLength(2048)
-	description?: string;
+	description: string = '';
 
 	@IsDefined()
 	@IsInt()
-	expiration: number;
+	expiration!: number;
 
 	@IsDefined()
 	@IsEnum(RepositoryScopes.map(scope => scope.id), { each: true })
-	scopes: RepositoryScopeId[];
+	scopes!: RepositoryScopeId[];
 
 }
