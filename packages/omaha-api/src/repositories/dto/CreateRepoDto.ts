@@ -1,6 +1,8 @@
-import { IsDefined, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsDefined, IsEnum, IsNotEmpty, IsObject, IsOptional, IsString, MaxLength, Validate } from 'class-validator';
 import { RepositoryVersionScheme } from 'src/entities/enum/RepositoryVersionScheme';
 import { RepositoryAccessType } from '../../entities/enum/RepositoryAccessType';
+import { RepositorySettingsObject } from '../settings/RepositorySettings';
+import { RepositorySettingsValidator } from '../settings/RepositorySettingsValidator';
 
 export class CreateRepoDto {
 
@@ -21,5 +23,10 @@ export class CreateRepoDto {
 	@IsOptional()
 	@IsEnum(RepositoryAccessType)
 	access: RepositoryAccessType = RepositoryAccessType.Private;
+
+	@IsOptional()
+	@IsObject()
+	@Validate(RepositorySettingsValidator)
+	settings?: Partial<RepositorySettingsObject>;
 
 }

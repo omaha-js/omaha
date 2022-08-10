@@ -76,6 +76,7 @@ export class RepositoriesService {
 		const description = dto.description;
 		const scheme = dto.scheme;
 		const access = dto.access;
+		const settings = dto.settings ?? {};
 
 		// Create the repository
 		const repository = await this.repository.save(this.repository.create({
@@ -83,7 +84,9 @@ export class RepositoriesService {
 			description,
 			scheme,
 			access,
-			settings: {}
+			settings: {
+				...RepositorySettingsManager.sanitize(settings)
+			}
 		}));
 
 		// Create the first collaboration with an ownership role
