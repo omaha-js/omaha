@@ -1,7 +1,7 @@
 import { ReadStream } from 'typeorm/platform/PlatformTools';
 import { StorageDriver } from '../../storage/drivers/StorageDriver';
 import { Logger } from '@nestjs/common';
-import { Client } from 'minio';
+import { Client, ItemBucketMetadata } from 'minio';
 import { Env } from '@baileyherbert/env';
 
 export class S3StorageDriver implements StorageDriver {
@@ -43,8 +43,21 @@ export class S3StorageDriver implements StorageDriver {
 		}
 	}
 
-	public async write(name: string, size: number, stream: ReadStream): Promise<void> {
-		await this.client.putObject(this.bucket, name, stream, size);
+	public async write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void> {
+		const meta: ItemBucketMetadata = {
+			'Content-Type': 'application/octet-stream',
+			'Content-Length': size
+		};
+
+		if (typeof sha1 === 'string') {
+			meta['X-Bz-Content-Sha1'] = sha1;
+		}
+
+		if (typeof md5 === 'string') {
+			meta['Content-MD5'] = md5;
+		}
+
+		await this.client.putObject(this.bucket, name, stream, meta);
 	}
 
 	public async exists(name: string): Promise<boolean> {

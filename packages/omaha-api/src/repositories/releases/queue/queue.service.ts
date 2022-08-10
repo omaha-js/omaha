@@ -112,8 +112,14 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
 		this.logger.log(`Sending attachment <${attachment.id}> object "${name}" to storage for ${repo.id}`);
 
-		const stream = fs.createReadStream(data.path, { encoding: 'binary' });
-		await this.storage.write(this.storage.getObjectName(repo, name), attachment.size, stream);
+		const stream = fs.createReadStream(data.path);
+		await this.storage.write(
+			this.storage.getObjectName(repo, name),
+			attachment.size,
+			stream,
+			attachment.hash_sha1.toString('hex'),
+			attachment.hash_md5.toString('hex'),
+		);
 
 		attachment.status = ReleaseAttachmentStatus.Ready;
 		attachment.object_name = name;

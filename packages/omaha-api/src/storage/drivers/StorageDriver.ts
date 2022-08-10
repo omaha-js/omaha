@@ -20,8 +20,14 @@ export interface StorageDriver {
 	 * @param stream
 	 *   A readable stream for the file that will be consumed during upload. The source for the stream should be from
 	 *   the application's temporary storage directory.
+	 *
+	 * @param sha1
+	 *   The SHA-1 digest hash as a hexadecimal string if known.
+	 *
+	 * @param md5
+	 *   The MD5 digest hash as a hexadecimal string if known.
 	 */
-	write(name: string, size: number, stream: ReadStream): Promise<void>;
+	write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void>;
 
 	/**
 	 * Returns true if the specified file exists within the storage system.

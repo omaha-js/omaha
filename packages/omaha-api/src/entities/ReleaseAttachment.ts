@@ -62,11 +62,18 @@ export class ReleaseAttachment {
 	public status: ReleaseAttachmentStatus;
 
 	/**
-	 * The SHA-256 digest hash for the file's contents.
+	 * The SHA-1 digest hash for the file's contents.
 	 */
-	@Column({ type: 'binary', length: 32 })
+	@Column({ type: 'binary', length: 20 })
 	@Transform(params => params.value.toString('hex'))
-	public hash: Buffer;
+	public hash_sha1: Buffer;
+
+	/**
+	 * The MD5 digest hash for the file's contents.
+	 */
+	@Column({ type: 'binary', length: 16 })
+	@Transform(params => params.value.toString('hex'))
+	public hash_md5: Buffer;
 
 	/**
 	 * The number of times the attachment was downloaded.

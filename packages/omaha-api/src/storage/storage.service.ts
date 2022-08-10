@@ -42,9 +42,15 @@ export class StorageService implements OnModuleInit {
 	 * @param stream
 	 *   A readable stream for the file that will be consumed during upload. The source for the stream should be from
 	 *   the application's temporary storage directory.
+	 *
+	 * @param sha1
+	 *   The SHA-1 digest hash as a hexadecimal string if known.
+	 *
+	 * @param md5
+	 *   The MD5 digest hash as a hexadecimal string if known.
 	 */
-	public write(name: string, size: number, stream: ReadStream): Promise<void> {
-		return this.driver.write(name, size, stream);
+	public write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void> {
+		return this.driver.write(name, size, stream, sha1, md5);
 	}
 
 	/**

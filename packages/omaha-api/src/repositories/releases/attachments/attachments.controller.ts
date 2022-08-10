@@ -22,6 +22,7 @@ import { RealtimeService } from 'src/realtime/realtime.service';
 import fs from 'fs';
 import crypto from 'crypto';
 import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
+import { PassThrough } from 'stream';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -122,7 +123,8 @@ export class AttachmentsController {
 			file_name: attachment.file_name,
 			mime: attachment.mime,
 			size: attachment.size,
-			hash: attachment.hash.toString('hex'),
+			hash_sha1: attachment.hash_sha1.toString('hex'),
+			hash_md5: attachment.hash_md5.toString('hex'),
 			download_url: url,
 			expires_in: Math.floor(expiration / 1000)
 		};
@@ -157,12 +159,20 @@ export class AttachmentsController {
 			}
 
 			// Create the read stream
-			const stream = fs.createReadStream(file.path, { encoding: 'binary' });
+			const stream = fs.createReadStream(file.path);
+			const pass = new PassThrough();
 
-			// Compute a SHA-256 hash for the file using the stream
-			const hash = crypto.createHash('sha256', { encoding: 'binary' });
-			const promise = new Promise(r => stream.once('end', r));
-			stream.pipe(hash);
+			// Compute hashes for the file using the stream
+			const sha1 = crypto.createHash('sha1', { encoding: 'binary' });
+			const md5 = crypto.createHash('md5', { encoding: 'binary' });
+			const promise = new Promise<void>(r => pass.once('end', r));
+
+			pass.on('data', chunk => {
+				sha1.update(chunk);
+				md5.update(chunk);
+			});
+
+			stream.pipe(pass);
 
 			// Wait for hashing
 			await promise;
@@ -189,7 +199,8 @@ export class AttachmentsController {
 				attachment.object_name = null;
 				attachment.mime = file.mimetype;
 				attachment.size = file.size;
-				attachment.hash = hash.digest();
+				attachment.hash_sha1 = sha1.digest();
+				attachment.hash_md5 = md5.digest();
 				attachment.status = ReleaseAttachmentStatus.Pending;
 
 				await attachment.release;
@@ -212,7 +223,8 @@ export class AttachmentsController {
 				attachment.mime = file.mimetype;
 				attachment.release = Promise.resolve(release);
 				attachment.asset = repoAsset;
-				attachment.hash = hash.digest();
+				attachment.hash_sha1 = sha1.digest();
+				attachment.hash_md5 = md5.digest();
 				attachment.status = ReleaseAttachmentStatus.Pending;
 
 				await this.service.save(attachment);
