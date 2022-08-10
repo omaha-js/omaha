@@ -1,5 +1,5 @@
 import { ReadStream } from 'typeorm/platform/PlatformTools';
-import { StorageDriver } from '../../storage/drivers/StorageDriver';
+import { StorageDriver } from '../interfaces/StorageDriver';
 import { Logger } from '@nestjs/common';
 import { Client, ItemBucketMetadata } from 'minio';
 import { Env } from '@baileyherbert/env';

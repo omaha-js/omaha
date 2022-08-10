@@ -1,9 +1,9 @@
 import { Environment } from 'src/app.environment';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
-import { StorageDriver } from '../../storage/drivers/StorageDriver';
+import { StorageDriver } from '../interfaces/StorageDriver';
 import { Logger } from '@nestjs/common';
 import { exists } from 'src/support/utilities/exists';
-import { ObjectNotFoundError } from '../errors/ObjectNotFoundError';
+import { ObjectNotFoundError } from '../../storage/errors/ObjectNotFoundError';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';

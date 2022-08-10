@@ -1,6 +1,6 @@
-import { StorageDriver } from './StorageDriver';
-import { LocalStorageDriver } from './LocalStorageDriver';
-import { S3StorageDriver } from './S3StorageDriver';
+import { StorageDriver } from './interfaces/StorageDriver';
+import { LocalStorageDriver } from './storage/LocalStorageDriver';
+import { S3StorageDriver } from './storage/S3StorageDriver';
 
 export enum StorageDriverType {
 

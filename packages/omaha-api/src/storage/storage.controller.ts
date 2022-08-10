@@ -2,7 +2,7 @@ import { Controller, ForbiddenException, Get, NotFoundException, Param, Query, S
 import { Guest } from 'src/auth/decorators/guest.decorator';
 import { DownloadQueryDto } from './dto/DownloadQueryDto';
 import { StorageService } from './storage.service';
-import { LocalStorageDriver } from './drivers/LocalStorageDriver';
+import { LocalStorageDriver } from '../drivers/storage/LocalStorageDriver';
 import { stat } from 'src/support/utilities/stat';
 import fs from 'fs';
 import path from 'path';

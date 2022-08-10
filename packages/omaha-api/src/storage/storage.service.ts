@@ -2,10 +2,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ReadStream } from 'fs';
 import { Environment } from 'src/app.environment';
 import { Repository } from 'src/entities/Repository';
-import { StorageDriverType } from './drivers';
-import { LocalStorageDriver } from './drivers/LocalStorageDriver';
-import { S3StorageDriver } from './drivers/S3StorageDriver';
-import { StorageDriver } from './drivers/StorageDriver';
+import { LocalStorageDriver } from '../drivers/storage/LocalStorageDriver';
+import { S3StorageDriver } from '../drivers/storage/S3StorageDriver';
+import { StorageDriver } from '../drivers/interfaces/StorageDriver';
+import { StorageDriverType } from 'src/drivers/storage';
 
 @Injectable()
 export class StorageService implements OnModuleInit {
@@ -28,6 +28,8 @@ export class StorageService implements OnModuleInit {
 			case StorageDriverType.Local: return new LocalStorageDriver();
 			case StorageDriverType.S3: return new S3StorageDriver();
 		}
+
+		throw new Error(`Unknown storage driver "${Environment.STORAGE_DRIVER}"`);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 import { Env } from '@baileyherbert/env';
-import { StorageDriverType } from './storage/drivers';
+import { StorageDriverType } from './drivers/storage';
 
 export const Environment = Env.rules({
 
