@@ -36,7 +36,7 @@ export class Token {
 	@Column({ type: 'json' })
 	public scopes!: AuthScopeId[];
 
-	@Column({ nullable: true, default: null })
+	@Column({ type: 'datetime', nullable: true, default: null })
 	@Index()
 	public expires_at!: Date | null;
 

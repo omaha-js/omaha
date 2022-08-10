@@ -38,7 +38,7 @@ export class ReleaseAttachment {
 	 * The name of the file within the storage system. This does not include the directory or path to the file, which
 	 * will be the repository's unique ID.
 	 */
-	@Column({ length: 256, default: null })
+	@Column({ type: 'varchar', length: 256, default: null })
 	@Exclude()
 	public object_name!: string | null;
 

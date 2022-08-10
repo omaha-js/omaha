@@ -35,7 +35,7 @@ export class Release {
 	/**
 	 * The description of the release in markdown format, often used as a changelog.
 	 */
-	@Column({ type: 'longtext', default: '' })
+	@Column({ type: 'longtext' })
 	public description!: string;
 
 	/**
@@ -59,19 +59,19 @@ export class Release {
 	/**
 	 * The time when this release was published (or `null` if it's still a draft).
 	 */
-	@Column({ precision: 6, nullable: true, default: null })
+	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
 	public published_at!: Date | null;
 
 	/**
 	 * The time when this release was archived (or `null` if it's in another state).
 	 */
-	@Column({ precision: 6, nullable: true, default: null })
+	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
 	public archived_at!: Date | null;
 
 	/**
 	 * The time when this release was purged (meaning its files have been removed from storage).
 	 */
-	@Column({ precision: 6, nullable: true, default: null })
+	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
 	public purged_at!: Date | null;
 
 	/**
