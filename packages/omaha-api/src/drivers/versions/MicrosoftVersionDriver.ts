@@ -4,8 +4,8 @@ import semver from 'semver';
 
 /**
  * This driver uses the official `semver` package to implement Microsoft .NET versioning, which uses the
- * `major.minor.build.revision` format. Internally, the `revision` number is converted to semantic prerelease metadata
- * for easy filtering and sorting.
+ * `major.minor.build.revision` format. This driver is currently very hacky for development speed, and should be
+ * reimplemented later.
  */
 export class MicrosoftVersionDriver implements VersionSchemeDriver {
 
@@ -15,7 +15,7 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 	 * @param input
 	 * @returns
 	 */
-	private getMicrosoftFromSemantic(input: string) {
+	public toMicrosoft(input: string) {
 		const version = semver.parse(input.trim());
 
 		if (version === null) {
@@ -24,7 +24,16 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 			);
 		}
 
-		return `${version.major}.${version.minor}.${version.patch}.${version.prerelease}`;
+		const computedPatch = version.patch.toString();
+
+		if (computedPatch.length !== 15) {
+			throw new Error(`Patch segment must be 15 bytes (got ${computedPatch.length})`);
+		}
+
+		const patch = Number(computedPatch.slice(1, 7));
+		const build = Number(computedPatch.slice(7, 15));
+
+		return `${version.major}.${version.minor}.${patch}.${build}`;
 	}
 
 	/**
@@ -33,7 +42,7 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 	 * @param input
 	 * @returns
 	 */
-	private getSemanticFromMicrosoft(input: string) {
+	public toSemantic(input: string) {
 		const match = input.trim().match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
 
 		if (!match) {
@@ -42,7 +51,16 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 			);
 		}
 
-		const version = `${Number(match[1])}.${Number(match[2])}.${Number(match[3])}-${Number(match[4])}`;
+		const major = Number(match[1]);
+		const minor = Number(match[2]);
+		const patch = Number(match[3]);
+		const build = Number(match[4]);
+
+		if (patch > 999999) throw new BadRequestException('Patch number must not exceed 6 digits');
+		if (build > 99999999) throw new BadRequestException('Build number must not exceed 8 digits');
+
+		const computedPatch = '1' + patch.toString().padStart(6, '0') + build.toString().padStart(8, '0');
+		const version = `${major}.${minor}.${computedPatch}`;
 
 		if (semver.valid(version) === null) {
 			throw new BadRequestException(
@@ -53,28 +71,31 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 		return version;
 	}
 
+	public toSemanticConstraint(input: string) {
+		return input.replace(/(\d+)\.(\d+)\.(\d+)\.(\d+)/g, match => this.toSemantic(match));
+	}
+
 	public validateVersionString(input: string): string {
-		return this.getMicrosoftFromSemantic(this.getSemanticFromMicrosoft(input));
+		return this.toMicrosoft(this.toSemantic(input));
 	}
 
 	public getVersionsFromConstraint(versions: VersionList, constraint: string): string[] {
-		constraint = this.getSemanticFromMicrosoft(constraint);
+		constraint = this.toSemanticConstraint(constraint);
 
 		if (semver.valid(constraint) === null && semver.validRange(constraint) === null) {
 			throw new BadRequestException(`The string '${constraint}' is not a valid semantic constraint`);
 		}
 
 		return versions.selected.filter(version => {
-			return semver.satisfies(this.getSemanticFromMicrosoft(version), constraint);
+			return semver.satisfies(this.toSemantic(version), constraint);
 		});
 	}
 
 	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[] {
-		// TODO: Refactor! This isn't the best way to do this!
 		const sorted = versions.selected
-			.map(version => this.getSemanticFromMicrosoft(version))
+			.map(version => this.toSemantic(version))
 			.sort(direction === 'asc' ? semver.compare : semver.rcompare)
-			.map(version => this.getMicrosoftFromSemantic(version));
+			.map(version => this.toMicrosoft(version));
 
 		return versions.selected.sort((a, b) => sorted.indexOf(a) - sorted.indexOf(b));
 	}
