@@ -1,7 +1,8 @@
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId } from 'src/auth/auth.scopes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { CreateDateColumn, DateColumn } from 'src/support/orm/decorators';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Repository } from './Repository';
 
 @Entity({ name: 'collaboration_invites' })
@@ -28,7 +29,7 @@ export class CollaborationInvite {
 	@CreateDateColumn()
 	public created_at!: Date;
 
-	@Column({ type: 'datetime', precision: 6 })
+	@DateColumn()
 	@Index()
 	public expires_at!: Date;
 

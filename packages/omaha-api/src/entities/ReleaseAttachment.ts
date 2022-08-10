@@ -1,5 +1,6 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Asset } from './Asset';
 import { ReleaseAttachmentStatus } from './enum/ReleaseAttachmentStatus';
 import { Release } from './Release';

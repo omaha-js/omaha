@@ -1,4 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
+import { CreateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Release } from './Release';
 import { ReleaseAttachment } from './ReleaseAttachment';
@@ -41,7 +42,7 @@ export class ReleaseDownload {
 	@Exclude()
 	public date!: Date;
 
-	@Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+	@CreateDateColumn()
 	@Index()
 	public time!: Date;
 

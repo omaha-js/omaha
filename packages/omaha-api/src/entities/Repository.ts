@@ -1,5 +1,5 @@
 import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinTable, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, Index, JoinTable, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
 import { Release } from './Release';
 import { Asset } from './Asset';
@@ -12,6 +12,7 @@ import { ReleaseDownload } from './ReleaseDownload';
 import { RepositoryVersionScheme } from './enum/RepositoryVersionScheme';
 import { RepositorySettingsObject } from 'src/repositories/settings/RepositorySettings';
 import { RepositorySettingsManager } from 'src/repositories/settings/RepositorySettingsManager';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 
 @Entity({ name: 'repositories' })
 export class Repository {

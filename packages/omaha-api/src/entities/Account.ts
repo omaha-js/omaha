@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, Index, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
 import { Token } from './Token';
 
@@ -28,7 +29,7 @@ export class Account {
 	public created_at!: Date;
 
 	@UpdateDateColumn()
-	public updated_at!: number;
+	public updated_at!: Date;
 
 	@OneToMany(() => Collaboration, collab => collab.account)
 	public collaborations!: Promise<Collaboration[]>;

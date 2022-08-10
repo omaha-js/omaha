@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, DateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { ReleaseStatus } from './enum/ReleaseStatus';
 import { ReleaseAttachment } from './ReleaseAttachment';
 import { ReleaseDownload } from './ReleaseDownload';
@@ -59,19 +60,19 @@ export class Release {
 	/**
 	 * The time when this release was published (or `null` if it's still a draft).
 	 */
-	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
+	@DateColumn({ default: null })
 	public published_at!: Date | null;
 
 	/**
 	 * The time when this release was archived (or `null` if it's in another state).
 	 */
-	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
+	@DateColumn({ default: null })
 	public archived_at!: Date | null;
 
 	/**
 	 * The time when this release was purged (meaning its files have been removed from storage).
 	 */
-	@Column({ type: 'datetime', precision: 6, nullable: true, default: null })
+	@DateColumn({ default: null })
 	public purged_at!: Date | null;
 
 	/**
