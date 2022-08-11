@@ -1,7 +1,8 @@
 {
 	"private": true,
 	"scripts": {
-		"dev": "pnpm -r --parallel run dev"
+		"dev": "pnpm -r --parallel run dev",
+		"build": "pnpm -r run build"
 	},
 	"dependencies": {},
 	"devDependencies": {},
