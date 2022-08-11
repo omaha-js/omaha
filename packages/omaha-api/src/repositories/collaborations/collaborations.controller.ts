@@ -27,6 +27,18 @@ export class CollaborationsController {
 		};
 	}
 
+	@Get(':collab_id')
+	@UseScopes('repo.collaborations.list')
+	public async getCollaboration(@Repo() repo: Repository, @Param('collab_id') id: string) {
+		const target = await this.service.getForRepositoryById(repo, id);
+
+		if (!target) {
+			throw new NotFoundException('No collaboration matching that ID could be found for this repository');
+		}
+
+		return target;
+	}
+
 	@Patch(':collab_id')
 	@UseScopes('repo.collaborations.manage')
 	public async updateCollaboration(
