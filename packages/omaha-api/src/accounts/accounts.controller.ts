@@ -67,6 +67,7 @@ export class AccountsController {
 			invite.scopes
 		);
 
+		await this.collaborations.deleteInvite(invite);
 		return instanceToPlain(collab, { groups: ['repo'] });
 	}
 
