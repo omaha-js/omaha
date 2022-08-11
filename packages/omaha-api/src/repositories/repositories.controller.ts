@@ -102,6 +102,10 @@ export class RepositoriesController {
 			throw new BadRequestException('Deleted repositories can only be restored from a web session');
 		}
 
+		if (!token.hasPermission('account.repos.manage')) {
+			throw new ForbiddenException('You do not have access to the requested repository');
+		}
+
 		const collabs = await repo.collaborators;
 
 		for (const collab of collabs) {
