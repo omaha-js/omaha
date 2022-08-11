@@ -39,9 +39,9 @@ export class AccountsController {
 		return token.account;
 	}
 
-	@Post('accept_invitation/:invite_id')
+	@Get('accept_invitation/:invite_id')
 	@UseScopes('account.repos.manage')
-	public async acceptInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
+	public async getInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
 		const account = token.account;
 		const invite = await this.collaborations.getInviteById(id);
 
@@ -59,6 +59,16 @@ export class AccountsController {
 		if (existing) {
 			throw new BadRequestException('You are already a collaborator of that repository');
 		}
+
+		return invite;
+	}
+
+	@Post('accept_invitation/:invite_id')
+	@UseScopes('account.repos.manage')
+	public async acceptInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
+		const account = token.account;
+		const invite = await this.getInvitation(token, id);
+		const repository = await invite.repository;
 
 		const collab = await this.collaborations.create(
 			repository,

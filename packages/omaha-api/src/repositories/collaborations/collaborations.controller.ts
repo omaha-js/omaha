@@ -127,6 +127,20 @@ export class CollaborationsController {
 		return this.service.createInvite(repo, params.email, params.role, params.scopes ?? []);
 	}
 
+	@Get('invites/:invite_id')
+	@UseScopes('repo.collaborations.list')
+	public async getInvite(@Repo() repo: Repository, @Param('invite_id') id: string) {
+		const invite = await this.service.getInviteForRepositoryById(repo, id);
+
+		if (!invite) {
+			throw new NotFoundException('No such invitation was found, it may have already been accepted');
+		}
+
+		await invite.repository;
+
+		return invite;
+	}
+
 	@Patch('invites/:invite_id')
 	@UseScopes('repo.collaborations.manage')
 	public async updateInvite(@Repo() repo: Repository, @Param('invite_id') id: string, @Body() params: UpdateCollaborationDto) {
