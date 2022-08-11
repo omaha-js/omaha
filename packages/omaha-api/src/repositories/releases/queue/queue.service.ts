@@ -82,9 +82,12 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 	 * Enqueues a release to be published.
 	 *
 	 * @param release The release to publish.
+	 * @param ip The IP address of the publisher.
 	 */
-	public async addPublishRelease(release: Release) {
-		return this.enqueue(release, 'publish');
+	public async addPublishRelease(release: Release, ip: string) {
+		return this.enqueue(release, 'publish', {
+			ip
+		});
 	}
 
 	/**
@@ -209,6 +212,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
 
 		this.logger.log(`Published "${release.version}" from queue for ${repo.id}`);
 		this.ws.emit(repo, 'release_published', { release });
+		this.releaseService.internSendPublishNotifications(repo, release, data.ip);
 
 		for (const version of archivedReleaseVersions) {
 			const release = await this.releaseService.getFromVersion(repo, version);
@@ -396,7 +400,9 @@ interface ReleaseJobs {
 	/**
 	 * A job that publishes a release.
 	 */
-	publish: undefined;
+	publish: {
+		ip: string;
+	};
 }
 
 export type ReleaseJobKey = keyof ReleaseJobs;

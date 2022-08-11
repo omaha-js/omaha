@@ -1,0 +1,12 @@
+Hi {{ account.name }},
+
+A new version of the "{{ repository.name }}" repository ({{ release.version }}) was published at {{ release.published_at.toISOString() }} from {{ ip }}.
+
+Here are the attachments for the new release:
+
+{% for attachment in attachments %}
+- {{ attachment.file_name }} ({{ attachment.size_human }}) sha1: {{ attachment.hash_sha1.toString('hex') }}
+{% endfor %}
+
+Thanks,
+{{ env.APP_NAME }}

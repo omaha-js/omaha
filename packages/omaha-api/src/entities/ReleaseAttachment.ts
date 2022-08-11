@@ -1,4 +1,5 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
+import prettyBytes from 'pretty-bytes';
 import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Asset } from './Asset';
@@ -107,6 +108,13 @@ export class ReleaseAttachment {
 	@Expose({ name: 'release', groups: ['ws'] })
 	public get jsonPropRelease() {
 		return (this as any).__release__;
+	}
+
+	/**
+	 * The size, but it's human friendly.
+	 */
+	public get size_human() {
+		return prettyBytes(this.size);
 	}
 
 }

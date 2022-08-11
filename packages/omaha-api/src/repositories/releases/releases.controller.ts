@@ -1,4 +1,5 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Collaboration } from 'src/entities/Collaboration';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
@@ -57,8 +58,8 @@ export class ReleasesController {
 	 */
 	@Post()
 	@UseScopes('repo.releases.create')
-	public async create(@Repo() repo: Repository, @Body() dto: CreateReleaseDto) {
-		return this.service.create(repo, dto);
+	public async create(@Repo() repo: Repository, @Body() dto: CreateReleaseDto, @Req() request: Request) {
+		return this.service.create(repo, dto, request.ip);
 	}
 
 	/**
@@ -108,7 +109,8 @@ export class ReleasesController {
 		@Repo() repo: Repository,
 		@Param('version') version: string,
 		@Body() dto: UpdateReleaseDto,
-		@Collab() collab?: Collaboration
+		@Req() request: Request,
+		@Collab() collab?: Collaboration,
 	) {
 		if (!collab) {
 			throw new ForbiddenException('You do not have privileges to access this endpoint');
@@ -126,7 +128,7 @@ export class ReleasesController {
 			collab.requirePermission('repo.releases.edit');
 		}
 
-		return this.service.update(repo, release, dto);
+		return this.service.update(repo, release, dto, request.ip);
 	}
 
 	/**

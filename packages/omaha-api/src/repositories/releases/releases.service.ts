@@ -18,6 +18,8 @@ import { QueueService } from './queue/queue.service';
 import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
 import prettyBytes from 'pretty-bytes';
+import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
+import { EmailService } from 'src/email/email.service';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -31,6 +33,7 @@ export class ReleasesService {
 		private readonly tags: TagsService,
 		private readonly storage: StorageService,
 		private readonly queue: QueueService,
+		private readonly email: EmailService,
 		private readonly ws: RealtimeService,
 	) {}
 
@@ -177,7 +180,7 @@ export class ReleasesService {
 	 *
 	 * @param dto
 	 */
-	public async create(repo: Repository, dto: CreateReleaseDto) {
+	public async create(repo: Repository, dto: CreateReleaseDto, ip: string) {
 		// Validate the version string with the driver and look for an existing release
 		const version = repo.driver.validateVersionString(dto.version);
 		const existing = await this.getFromVersion(repo, version);
@@ -186,7 +189,7 @@ export class ReleasesService {
 		if (existing) {
 			// If the matched version is a draft, treat this request as an update
 			if (existing.status === ReleaseStatus.Draft) {
-				return this.update(repo, existing, dto);
+				return this.update(repo, existing, dto, ip);
 			}
 
 			throw new BadRequestException('The specified version already exists within the repository');
@@ -254,13 +257,14 @@ export class ReleasesService {
 	/**
 	 * Updates an existing release. This can also be used to publish it.
 	 */
-	public async update(repo: Repository, release: Release, dto: UpdateReleaseDto) {
+	public async update(repo: Repository, release: Release, dto: UpdateReleaseDto, ip: string) {
 		if (typeof dto.description === 'string') {
 			release.description = dto.description;
 		}
 
 		// Handle publishing
 		let published = false;
+		let publishQueued = false;
 		if (dto.status === ReleaseStatus.Published) {
 			if (release.status === ReleaseStatus.Draft) {
 				// Get the assets for both the repository and the release
@@ -299,7 +303,8 @@ export class ReleasesService {
 
 				// Queue the publish if there are pending attachments
 				if (pending.length > 0) {
-					await this.queue.addPublishRelease(release);
+					publishQueued = true;
+					await this.queue.addPublishRelease(release, ip);
 					await release.queue;
 				}
 
@@ -351,6 +356,11 @@ export class ReleasesService {
 
 			return manager.save(release);
 		});
+
+		// Announce publish events
+		if (published && !publishQueued) {
+			this.internSendPublishNotifications(repo, release, ip);
+		}
 
 		// Emit the updated event
 		if (release.status === ReleaseStatus.Draft) {
@@ -635,6 +645,37 @@ export class ReleasesService {
 		}
 
 		return [];
+	}
+
+	/**
+	 * Sends an email to all owners and managers on the repository to notify about the new release.
+	 *
+	 * @param repository
+	 * @param release
+	 * @param ip
+	 */
+	public async internSendPublishNotifications(repository: Repository, release: Release, ip: string) {
+		const collabs = await repository.collaborators;
+		const attachments = await release.attachments;
+
+		for (const collab of collabs) {
+			if ([CollaborationRole.Owner, CollaborationRole.Manager].includes(collab.role)) {
+				const account = await collab.account;
+
+				this.email.send({
+					subject: `Successfully published ${repository.name}@${release.version}`,
+					template: 'repo_release_published',
+					to: account.email,
+					context: {
+						repository,
+						account,
+						release,
+						attachments,
+						ip,
+					}
+				});
+			}
+		}
 	}
 
 }
