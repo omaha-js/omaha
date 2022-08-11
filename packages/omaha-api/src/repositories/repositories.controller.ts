@@ -141,7 +141,7 @@ export class RepositoriesController {
 			'desc'
 		);
 
-		return { versions };
+		return versions;
 	}
 
 }
