@@ -32,7 +32,7 @@ export class ReleaseDownload {
 
 	@ManyToOne(() => Token, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'token_id' })
-	public token!: Token;
+	public token!: Token | null;
 
 	@Column({ type: 'varchar', length: 45 })
 	public ip!: string;

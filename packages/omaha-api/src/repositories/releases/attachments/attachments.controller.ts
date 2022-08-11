@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Repository } from 'src/entities/Repository';
@@ -23,6 +23,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
 import { PassThrough } from 'stream';
+import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -75,15 +76,21 @@ export class AttachmentsController {
 	 * Creates a download link for an attachment.
 	 */
 	@Get('download')
-	@UseScopes('repo.releases.attachments.download')
 	public async downloadAttachment(
 		@Repo() repo: Repository,
 		@Param('version') version: string,
 		@Param('asset') assetName: string,
-		@User() token: BaseToken,
 		@Req() request: Request,
+		@User() token?: BaseToken,
 		@Collab() collab?: Collaboration
 	) {
+		if (token && !collab?.hasPermission('repo.releases.attachments.download')) {
+			throw new ForbiddenException('You do not have access to this endpoint');
+		}
+		else if (repo.access !== RepositoryAccessType.Public) {
+			throw new UnauthorizedException('Missing access token');
+		}
+
 		const expiration = 600000;
 		const attachment = await this.getAttachment(repo, version, assetName, collab);
 		const disposition = `attachment; filename="${attachment.file_name}"`;
@@ -105,9 +112,16 @@ export class AttachmentsController {
 			throw new BadRequestException('This release has not finished processing, try again shortly');
 		}
 
-		if (token.isDatabaseToken() && release.status !== ReleaseStatus.Draft) {
+		if (token && token.isDatabaseToken() && release.status !== ReleaseStatus.Draft) {
 			await Promise.all([
 				this.downloads.recordDownload(repo, release, attachment, token.token, request.ip),
+				this.releases.recordDownload(release),
+				this.service.incrementDownloadCount(attachment)
+			]);
+		}
+		else if (!token) {
+			await Promise.all([
+				this.downloads.recordDownload(repo, release, attachment, null, request.ip),
 				this.releases.recordDownload(release),
 				this.service.incrementDownloadCount(attachment)
 			]);

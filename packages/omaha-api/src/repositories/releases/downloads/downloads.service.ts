@@ -28,7 +28,7 @@ export class DownloadsService {
 		repo: Repository,
 		release: Release,
 		attachment: ReleaseAttachment,
-		token: Token,
+		token: Token | null,
 		ip: string
 	) {
 		const download = this.repository.create({
