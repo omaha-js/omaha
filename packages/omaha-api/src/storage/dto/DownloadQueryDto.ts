@@ -8,7 +8,7 @@ export class DownloadQueryDto {
 	@IsDefined()
 	@IsNumberString()
 	@IsNotEmpty()
-	expires!: number;
+	expires!: string;
 
 	/**
 	 * The base64-encoded download token.

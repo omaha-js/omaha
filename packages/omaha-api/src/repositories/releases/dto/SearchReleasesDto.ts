@@ -9,7 +9,7 @@ export class SearchReleasesDto {
 	@IsOptional()
 	@IsNumberString()
 	@IsNotEmpty()
-	page: number = 1;
+	page: string = '1';
 
 	/**
 	 * The number of results to show per page. This can be set to `0` to show all results when `assets=1`.
@@ -18,7 +18,7 @@ export class SearchReleasesDto {
 	@IsOptional()
 	@IsNumberString()
 	@IsNotEmpty()
-	count: number = 25;
+	count: string = '25';
 
 	/**
 	 * Whether or not to include attachments in the results.

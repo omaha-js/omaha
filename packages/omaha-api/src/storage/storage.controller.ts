@@ -24,7 +24,7 @@ export class StorageController {
 		if (isNaN(expiration)) throw new ForbiddenException('Invalid expiration timestamp');
 		if (Date.now() >= (expiration * 1000)) throw new ForbiddenException('Download link has expired');
 
-		const signature = driver.getDownloadSignature(objectName, query.expires, query.disposition);
+		const signature = driver.getDownloadSignature(objectName, expiration, query.disposition);
 
 		if (signature !== query.signature) {
 			throw new ForbiddenException('Incorrect signature');
