@@ -178,11 +178,17 @@ export class ReleasesService {
 	 * @param dto
 	 */
 	public async create(repo: Repository, dto: CreateReleaseDto) {
-		// Validate the version string with the driver
+		// Validate the version string with the driver and look for an existing release
 		const version = repo.driver.validateVersionString(dto.version);
+		const existing = await this.getFromVersion(repo, version);
 
 		// Check for a matching version name in the repository
-		if (await this.getFromVersion(repo, version)) {
+		if (existing) {
+			// If the matched version is a draft, treat this request as an update
+			if (existing.status === ReleaseStatus.Draft) {
+				return this.update(repo, existing, dto);
+			}
+
 			throw new BadRequestException('The specified version already exists within the repository');
 		}
 
