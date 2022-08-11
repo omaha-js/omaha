@@ -89,4 +89,9 @@ export class Collaboration {
 		return (this as any).__account__;
 	}
 
+	@Expose({ name: 'repository', groups: ['repo'] })
+	public get jsonPropRepository() {
+		return (this as any).__repository__;
+	}
+
 }

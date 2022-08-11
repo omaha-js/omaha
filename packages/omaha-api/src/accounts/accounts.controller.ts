@@ -1,4 +1,5 @@
 import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
@@ -66,7 +67,7 @@ export class AccountsController {
 			invite.scopes
 		);
 
-		return collab;
+		return instanceToPlain(collab, { groups: ['repo'] });
 	}
 
 }
