@@ -39,9 +39,9 @@ This is a work in progress – here's an overview of the current status:
 
 - [x] REST API
 - [ ] Web interface
-- [ ] API client (JS)
+- [x] API client (JS)
 - [ ] API client (C#)
-- [ ] Docker deployment
+- [x] Docker deployment
 - [ ] NuGet deployment
 
 ## license
