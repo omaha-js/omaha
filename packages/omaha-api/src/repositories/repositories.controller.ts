@@ -78,7 +78,7 @@ export class RepositoriesController {
 	@Private()
 	@UseGuards(RepositoriesGuard)
 	public async deleteRepository(@Repo() repo: Repository, @User() token: BaseToken, @Collab() collab?: Collaboration) {
-		if (collab?.role !== CollaborationRole.Owner) {
+		if (!collab || collab.role !== CollaborationRole.Owner) {
 			throw new ForbiddenException('Insufficient privileges');
 		}
 

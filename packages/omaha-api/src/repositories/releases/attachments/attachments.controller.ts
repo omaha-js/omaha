@@ -61,7 +61,7 @@ export class AttachmentsController {
 			attachment => attachment.asset.name.toLowerCase() === assetName.toLowerCase()
 		);
 
-		if (release.status === ReleaseStatus.Draft && !collab?.hasPermission('repo.releases.attachments.manage')) {
+		if (release.status === ReleaseStatus.Draft && (!collab || !collab.hasPermission('repo.releases.attachments.manage'))) {
 			throw new NotFoundException(`No version matching '${version}' exists within the repository`);
 		}
 
@@ -86,8 +86,9 @@ export class AttachmentsController {
 	) {
 		if (repo.access === RepositoryAccessType.Private) {
 			if (
-				!collab?.hasPermission('repo.releases.attachments.download') ||
-				!token?.hasPermission('repo.releases.attachments.download')
+				!collab || !token ||
+				!collab.hasPermission('repo.releases.attachments.download') ||
+				!token.hasPermission('repo.releases.attachments.download')
 			) {
 				throw new ForbiddenException('You do not have access to this endpoint');
 			}
@@ -99,7 +100,7 @@ export class AttachmentsController {
 		const release = await attachment.release;
 
 		if (release.status === ReleaseStatus.Archived) {
-			if (!collab?.hasPermission('repo.releases.attachments.manage')) {
+			if (!collab || !collab.hasPermission('repo.releases.attachments.manage')) {
 				throw new BadRequestException('Archived releases cannot be downloaded');
 			}
 
