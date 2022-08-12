@@ -140,7 +140,7 @@ export class AttachmentsController {
 			hash_sha1: attachment.hash_sha1.toString('hex'),
 			hash_md5: attachment.hash_md5.toString('hex'),
 			download_url: url,
-			expires_in: Math.floor(expiration / 1000)
+			expires_in: expiration
 		};
 	}
 
