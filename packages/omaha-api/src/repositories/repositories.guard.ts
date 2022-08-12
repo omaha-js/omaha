@@ -88,7 +88,7 @@ export class RepositoriesGuard implements CanActivate {
 			}
 
 			(request as any)._guardedRepository = token.repository;
-			(request as any)._guardedCollaboration = this.collaborations.getForToken(token)[0];
+			(request as any)._guardedCollaboration = (await this.collaborations.getForToken(token))[0];
 
 			return true;
 		}
