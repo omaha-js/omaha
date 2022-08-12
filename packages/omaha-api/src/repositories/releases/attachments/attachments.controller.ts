@@ -84,11 +84,13 @@ export class AttachmentsController {
 		@User() token?: BaseToken,
 		@Collab() collab?: Collaboration
 	) {
-		if (token && !collab?.hasPermission('repo.releases.attachments.download')) {
-			throw new ForbiddenException('You do not have access to this endpoint');
-		}
-		else if (repo.access !== RepositoryAccessType.Public) {
-			throw new UnauthorizedException('Missing access token');
+		if (repo.access === RepositoryAccessType.Private) {
+			if (
+				!collab?.hasPermission('repo.releases.attachments.download') ||
+				!token?.hasPermission('repo.releases.attachments.download')
+			) {
+				throw new ForbiddenException('You do not have access to this endpoint');
+			}
 		}
 
 		const expiration = 600000;
