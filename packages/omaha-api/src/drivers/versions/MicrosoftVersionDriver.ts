@@ -101,8 +101,11 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 	}
 
 	public getVersionsFromSameMajor(versions: VersionList, version: string): string[] {
-		const major = semver.major(version);
-		return versions.selected.filter(version => semver.major(version) === major);
+		const major = semver.major(this.toSemantic(version));
+		return versions.selected
+			.map(version => this.toSemantic(version))
+			.filter(version => semver.major(version) === major)
+			.map(version => this.toMicrosoft(version));
 	}
 
 }

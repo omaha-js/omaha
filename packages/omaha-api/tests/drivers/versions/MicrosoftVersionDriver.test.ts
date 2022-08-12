@@ -106,4 +106,12 @@ describe('MicrosoftVersionDriver', function() {
 		expect(driver.getVersionsFromConstraint(list, '1.0.1.0')).toEqual(versions.slice(2, 3));
 	});
 
+	it('can filter versions from the same major', function() {
+		const versions = ['1.0.0.0', '1.0.0.1', '1.0.1.0', '1.1.0.0', '2.0.0.0', '2.0.0.1', '2.0.1.0', '2.1.0.0'];
+		const list = { all: versions, selected: versions };
+
+		expect(driver.getVersionsFromSameMajor(list, '1.2.3.4')).toEqual(versions.slice(0, 4));
+		expect(driver.getVersionsFromSameMajor(list, '2.3.4.5')).toEqual(versions.slice(4, 8));
+	});
+
 });
