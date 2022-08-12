@@ -14,8 +14,6 @@ import { VersionList } from 'src/drivers/interfaces/VersionSchemeDriver';
 import { RepositorySettingsManager } from '../settings/RepositorySettingsManager';
 import { Cron } from '@nestjs/schedule';
 import { StorageService } from 'src/storage/storage.service';
-import { QueueService } from './queue/queue.service';
-import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
 import prettyBytes from 'pretty-bytes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
@@ -32,7 +30,6 @@ export class ReleasesService {
 		@InjectRepository(Release) private readonly repository: TypeOrmRepository<Release>,
 		private readonly tags: TagsService,
 		private readonly storage: StorageService,
-		private readonly queue: QueueService,
 		private readonly email: EmailService,
 		private readonly ws: RealtimeService,
 	) {}
@@ -264,7 +261,6 @@ export class ReleasesService {
 
 		// Handle publishing
 		let published = false;
-		let publishQueued = false;
 		if (dto.status === ReleaseStatus.Published) {
 			if (release.status === ReleaseStatus.Draft) {
 				// Get the assets for both the repository and the release
@@ -291,29 +287,9 @@ export class ReleasesService {
 					);
 				}
 
-				// Check for pending and failed attachments
-				const pending = attachments.filter(a => a.status === ReleaseAttachmentStatus.Pending);
-				const failed = attachments.filter(a => a.status === ReleaseAttachmentStatus.Failed);
-
-				if (failed.length > 0) {
-					throw new BadRequestException(
-						`One or more attachments in this release are marked as failed, reupload them and try again`
-					);
-				}
-
-				// Queue the publish if there are pending attachments
-				if (pending.length > 0) {
-					publishQueued = true;
-					await this.queue.addPublishRelease(release, ip);
-					await release.queue;
-				}
-
-				// Otherwise publish immediately
-				else {
-					release.status = ReleaseStatus.Published;
-					release.published_at = new Date();
-					published = true;
-				}
+				release.status = ReleaseStatus.Published;
+				release.published_at = new Date();
+				published = true;
 			}
 			else if (release.status === ReleaseStatus.Archived) {
 				throw new BadRequestException(
@@ -357,11 +333,6 @@ export class ReleasesService {
 			return manager.save(release);
 		});
 
-		// Announce publish events
-		if (published && !publishQueued) {
-			this.internSendPublishNotifications(repo, release, ip);
-		}
-
 		// Emit the updated event
 		if (release.status === ReleaseStatus.Draft) {
 			this.ws.emit(repo, 'release_updated', { release }, [
@@ -373,8 +344,9 @@ export class ReleasesService {
 			this.ws.emit(repo, 'release_updated', { release });
 		}
 
-		// Emit the published event
+		// Emit the published event and send notifications
 		if (published) {
+			this.internSendPublishNotifications(repo, release, ip);
 			this.ws.emit(repo, 'release_published', { release });
 		}
 

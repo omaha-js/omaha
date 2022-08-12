@@ -1,4 +1,4 @@
-import { ReadStream } from 'fs';
+import { Readable } from 'stream';
 
 /**
  * This interface defines a storage driver.
@@ -21,13 +21,10 @@ export interface StorageDriver {
 	 *   A readable stream for the file that will be consumed during upload. The source for the stream should be from
 	 *   the application's temporary storage directory.
 	 *
-	 * @param sha1
-	 *   The SHA-1 digest hash as a hexadecimal string if known.
-	 *
-	 * @param md5
-	 *   The MD5 digest hash as a hexadecimal string if known.
+	 * @param metadata
+	 *   Additional metadata for the file upload.
 	 */
-	write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void>;
+	write(name: string, stream: Readable, metadata?: StorageMetaData): Promise<void>;
 
 	/**
 	 * Returns true if the specified file exists within the storage system.
@@ -56,5 +53,29 @@ export interface StorageDriver {
 	 *   link may be either absolute or root-relative.
 	 */
 	getDownloadLink(name: string, duration: number, disposition?: string): Promise<string>;
+
+}
+
+export interface StorageMetaData {
+
+	/**
+	 * The MIME content type of the file (if known).
+	 */
+	mime?: string;
+
+	/**
+	 * The total size of the file in bytes (if known).
+	 */
+	size?: number;
+
+	/**
+	 * The MD5 checksum hash of the file (if known).
+	 */
+	hash_md5?: string;
+
+	/**
+	 * The SHA1 checksum hash of the file (if known).
+	 */
+	hash_sha1?: string;
 
 }

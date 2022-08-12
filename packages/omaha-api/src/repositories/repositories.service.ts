@@ -17,7 +17,6 @@ import { EmailService } from 'src/email/email.service';
 import { Environment } from 'src/app.environment';
 import { Cron } from '@nestjs/schedule';
 import { AttachmentsService } from './releases/attachments/attachments.service';
-import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { StorageService } from 'src/storage/storage.service';
 import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
 import moment from 'moment';
@@ -269,11 +268,9 @@ export class RepositoriesService {
 				const objectName = this.storage.getObjectName(repo, attachment.object_name);
 
 				try {
-					if (attachment.status === ReleaseAttachmentStatus.Ready) {
-						this.logger.debug('Deleting storage object %s (%d bytes)', objectName, attachment.size);
-						await this.storage.delete(objectName);
-						size += attachment.size;
-					}
+					this.logger.debug('Deleting storage object %s (%d bytes)', objectName, attachment.size);
+					await this.storage.delete(objectName);
+					size += attachment.size;
 				}
 				catch (error) {
 					if (!(error instanceof ObjectNotFoundError)) {

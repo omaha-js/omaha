@@ -66,9 +66,7 @@ export class RepositoriesGuard implements CanActivate {
 				}
 			}
 
-			// This is not legit, don't do this, why am I doing this?
-			// Gotta go fast...
-			(request as any)._guardedRepository = collaboration.repository;
+			(request as any)._guardedRepository = await collaboration.repository;
 			(request as any)._guardedCollaboration = collaboration;
 
 			return true;

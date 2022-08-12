@@ -3,7 +3,6 @@ import prettyBytes from 'pretty-bytes';
 import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Asset } from './Asset';
-import { ReleaseAttachmentStatus } from './enum/ReleaseAttachmentStatus';
 import { Release } from './Release';
 import { ReleaseDownload } from './ReleaseDownload';
 
@@ -55,13 +54,6 @@ export class ReleaseAttachment {
 	 */
 	@Column({ unsigned: true })
 	public size!: number;
-
-	/**
-	 * The status of the file upload into storage.
-	 */
-	@Column({ type: 'enum', enum: ReleaseAttachmentStatus, default: ReleaseAttachmentStatus.Pending })
-	@Index()
-	public status!: ReleaseAttachmentStatus;
 
 	/**
 	 * The SHA-1 digest hash for the file's contents.

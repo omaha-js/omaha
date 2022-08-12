@@ -1,5 +1,5 @@
 import { ReadStream } from 'typeorm/platform/PlatformTools';
-import { StorageDriver } from '../interfaces/StorageDriver';
+import { StorageDriver, StorageMetaData } from '../interfaces/StorageDriver';
 import { Logger } from '@nestjs/common';
 import { Client, ItemBucketMetadata } from 'minio';
 import { Env } from '@baileyherbert/env';
@@ -43,21 +43,35 @@ export class S3StorageDriver implements StorageDriver {
 		}
 	}
 
-	public async write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void> {
+	public async write(name: string, stream: ReadStream, metadata?: StorageMetaData): Promise<void> {
 		const meta: ItemBucketMetadata = {
-			'Content-Type': 'application/octet-stream',
-			'Content-Length': size
+			'Content-Type': 'application/octet-stream'
 		};
 
-		if (typeof sha1 === 'string') {
-			meta['X-Bz-Content-Sha1'] = sha1;
+		if (typeof metadata?.mime === 'string') {
+			meta['Content-Type'] = metadata.mime;
 		}
 
-		if (typeof md5 === 'string') {
-			meta['Content-MD5'] = md5;
+		if (typeof metadata?.size !== 'undefined') {
+			meta['Content-Length'] = Number(metadata.size);
 		}
 
-		await this.client.putObject(this.bucket, name, stream, meta);
+		if (typeof metadata?.hash_sha1 === 'string') {
+			meta['X-Bz-Content-Sha1'] = metadata.hash_sha1;
+		}
+
+		if (typeof metadata?.hash_md5 === 'string') {
+			meta['Content-MD5'] = metadata.hash_md5;
+		}
+
+		return new Promise<void>((resolve, reject) => {
+			stream.on('error', error => {
+				stream.destroy();
+				reject(error);
+			});
+
+			this.client.putObject(this.bucket, name, stream, meta).then(() => resolve(), reject);
+		});
 	}
 
 	public async exists(name: string): Promise<boolean> {

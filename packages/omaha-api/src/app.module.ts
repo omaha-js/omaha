@@ -15,7 +15,6 @@ import { StorageModule } from './storage/storage.module';
 import { ReleaseDownload } from './entities/ReleaseDownload';
 import { Token } from './entities/Token';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ReleaseJob } from './entities/ReleaseJob';
 import { EmailModule } from './email/email.module';
 import { CollaborationInvite } from './entities/CollaborationInvite';
 import { RealtimeModule } from './realtime/realtime.module';
@@ -43,7 +42,6 @@ import { RealtimeModule } from './realtime/realtime.module';
 				ReleaseAttachment,
 				ReleaseDownload,
 				Token,
-				ReleaseJob,
 			],
 		}),
 		RepositoriesModule,

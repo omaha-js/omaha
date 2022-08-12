@@ -4,7 +4,6 @@ import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, On
 import { ReleaseStatus } from './enum/ReleaseStatus';
 import { ReleaseAttachment } from './ReleaseAttachment';
 import { ReleaseDownload } from './ReleaseDownload';
-import { ReleaseJob } from './ReleaseJob';
 import { Repository } from './Repository';
 import { Tag } from './Tag';
 
@@ -91,12 +90,6 @@ export class Release {
 	 */
 	@OneToMany(() => ReleaseAttachment, attachment => attachment.release)
 	public attachments!: Promise<ReleaseAttachment[]>;
-
-	/**
-	 * The queued jobs for this release.
-	 */
-	@OneToMany(() => ReleaseJob, job => job.release)
-	public queue!: Promise<ReleaseJob[]>;
 
 	/**
 	 * The downloads for this release.

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, ForbiddenException, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, ForbiddenException, Get, Logger, NotFoundException, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Repository } from 'src/entities/Repository';
@@ -15,15 +15,13 @@ import { Request } from 'express';
 import { ReleaseStatus } from 'src/entities/enum/ReleaseStatus';
 import { Collab } from 'src/support/Collab';
 import { Collaboration } from 'src/entities/Collaboration';
-import { QueueService } from '../queue/queue.service';
-import { exists } from 'src/support/utilities/exists';
-import { ReleaseAttachmentStatus } from 'src/entities/enum/ReleaseAttachmentStatus';
 import { RealtimeService } from 'src/realtime/realtime.service';
-import fs from 'fs';
-import crypto from 'crypto';
-import { ObjectNotFoundError } from 'src/storage/errors/ObjectNotFoundError';
-import { PassThrough } from 'stream';
 import { RepositoryAccessType } from 'src/entities/enum/RepositoryAccessType';
+import { AttachmentStorageEngine } from './storage/AttachmentStorageEngine';
+import { AttachmentStorageGuard } from './storage/AttachmentStorageGuard';
+import { Release } from 'src/entities/Release';
+import { Asset } from 'src/entities/Asset';
+import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 
 @Controller('repositories/:repo_id/releases/:version/:asset')
 @UseGuards(RepositoriesGuard)
@@ -36,7 +34,6 @@ export class AttachmentsController {
 		private readonly releases: ReleasesService,
 		private readonly storage: StorageService,
 		private readonly downloads: DownloadsService,
-		private readonly queue: QueueService,
 		private readonly ws: RealtimeService,
 	) {}
 
@@ -111,10 +108,6 @@ export class AttachmentsController {
 			}
 		}
 
-		if (attachment.status !== ReleaseAttachmentStatus.Ready) {
-			throw new BadRequestException('This release has not finished processing, try again shortly');
-		}
-
 		if (token && token.isDatabaseToken() && release.status !== ReleaseStatus.Draft) {
 			await Promise.all([
 				this.downloads.recordDownload(repo, release, attachment, token.token, request.ip),
@@ -150,88 +143,55 @@ export class AttachmentsController {
 	/**
 	 * Uploads an attachment.
 	 *
-	 * @param repo
-	 * @param version
-	 * @param assetName
 	 * @param file
 	 * @returns
 	 */
 	@Post()
 	@UseScopes('repo.releases.attachments.manage')
-	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME }))
-	public async uploadAttachment(
-		@Repo() repo: Repository,
-		@Param('version') version: string,
-		@Param('asset') assetName: string,
-		@UploadedFile() file: Express.Multer.File
-	) {
+	@UseGuards(AttachmentStorageGuard)
+	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME, storage: new AttachmentStorageEngine() }))
+	public async uploadAttachment(@Req() request: Request, @UploadedFile() file: Express.Multer.File) {
+		// Get controller entities
+		const repo: Repository = (request as any)._attachRepository;
+		const release: Release = (request as any)._attachRelease;
+		const asset: Asset = (request as any)._attachAsset;
+		const attachment: ReleaseAttachment = (request as any)._attachAttachment;
+
+		// Get attachment parameters
+		const success: boolean = (request as any)._attachFileReady;
+		const hash_sha1: Buffer = (request as any)._attachHashSHA1;
+		const hash_md5: Buffer = (request as any)._attachHashMD5;
+		const size: number = (request as any)._attachFileSize;
+
 		try {
-			const release = await this.releases.getFromVersionOrFail(repo, version);
-			const asset = (await repo.assets).find(asset => asset.name.toLowerCase() === assetName.toLowerCase());
-			const attachment = (await release.attachments).find(attachment => attachment.asset.id === asset?.id);
-
-			// Preflight checks
-			if (!file) throw new BadRequestException(`Missing file upload`);
-			if (!asset) throw new NotFoundException(`The specified asset was not found in the repository`);
-			if (release.status !== ReleaseStatus.Draft) throw new BadRequestException(`Cannot upload attachments to a published release`);
-
-			// Make sure the file exists
-			if (!await exists(file.path)) {
-				throw new InternalServerErrorException('File not found (internal)');
+			// Check for successful upload
+			if (!success) {
+				throw new BadRequestException('File upload failed');
 			}
-
-			// Create the read stream
-			const stream = fs.createReadStream(file.path);
-			const pass = new PassThrough();
-
-			// Compute hashes for the file using the stream
-			const sha1 = crypto.createHash('sha1', { encoding: 'binary' });
-			const md5 = crypto.createHash('md5', { encoding: 'binary' });
-			const promise = new Promise<void>(r => pass.once('end', r));
-
-			pass.on('data', chunk => {
-				sha1.update(chunk);
-				md5.update(chunk);
-			});
-
-			stream.pipe(pass);
-
-			// Wait for hashing
-			await promise;
 
 			// Update an existing attachment
 			if (attachment) {
-				if (attachment.status === ReleaseAttachmentStatus.Pending) {
-					throw new BadRequestException('This attachment is currently pending, please try again shortly');
-				}
-
 				// Delete old objects
-				if (typeof attachment.object_name === 'string') {
+				if (typeof attachment.object_name === 'string' && attachment.object_name !== file.filename) {
 					try {
 						await this.storage.delete(this.storage.getObjectName(repo, attachment.object_name));
 					}
-					catch (err) {
-						if (!(err instanceof ObjectNotFoundError)) {
-							this.logger.error('Failed to delete old object', err);
-						}
-					}
+					catch (err) {}
 				}
 
 				attachment.file_name = file.originalname,
-				attachment.object_name = null;
+				attachment.object_name = file.filename;
 				attachment.mime = file.mimetype;
-				attachment.size = file.size;
-				attachment.hash_sha1 = sha1.digest();
-				attachment.hash_md5 = md5.digest();
-				attachment.status = ReleaseAttachmentStatus.Pending;
+				attachment.size = size;
+				attachment.hash_sha1 = hash_sha1;
+				attachment.hash_md5 = hash_md5;
 
 				await attachment.release;
+				await this.service.save(attachment);
+
 				this.ws.emit(repo, 'attachment_updated', { attachment }, [
 					'repo.releases.attachments.manage'
 				]);
-
-				await this.service.save(attachment);
-				await this.queue.addAttachmentUpload(attachment, file.path);
 
 				return attachment;
 			}
@@ -240,14 +200,13 @@ export class AttachmentsController {
 			else {
 				const attachment = await this.service.create();
 				attachment.file_name = file.originalname;
-				attachment.object_name = null;
-				attachment.size = file.size;
+				attachment.object_name = file.filename;
+				attachment.size = size;
 				attachment.mime = file.mimetype;
 				attachment.release = Promise.resolve(release);
 				attachment.asset = asset;
-				attachment.hash_sha1 = sha1.digest();
-				attachment.hash_md5 = md5.digest();
-				attachment.status = ReleaseAttachmentStatus.Pending;
+				attachment.hash_sha1 = hash_sha1;
+				attachment.hash_md5 = hash_md5;
 
 				await this.service.save(attachment);
 
@@ -255,21 +214,12 @@ export class AttachmentsController {
 					'repo.releases.attachments.manage'
 				]);
 
-				await this.queue.addAttachmentUpload(attachment, file.path);
-
 				return attachment;
 			}
 		}
 		catch (err) {
-			try { await fs.promises.unlink(file.path); }
-			catch (err) {}
-
-			if (err instanceof BadRequestException || err instanceof InternalServerErrorException || err instanceof NotFoundException) {
-				throw err;
-			}
-
-			this.logger.error('Attachment upload failed:', err);
-			throw new InternalServerErrorException();
+			this.storage.delete(this.storage.getObjectName(repo, file.filename));
+			throw err;
 		}
 	}
 

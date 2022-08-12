@@ -1,11 +1,11 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ReadStream } from 'fs';
 import { Environment } from 'src/app.environment';
 import { Repository } from 'src/entities/Repository';
 import { LocalStorageDriver } from '../drivers/storage/LocalStorageDriver';
 import { S3StorageDriver } from '../drivers/storage/S3StorageDriver';
-import { StorageDriver } from '../drivers/interfaces/StorageDriver';
+import { StorageDriver, StorageMetaData } from '../drivers/interfaces/StorageDriver';
 import { StorageDriverType } from 'src/drivers/storage';
+import { Readable } from 'stream';
 
 @Injectable()
 export class StorageService implements OnModuleInit {
@@ -38,21 +38,15 @@ export class StorageService implements OnModuleInit {
 	 * @param name
 	 *   The full name of the object in storage.
 	 *
-	 * @param size
-	 *   The total size of the file in bytes.
-	 *
 	 * @param stream
 	 *   A readable stream for the file that will be consumed during upload. The source for the stream should be from
 	 *   the application's temporary storage directory.
 	 *
-	 * @param sha1
-	 *   The SHA-1 digest hash as a hexadecimal string if known.
-	 *
-	 * @param md5
-	 *   The MD5 digest hash as a hexadecimal string if known.
+	 * @param metadata
+	 *   Additional metadata for the file upload.
 	 */
-	public write(name: string, size: number, stream: ReadStream, sha1?: string, md5?: string): Promise<void> {
-		return this.driver.write(name, size, stream, sha1, md5);
+	public write(name: string, stream: Readable, metadata?: StorageMetaData): Promise<void> {
+		return this.driver.write(name, stream, metadata);
 	}
 
 	/**

@@ -22,7 +22,7 @@ export class LocalStorageDriver implements StorageDriver {
 		}
 	}
 
-	public async write(name: string, size: number, stream: ReadStream): Promise<void> {
+	public async write(name: string, stream: ReadStream): Promise<void> {
 		const targetPath = path.resolve(this.storagePath, name);
 		const targetDir = path.dirname(targetPath);
 
@@ -30,11 +30,20 @@ export class LocalStorageDriver implements StorageDriver {
 			await fs.promises.mkdir(targetDir, { recursive: true });
 		}
 
-		const target = fs.createWriteStream(targetPath, { encoding: 'binary' });
-		const finished = new Promise(fulfill => stream.on('end', fulfill));
+		return new Promise<void>((resolve, reject) => {
+			const target = fs.createWriteStream(targetPath, { encoding: 'binary' });
 
-		stream.pipe(target);
-		await finished;
+			stream.on('error', error => {
+				target.destroy();
+				reject(error);
+			});
+
+			stream.on('end', () => {
+				resolve();
+			});
+
+			stream.pipe(target);
+		});
 	}
 
 	public exists(name: string): Promise<boolean> {
