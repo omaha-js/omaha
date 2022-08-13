@@ -482,14 +482,15 @@ export class ReleasesService {
 	}
 
 	/**
-	 * Increments the download count on the given release.
+	 * Increments the download count on the given release without bumping the update timestamp.
 	 *
 	 * @param release
 	 * @returns
 	 */
 	public async recordDownload(release: Release) {
 		return this.repository.update(release.id, {
-			download_count: () => 'download_count + 1'
+			download_count: () => 'download_count + 1',
+			updated_at: () => 'updated_at'
 		});
 	}
 

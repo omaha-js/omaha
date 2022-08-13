@@ -20,9 +20,16 @@ export class AttachmentsService {
 		return this.repository.create();
 	}
 
+	/**
+	 * Increments the download count on the given attachment without bumping the update timestamp.
+	 *
+	 * @param attachment
+	 * @returns
+	 */
 	public async incrementDownloadCount(attachment: ReleaseAttachment) {
 		return this.repository.update(attachment.id, {
-			download_count: () => 'download_count + 1'
+			download_count: () => 'download_count + 1',
+			updated_at: () => 'updated_at'
 		});
 	}
 
