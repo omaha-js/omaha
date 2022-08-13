@@ -33,6 +33,7 @@ importers:
       '@types/node': ^16.11.47
       '@types/nodemailer': ^6.4.5
       '@types/passport-local': ^1.0.34
+      '@types/proxy-addr': ^2.0.0
       '@types/semver': ^7.3.10
       '@types/twig': ^1.12.9
       '@types/uuid': ^8.3.4
@@ -50,6 +51,7 @@ importers:
       passport-local: ^1.0.0
       prettier: ^2.7.1
       pretty-bytes: ^5.6.0
+      proxy-addr: ^2.0.7
       reflect-metadata: ^0.1.13
       rimraf: ^3.0.2
       rxjs: ^7.5.6
@@ -89,6 +91,7 @@ importers:
       passport: 0.5.3
       passport-local: 1.0.0
       pretty-bytes: 5.6.0
+      proxy-addr: 2.0.7
       reflect-metadata: 0.1.13
       rimraf: 3.0.2
       rxjs: 7.5.6
@@ -111,6 +114,7 @@ importers:
       '@types/node': 16.11.47
       '@types/nodemailer': 6.4.5
       '@types/passport-local': 1.0.34
+      '@types/proxy-addr': 2.0.0
       '@types/semver': 7.3.10
       '@types/twig': 1.12.9
       '@types/uuid': 8.3.4
@@ -1404,6 +1408,12 @@ packages:
 
   /@types/prettier/2.7.0:
     resolution: {integrity: sha512-RI1L7N4JnW5gQw2spvL7Sllfuf1SaHdrZpCHiBlCXjIlufi1SMNnbu2teze3/QE67Fg2tBlH7W+mi4hVNk4p0A==}
+    dev: true
+
+  /@types/proxy-addr/2.0.0:
+    resolution: {integrity: sha512-JEm0kSrO3CjbFSLpYeYhCscS0vpW1mIWedhWuurJnYbMzY1vcm9fzJ6TL6SWq3m/m3g4KUV5JBT69mQSwUHZHg==}
+    dependencies:
+      '@types/node': 17.0.23
     dev: true
 
   /@types/pug/2.0.6:

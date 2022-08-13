@@ -71,9 +71,9 @@ export class RealtimeService {
 			scopes: conn.collaboration.getFullScopes()
 		})));
 
-		this.logger.log(
+		this.logger.debug(
 			'Accepted websocket connection from %s for %d repositories',
-			socket.conn.remoteAddress,
+			socket.remoteAddress,
 			connections.length
 		);
 	}
@@ -90,9 +90,9 @@ export class RealtimeService {
 				this.connections.delete(socket, connection);
 			}
 
-			this.logger.log(
+			this.logger.debug(
 				'Closed websocket connection from %s',
-				socket.conn.remoteAddress
+				socket.remoteAddress
 			);
 		}
 	}
