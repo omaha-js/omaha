@@ -58,6 +58,11 @@ async function bootstrap() {
 
 	app.enableShutdownHooks();
 
+	app.enableCors({
+		origin: '*',
+		allowedHeaders: 'Content-Type, Accept, Authorization'
+	});
+
 	await app.listen(3000);
 }
 
