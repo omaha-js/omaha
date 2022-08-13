@@ -22,6 +22,12 @@ export const Environment = Env.rules({
 	 */
 	APP_URL: Env.schema.string().optional('http://localhost:3000'),
 
+	/**
+	 * The trusted proxy setting for `express`. Refer to the following documentation link for possible values:
+	 * https://expressjs.com/en/guide/behind-proxies.html
+	 */
+	APP_TRUSTED_PROXY: Env.schema.string().optional(),
+
 	/// =======================================================
 	/// == Database
 	/// =======================================================

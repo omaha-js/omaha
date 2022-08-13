@@ -9,6 +9,7 @@ import { TrimPipe } from './support/TrimPipe';
 import { ClassSerializerInterceptor, ValidationPipe, VersioningType } from '@nestjs/common';
 import { CustomLogger } from './app.logger';
 import { EntityNotFoundExceptionFilter } from './support/filters/entities';
+import { Environment } from './app.environment';
 
 async function bootstrap() {
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -62,6 +63,10 @@ async function bootstrap() {
 		origin: '*',
 		allowedHeaders: 'Content-Type, Accept, Authorization'
 	});
+
+	if (typeof Environment.APP_TRUSTED_PROXY === 'string' && Environment.APP_TRUSTED_PROXY.length > 0) {
+		app.set('trust proxy', Environment.APP_TRUSTED_PROXY);
+	}
 
 	await app.listen(3000);
 }
