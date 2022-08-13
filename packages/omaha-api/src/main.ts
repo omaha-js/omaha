@@ -64,7 +64,7 @@ async function bootstrap() {
 		allowedHeaders: 'Content-Type, Accept, Authorization'
 	});
 
-	if (typeof Environment.APP_TRUSTED_PROXY === 'string' && Environment.APP_TRUSTED_PROXY.length > 0) {
+	if (typeof Environment.APP_TRUSTED_PROXY !== 'undefined') {
 		app.set('trust proxy', Environment.APP_TRUSTED_PROXY);
 	}
 

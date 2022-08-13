@@ -26,7 +26,18 @@ export const Environment = Env.rules({
 	 * The trusted proxy setting for `express`. Refer to the following documentation link for possible values:
 	 * https://expressjs.com/en/guide/behind-proxies.html
 	 */
-	APP_TRUSTED_PROXY: Env.schema.string().optional(),
+	APP_TRUSTED_PROXY: (value?: string) => {
+		if (typeof value === 'string') {
+			value = value.trim().toLowerCase();
+
+			if (value === 'true') return true;
+			if (value === 'false') return false;
+			if (value.match(/^\d+$/)) return Number(value);
+			if (value.length === 0) return;
+
+			return value;
+		}
+	},
 
 	/// =======================================================
 	/// == Database
