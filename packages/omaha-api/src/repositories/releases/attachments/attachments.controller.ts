@@ -151,6 +151,13 @@ export class AttachmentsController {
 	@UseGuards(AttachmentStorageGuard)
 	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME, storage: new AttachmentStorageEngine() }))
 	public async uploadAttachment(@Req() request: Request, @UploadedFile() file: Express.Multer.File) {
+		if (!file) {
+			throw new BadRequestException(
+				`Missing file upload, make sure you are sending the content under the name 'file' and have provided ` +
+				`a valid file name.`
+			);
+		}
+
 		// Get controller entities
 		const repo: Repository = (request as any)._attachRepository;
 		const release: Release = (request as any)._attachRelease;
@@ -218,7 +225,10 @@ export class AttachmentsController {
 			}
 		}
 		catch (err) {
-			this.storage.delete(this.storage.getObjectName(repo, file.filename));
+			if (file && file.filename) {
+				this.storage.delete(this.storage.getObjectName(repo, file.filename));
+			}
+
 			throw err;
 		}
 	}
