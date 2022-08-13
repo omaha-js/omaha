@@ -1,6 +1,7 @@
 import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { Request } from 'express';
 import { StorageEngine } from 'multer';
+import { Asset } from 'src/entities/Asset';
 import { Release } from 'src/entities/Release';
 import { ReleaseAttachment } from 'src/entities/ReleaseAttachment';
 import { Repository } from 'src/entities/Repository';
@@ -30,6 +31,7 @@ export class AttachmentStorageEngine implements StorageEngine {
 	private async upload(request: Request, file: Express.Multer.File): Promise<void> {
 		const repo: Repository = (request as any)._attachRepository;
 		const release: Release = (request as any)._attachRelease;
+		const asset: Asset = (request as any)._attachAsset;
 		const attachment: ReleaseAttachment = (request as any)._attachAttachment;
 		const storage: StorageService = (request as any)._storageService;
 
@@ -46,7 +48,7 @@ export class AttachmentStorageEngine implements StorageEngine {
 		const size = typeof sizeInput === 'string' ? Number(sizeInput) : undefined;
 		const hash_sha1 = typeof sha1Input === 'string' ? sha1Input.trim() : undefined;
 		const hash_md5 = typeof md5Input === 'string' ? md5Input.trim() : undefined;
-		const objectName = file.filename = `${release.version}/${attachment.asset.name}-${uuid.v4()}`;
+		const objectName = file.filename = `${release.version}/${asset.name}-${uuid.v4()}`;
 		const mime = file.mimetype ?? 'application/octet-stream';
 
 		const hasher = createHashTransform({
