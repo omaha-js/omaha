@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { router } from 'tinro';
 	import Lock from 'tabler-icons-svelte/icons/Lock.svelte';
-	import ExclamationCircle from 'svelte-bootstrap-icons/lib/ExclamationCircle';
+	import ExclamationCircle from 'svelte-bootstrap-icons/lib/ExclamationCircle.svelte';
 	import { useApi } from 'src/omaha/core/api/Api';
 	import Button from 'src/components/kit/Button.svelte';
 
