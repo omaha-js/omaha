@@ -18,6 +18,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { EmailModule } from './email/email.module';
 import { CollaborationInvite } from './entities/CollaborationInvite';
 import { RealtimeModule } from './realtime/realtime.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
 
 @Module({
 	imports: [
@@ -49,6 +51,9 @@ import { RealtimeModule } from './realtime/realtime.module';
 		ScheduleModule.forRoot(),
 		EmailModule,
 		RealtimeModule,
+		ServeStaticModule.forRoot({
+			rootPath: path.resolve(__dirname, '../node_modules/@omaha/omaha-web/dist')
+		})
 	],
 })
 export class AppModule {}

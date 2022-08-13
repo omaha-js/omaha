@@ -38,8 +38,6 @@ async function bootstrap() {
 
 			next();
 		});
-
-		// TODO: Implement the logic for production.
 	}
 
 	app.useGlobalFilters(new EntityNotFoundExceptionFilter());
