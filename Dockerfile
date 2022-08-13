@@ -2,8 +2,7 @@
 
 FROM node:16 AS workspace
 
-RUN npm install -g pnpm && \
-	curl -sf https://gobinaries.com/tj/node-prune | sh
+RUN npm install -g pnpm
 
 WORKDIR /srv/app
 
@@ -27,7 +26,7 @@ COPY ./packages/omaha-web/src ./src
 COPY ./packages/omaha-web/public ./public
 COPY ./packages/omaha-web/index.html ./
 
-RUN pnpm run build && rm -rf src
+RUN pnpm run build && rm -rf src && rm -rf public && rm -rf src
 
 # Stage 3: Build omaha-api
 
@@ -43,9 +42,7 @@ RUN pnpm run build
 
 FROM build-api AS pruned
 WORKDIR /srv/app
-RUN rm -rf node_modules && \
-	pnpm --filter omaha-api --prod deploy pruned && \
-	/usr/local/bin/node-prune pruned/node_modules
+RUN rm -rf node_modules && pnpm --filter omaha-api --prod deploy pruned
 
 # Stage 5: Production
 
