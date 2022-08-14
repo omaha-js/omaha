@@ -1,0 +1,58 @@
+header {
+	background-color: #fff;
+	padding: 2rem 5rem;
+	box-shadow: 0 0 2em rgba(113, 113, 113, 0.14);
+
+	.header-flex {
+		display: flex;
+		align-items: stretch;
+	}
+
+	.header-logo {
+		a {
+			display: flex;
+			background-color: #ff3b4a;
+			border-radius: 4px;
+
+			width: 5rem;
+			height: 5rem;
+
+			align-items: center;
+			justify-content: center;
+
+			margin-right: 1.5rem;
+			transition: background-color 0.2s;
+
+			&:hover {
+				background-color: darken(#ff3b4a, 15%);
+			}
+		}
+	}
+
+	.create-repo-button {
+		margin-left: 1.1rem;
+
+		a {
+			display: flex;
+			background-color: #f3f3f3;
+			border-radius: 4px;
+
+			width: 5rem;
+			height: 5rem;
+
+			align-items: center;
+			justify-content: center;
+
+			color: #999;
+			transition: background-color 0.2s;
+
+			&:hover {
+				color: #444;
+				background-color: darken(#f3f3f3, 6%);
+			}
+		}
+	}
+
+	@import 'header/repo_picker';
+	@import 'header/user_dropdown';
+}

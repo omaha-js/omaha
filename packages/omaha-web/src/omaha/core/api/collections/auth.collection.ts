@@ -1,8 +1,8 @@
-import { Account } from 'src/omaha/models/Account';
 import { SessionManager, token } from '../../SessionManager';
 import { ApiWorker } from '../Api';
 import { IAuthIdentityResponse, IAuthLoginResponse } from '../responses/auth.responses';
 import { plainToInstance } from 'class-transformer';
+import { Account } from '@omaha/client';
 
 export default function (api: ApiWorker) {
 	return {
@@ -21,10 +21,9 @@ export default function (api: ApiWorker) {
 				password
 			});
 
-			const account = plainToInstance(Account, response.account);
-			SessionManager.set(response.token, account, persist);
+			SessionManager.set(response.token, response.account, persist);
 
-			return account;
+			return response.account;
 		},
 
 		/**
@@ -43,11 +42,9 @@ export default function (api: ApiWorker) {
 				email,
 				password
 			});
+			SessionManager.set(response.token, response.account, persist);
 
-			const account = plainToInstance(Account, response.account);
-			SessionManager.set(response.token, account, persist);
-
-			return account;
+			return response.account;
 		},
 
 		/**
@@ -59,7 +56,7 @@ export default function (api: ApiWorker) {
 				const response = await api.get<IAuthIdentityResponse>('/v1/auth/identity');
 
 				if (response.access === 'account') {
-					return plainToInstance(Account, response.account);
+					return response.account;
 				}
 			}
 			catch (err) {}

@@ -1,9 +1,27 @@
 <script lang="ts">
-	import AccountNavigation from './admin/AccountNavigation.svelte';
-	import RepoNavigation from './admin/RepoNavigation.svelte';
-	import RepoSwitcher from './admin/RepoSwitcher.svelte';
+	// import AccountNavigation from './admin/AccountNavigation.svelte';
+	// import RepoNavigation from './admin/RepoNavigation.svelte';
+	// import RepoSwitcher from './admin/RepoSwitcher.svelte';
+
+	import Logo from './header/Logo.svelte';
+	import HeaderRepoPicker from './header/HeaderRepoPicker.svelte';
+	import HeaderCreateButton from './header/HeaderCreateButton.svelte';
+	import HeaderUserDropdown from './header/HeaderUserDropdown.svelte';
+
 </script>
 
+<header>
+	<div class="container">
+		<div class="header-flex">
+			<Logo />
+			<HeaderRepoPicker />
+			<HeaderCreateButton />
+			<HeaderUserDropdown />
+		</div>
+	</div>
+</header>
+
+<!--
 <div class="layout layout-admin">
 	<div class="sidebar">
 		<div class="sidebar-wrapper">
@@ -27,3 +45,4 @@
 		</div>
 	</main>
 </div>
+-->

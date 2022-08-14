@@ -1,0 +1,40 @@
+.repo-picker {
+	background-color: #fff;
+	border-radius: 4px;
+	flex-grow: 1;
+	max-width: 50rem;
+
+	.repo-picker-input {
+		display: flex;
+
+		align-items: center;
+
+		background-color: #f3f3f3;
+		border-radius: 4px;
+		height: 5rem;
+
+		padding: 0 1.5rem;
+
+		.repo-icon {
+			svg {
+				color: #8e8e8e;
+			}
+		}
+
+		.repo-name {
+			padding: 0 1rem;
+			font-size: 1.5rem;
+			flex-grow: 1;
+
+			&.state-no-selection {
+				color: #929292;
+			}
+		}
+
+		.repo-caret {
+			svg {
+				color: #acacac;
+			}
+		}
+	}
+}

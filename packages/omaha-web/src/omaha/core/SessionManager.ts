@@ -1,5 +1,5 @@
+import { Account } from '@omaha/client';
 import { createStore } from '../helpers/stores';
-import { Account } from '../models/Account';
 import { Api } from './api/Api';
 
 class SessionManagerImpl {

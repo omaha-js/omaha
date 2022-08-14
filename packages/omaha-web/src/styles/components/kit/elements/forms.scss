@@ -1,34 +1,39 @@
 .form-control {
-	background-color: $oc-dark-8;
-	border-color: $oc-dark-5;
+	background-color: $oc-gray-1;
+	border-color: $oc-gray-3;
+	box-shadow: none !important;
 
 	&:focus, &:active {
-		background-color: $oc-dark-8;
-		border-color: $oc-blue-8;
+		background-color: $oc-white;
+		border-color: $oc-gray-3;
+		color: $oc-dark-4;
 	}
 
-	height: 36px;
+	height: 3.6rem;
 	min-height: 36px;
-	line-height: 34px;
-	font-size: 14px;
+	line-height: 3.6rem;
+	font-size: 1.4rem;
 	border-radius: 4px;
-	color: $oc-dark-0;
+	color: $oc-dark-4;
+
+	padding: 0.4rem 1.1rem;
 }
 
 .form-check {
 	display: flex;
 	align-items: center;
 
-	padding-top: 4px;
-	padding-bottom: 4px;
+	padding-top: 0.4rem;
+	padding-bottom: 0.4rem;
+	font-size: 1.4rem;
 
 	.form-check-input {
 		margin-top: 0;
-		margin-right: 0.6em;
+		margin-right: 0.7rem;
 	}
 
 	.form-check-label {
-		line-height: 15px;
+		line-height: 1.4rem;
 	}
 }
 

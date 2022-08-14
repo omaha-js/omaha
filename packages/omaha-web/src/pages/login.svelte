@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { router } from 'tinro';
 	import Lock from 'tabler-icons-svelte/icons/Lock.svelte';
-	import ExclamationCircle from 'svelte-bootstrap-icons/lib/ExclamationCircle.svelte';
+	import AlertCircle from 'tabler-icons-svelte/icons/AlertCircle.svelte';
 	import { useApi } from 'src/omaha/core/api/Api';
 	import Button from 'src/components/kit/Button.svelte';
 
@@ -39,7 +39,7 @@
 			<form on:submit|preventDefault={ onSubmit }>
 				{#if $error}
 				<div class="form-error mb-3">
-					<ExclamationCircle />
+					<AlertCircle size={28} />
 					<p>{$error}</p>
 				</div>
 				{/if}

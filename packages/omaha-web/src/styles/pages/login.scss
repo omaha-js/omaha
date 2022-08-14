@@ -11,11 +11,11 @@
 	justify-content: center;
 
 	.login-container {
-		background-color: $oc-dark-7;
-		border: 3px solid $oc-dark-8;
+		background-color: $oc-white;
+		box-shadow: 0 0 6px rgba($oc-black, 0.14);
 		border-radius: 6px;
 
-		width: 400px;
+		width: 40rem;
 		max-width: 100%;
 
 		.login-header {
@@ -23,7 +23,7 @@
 			align-items: center;
 			justify-content: center;
 
-			color: $oc-dark-3;
+			color: $oc-dark-4;
 			text-align: center;
 
 			padding: 45px 35px 35px;
@@ -49,36 +49,36 @@
 		}
 
 		.login-footer {
-			background-color: $oc-dark-8;
+			background-color: $oc-gray-2;
 			padding: 35px;
 			border-radius: 0 0 6px 6px;
 
 			font-size: 14px;
-			color: $oc-dark-3;
+			color: $oc-dark-4;
 
 			text-align: center;
 		}
 
 		.form-error {
-			background-color: $oc-dark-6;
+			background-color: $oc-red-1;
 			border-radius: 4px;
 
 			display: flex;
 			align-items: center;
 
-			min-height: 36px;
+			min-height: 3.6rem;
 
-			padding: 8px 12px;
+			padding: 0.8rem 1.1rem;
 
-			color: $oc-red-6;
-			font-size: 14px;
+			color: $oc-red-7;
+			font-size: 1.4rem;
 			font-weight: 400;
 
 			svg {
-				flex: 0 0 14px;
-				height: 14px;
-				width: 14px;
-				margin-right: 10px;
+				flex: 0 0 1.8rem;
+				height: 1.8rem;
+				width: 1.8rem;
+				margin-right: 1rem;
 			}
 		}
 	}

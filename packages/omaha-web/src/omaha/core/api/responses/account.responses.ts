@@ -1,4 +1,4 @@
-import { Account } from 'src/omaha/models/Account';
+import { Account } from '@omaha/client';
 
 export interface IAccountUpdateResponse {
 	success: true;

@@ -1,0 +1,15 @@
+.header-user {
+	margin-left: auto;
+
+	.avatar {
+		cursor: pointer;
+		border: 1px solid $oc-gray-3;
+		border-radius: 100px;
+		overflow: hidden;
+
+		img {
+			width: 5rem;
+			height: 5rem;
+		}
+	}
+}

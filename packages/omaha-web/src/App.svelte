@@ -3,7 +3,7 @@
 	import Loader from './components/helpers/Loader.svelte';
 	import Loadable from './components/helpers/routing/Loadable.svelte';
 	import ProtectedRoute from './components/helpers/routing/ProtectedRoute.svelte';
-	import AdminLayout from './components/layouts/AdminLayout.svelte';
+	import Layout from './components/layouts/Layout.svelte';
 	import NotificationTray from './components/layouts/notifications/NotificationTray.svelte';
 	import { account, sessionLoading } from './omaha/core/SessionManager';
 
@@ -15,7 +15,7 @@
 {#if $sessionLoading}
 	<Loader full size={40} theme="gray" message="Loading" />
 {:else if $account}
-	<AdminLayout>
+	<Layout>
 		<Route path="/">Admin</Route>
 
 		<!-- Account -->
@@ -23,7 +23,7 @@
 		<Route path="/account/tokens"><Loadable component={ () => import('./pages/protected/account/tokens/index.svelte') } /></Route>
 		<Route path="/account/settings" redirect="/account/settings/profile" />
 		<Route path="/account/settings/*"><Loadable component={ () => import('./pages/protected/account/settings.svelte') } /></Route>
-	</AdminLayout>
+	</Layout>
 {:else}
 	<Route path="/login"><Loadable component={ () => import('./pages/login.svelte') } /></Route>
 	<Route path="/register"><Loadable component={ () => import('./pages/register.svelte') } /></Route>

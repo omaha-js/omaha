@@ -40,7 +40,10 @@ const config = <UserConfig> defineConfig({
 	],
 	server: {
 		host: 'localhost',
-		port: 3001
+		port: 3001,
+		hmr: {
+			clientPort: 3001
+		}
 	},
 	build: {
 		sourcemap: sourceMapsInProduction
