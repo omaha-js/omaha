@@ -128,7 +128,7 @@ importers:
 
   packages/omaha-web:
     specifiers:
-      '@omaha/client': 1.0.0-rc.2
+      '@omaha/client': ^1.0.0-rc.3
       '@sveltejs/vite-plugin-svelte': ^1.0.1
       '@types/blueimp-md5': ^2.18.0
       '@vitejs/plugin-legacy': ^2.0.1
@@ -150,7 +150,7 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.7
     devDependencies:
-      '@omaha/client': 1.0.0-rc.2
+      '@omaha/client': 1.0.0-rc.3
       '@sveltejs/vite-plugin-svelte': 1.0.1_svelte@3.49.0+vite@3.0.7
       '@types/blueimp-md5': 2.18.0
       '@vitejs/plugin-legacy': 2.0.1_terser@5.14.2+vite@3.0.7
@@ -1177,8 +1177,8 @@ packages:
       - encoding
     dev: false
 
-  /@omaha/client/1.0.0-rc.2:
-    resolution: {integrity: sha512-ZoJHsxQLW3xbNQqMUEmcWlClCIzIe6M01cYHjN/s/YtAVazyQdesPXIVGEiy79mi7xJ645v6BAl/d3RtsgUpGQ==}
+  /@omaha/client/1.0.0-rc.3:
+    resolution: {integrity: sha512-UaguhV7zv/E5Rm+WeD1ADnWYvtExGmWL7sZhXG5nRRgLVelyyMWl4GFWZhAFdnYyS0jzpyrzhREdL3pLQAn+Fw==}
     engines: {node: '>=16.0.0'}
     dependencies:
       '@baileyherbert/events': 1.0.1

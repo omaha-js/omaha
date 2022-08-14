@@ -8,7 +8,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
-		"@omaha/client": "1.0.0-rc.2",
+		"@omaha/client": "^1.0.0-rc.3",
 		"@sveltejs/vite-plugin-svelte": "^1.0.1",
 		"@types/blueimp-md5": "^2.18.0",
 		"@vitejs/plugin-legacy": "^2.0.1",
