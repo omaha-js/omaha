@@ -101,6 +101,8 @@
 						font-size: 1.3rem;
 						padding-bottom: 0.1rem;
 
+						max-width: calc(100% - 3rem);
+
 						.repo-name {
 							color: #929292;
 						}
@@ -112,6 +114,10 @@
 
 						.repo-description {
 							color: #cbcbcb;
+
+							white-space: nowrap;
+							overflow: hidden;
+							text-overflow: ellipsis;
 						}
 					}
 
