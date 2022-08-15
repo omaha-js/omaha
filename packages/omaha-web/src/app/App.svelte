@@ -1,8 +1,7 @@
 <script lang="ts">
 	import omaha from 'src/omaha';
 	import { bootstrapped } from 'src/omaha/bootstrap';
-
-	import { router, Route, TinroRouteMeta } from 'tinro';
+	import { router, Route } from 'tinro';
 	import Loader from './components/helpers/Loader.svelte';
 	import Loadable from './components/helpers/routing/Loadable.svelte';
 	import LoadableForRepo from './components/helpers/routing/LoadableForRepo.svelte';
@@ -63,9 +62,11 @@
 		<Route path="/account/settings/*"><Loadable component={ () => import('./pages/protected/account/settings.svelte') } /></Route>
 	</Layout>
 {:else}
-	<Route path="/login"><Loadable component={ () => import('./pages/guard/login.svelte') } /></Route>
-	<Route path="/register"><Loadable component={ () => import('./pages/guard/register.svelte') } /></Route>
-	<ProtectedRoute path="/*" fallback></ProtectedRoute>
+	<Route>
+		<Route path="/login"><Loadable component={ () => import('./pages/guard/login.svelte') } /></Route>
+		<Route path="/register"><Loadable component={ () => import('./pages/guard/register.svelte') } /></Route>
+		<ProtectedRoute fallback />
+	</Route>
 {/if}
 
 <NotificationTray />
