@@ -43,7 +43,7 @@
 
 	<div class="repo-list">
 		<ul>
-			{#each $repositories as repo}
+			{#each $repositories as repo (repo.id)}
 				<li>
 					<a class="repo-list-item" href="/repository/{repo.id}">
 						<div class="repo-favorite">
