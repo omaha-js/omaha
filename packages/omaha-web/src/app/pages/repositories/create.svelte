@@ -7,18 +7,49 @@
 	import User from 'tabler-icons-svelte/icons/User.svelte';
 	import Archive from 'tabler-icons-svelte/icons/Archive.svelte';
 	import InfoCircle from 'tabler-icons-svelte/icons/InfoCircle.svelte';
+	import omaha from 'src/omaha';
+	import { onDestroy } from 'svelte';
+	import { RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
+	import Button from 'src/app/components/kit/Button.svelte';
+	import { router } from 'tinro';
 
-	let repoName: string;
-	let repoDescription: string;
+	let repoName = '';
+	let repoDescription = '';
 	let repoAccess: 'private' | 'public' = 'private';
 	let repoVersionScheme: 'semantic' | 'microsoft' | 'incremental' = 'semantic';
 	let repoRolling = false;
 	let repoRollingBuffer = 10;
 	let repoArchiveExpiration = 14;
+
+	const [client, error, loading, dispose] = omaha.client.useFromComponent();
+
+	onDestroy(dispose);
+
+	async function onSubmit() {
+		try {
+			const repo = await client.repos.create({
+				name: repoName,
+				description: repoDescription,
+				access: repoAccess as RepositoryAccessType,
+				scheme: repoVersionScheme as RepositoryVersionScheme,
+				settings: {
+					'releases.rolling': repoRolling,
+					'releases.rolling.buffer': repoRollingBuffer,
+					'releases.archives.expiration': repoArchiveExpiration
+				}
+			});
+
+			await omaha.repositories.refresh();
+			router.goto(`/repository/${repo.id}/releases`);
+		}
+		catch (err) {
+			window.scrollTo(0, 0);
+		}
+	}
 </script>
 
 <div class="form-container">
-	<form class="form">
+	<form class="form" on:submit|preventDefault={ onSubmit }>
 		<div class="heading-group">
 			<h1>Create a new repository</h1>
 			<p>
@@ -29,13 +60,19 @@
 
 		<!-- Basic repository information -->
 		<div class="form-section top">
+			{#if $error}
+				<div class="alert alert-danger mb-4" role="alert">
+					{$error}
+				</div>
+			{/if}
+
 			<div class="form-group">
 				<label for="inputName">Repository name</label>
-				<input type="text" class="form-control half" id="inputName">
+				<input type="text" class="form-control half" id="inputName" bind:value={repoName}>
 			</div>
 			<div class="form-group">
 				<label for="inputDescription">Description <span class="tip">(optional)</span></label>
-				<input type="text" class="form-control" id="inputDescription">
+				<input type="text" class="form-control" id="inputDescription" bind:value={repoDescription}>
 			</div>
 		</div>
 
@@ -218,7 +255,7 @@
 			{#if repoRolling}
 				<div class="form-group">
 					<label for="inputBuffer">Number of releases to keep per major version</label>
-					<input type="number" class="form-control half" id="inputBuffer" value={repoRollingBuffer}>
+					<input type="number" class="form-control half" id="inputBuffer" bind:value={repoRollingBuffer}>
 				</div>
 			{/if}
 
@@ -228,7 +265,7 @@
 					type="number"
 					class="form-control half"
 					id="inputExpiration"
-					value={repoArchiveExpiration}
+					bind:value={repoArchiveExpiration}
 					min={0}
 					max={1461}
 				/>
@@ -248,7 +285,7 @@
 		</div>
 
 		<div class="form-section bottom">
-			<button type="submit" class="btn btn-blue">Create repository</button>
+			<Button type="submit" color="blue" loading={$loading}>Create repository</Button>
 		</div>
 	</form>
 </div>
