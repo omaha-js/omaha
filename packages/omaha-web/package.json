@@ -8,6 +8,7 @@
 		"preview": "vite preview"
 	},
 	"devDependencies": {
+		"@baileyherbert/logging": "^2.1.0",
 		"@omaha/client": "^1.0.0-rc.3",
 		"@sveltejs/vite-plugin-svelte": "^1.0.1",
 		"@types/blueimp-md5": "^2.18.0",

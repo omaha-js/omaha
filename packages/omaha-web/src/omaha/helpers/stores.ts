@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 
-export function createStore<T>(initial: T): Store<T> {
+export function createStore<T>(): Store<T | undefined>;
+export function createStore<T>(initial: T): Store<T>;
+export function createStore<T>(initial?: T): Store<T> {
 	let localValue = initial;
 	const { set, subscribe } = writable(localValue);
 
@@ -11,11 +13,11 @@ export function createStore<T>(initial: T): Store<T> {
 			set(localValue);
 		},
 		update: (updater: (value: T) => T) => {
-			localValue = updater(localValue);
+			localValue = updater(localValue as T);
 			set(localValue);
 		},
 		get: () => {
-			return localValue;
+			return localValue as T;
 		}
 	};
 }

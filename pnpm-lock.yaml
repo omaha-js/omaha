@@ -128,6 +128,7 @@ importers:
 
   packages/omaha-web:
     specifiers:
+      '@baileyherbert/logging': ^2.1.0
       '@omaha/client': ^1.0.0-rc.3
       '@sveltejs/vite-plugin-svelte': ^1.0.1
       '@types/blueimp-md5': ^2.18.0
@@ -150,6 +151,7 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.7
     devDependencies:
+      '@baileyherbert/logging': 2.1.0
       '@omaha/client': 1.0.0-rc.3
       '@sveltejs/vite-plugin-svelte': 1.0.1_svelte@3.49.0+vite@3.0.7
       '@types/blueimp-md5': 2.18.0
@@ -597,7 +599,6 @@ packages:
     dependencies:
       '@baileyherbert/events': 1.0.1
       chalk: 4.1.2
-    dev: false
 
   /@baileyherbert/nested-collections/1.3.0:
     resolution: {integrity: sha512-apYKV8ScmM35tU8LF4FO7QEjtHqGSYH7ADm16Fj4PxQtBRZAaI8MIYIl4KtqafY47CvZxp55GPF7s/DlaZRWAg==}

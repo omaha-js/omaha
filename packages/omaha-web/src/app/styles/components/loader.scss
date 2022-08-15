@@ -1,0 +1,33 @@
+.loader {
+	display: flex;
+	align-items: center;
+
+	.status {
+		font-size: 18px;
+		font-weight: 500;
+		color: #000;
+		padding-left: 10px;
+	}
+
+	&.full {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		justify-content: center;
+		flex-direction: column;
+		background-color: $oc-gray-3;
+		z-index: 1000;
+
+		.status {
+			padding-top: 18px;
+			padding-left: 0;
+		}
+	}
+
+	&.theme-gray {
+		svg path { fill: $oc-dark-2; }
+		.status { color: $oc-dark-2; }
+	}
+}

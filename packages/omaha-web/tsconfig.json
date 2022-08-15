@@ -10,10 +10,12 @@
 		"esModuleInterop": true,
 		"experimentalDecorators": true,
 		"sourceMap": true,
-		"strict": false,
+		"strict": true,
 		"baseUrl": ".",
 		"paths": {
-			"src/*": ["src/*"]
+			"src/*": ["src/*"],
+			"omaha/*": ["src/omaha/*"],
+			"app/*": ["src/app/*"]
 		},
 		"types": [
 			"svelte",

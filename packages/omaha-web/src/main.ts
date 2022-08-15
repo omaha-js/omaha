@@ -1,8 +1,8 @@
 import 'reflect-metadata';
-import App from './App.svelte';
-import { SessionManager } from './omaha/core/SessionManager';
+import App from './app/App.svelte';
+import { bootstrap } from './omaha/bootstrap';
 
-SessionManager.init();
+bootstrap();
 
 const app = new App({
 	target: document.body

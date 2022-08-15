@@ -1,0 +1,150 @@
+.repo-picker {
+	background-color: #fff;
+	border-radius: 4px;
+	flex-grow: 1;
+
+	height: 5rem;
+	max-width: 50rem;
+
+	position: relative;
+
+	.repo-picker-input {
+		display: flex;
+
+		align-items: center;
+		user-select: none;
+
+		background-color: $oc-gray-1;
+		border-radius: 4px;
+		height: 5rem;
+
+		cursor: pointer;
+		padding: 0 1.5rem;
+
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+
+		z-index: 1;
+
+		.repo-icon {
+			svg {
+				color: $oc-gray-6;
+				width: 2.8rem;
+				height: 2.8rem;
+			}
+		}
+
+		.repo-name {
+			padding: 0 1rem;
+			font-size: 1.5rem;
+			flex-grow: 1;
+
+			&.state--no-selection {
+				color: $oc-gray-6;
+			}
+
+			&.state--has-selection {
+				color: $oc-gray-7;
+				font-weight: 500;
+			}
+		}
+
+		.repo-caret {
+			svg {
+				color: $oc-gray-5;
+				transition: transform 0.2s;
+			}
+		}
+	}
+
+	.repo-list {
+		display: none;
+
+		position: absolute;
+		top: 5rem;
+		background-color: #fff;
+		width: 100%;
+		border-radius: 0 0 4px 4px;
+		box-shadow: 0 0 6px rgba(#000000, .16);
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+
+			li {
+				margin: 0;
+				padding: 0;
+
+				a.repo-list-item {
+					display: flex;
+					align-items: center;
+					padding: 1rem 1.85rem;
+					height: 4rem;
+					text-decoration: none;
+
+					.repo-favorite {
+						margin-right: 1.5rem;
+
+						svg {
+							width: 1.9rem;
+							height: 1.9rem;
+							color: #dcdcdc;
+						}
+					}
+
+					.repo-descriptor {
+						display: flex;
+						font-size: 1.3rem;
+						padding-bottom: 0.1rem;
+
+						.repo-name {
+							color: #929292;
+						}
+
+						.sep {
+							padding: 0 .8rem;
+							color: #cbcbcb;
+						}
+
+						.repo-description {
+							color: #cbcbcb;
+						}
+					}
+
+					&:hover {
+						background-color: $oc-gray-0;
+					}
+				}
+
+				&:last-of-type {
+					a.repo-list-item {
+						border-radius: 0 0 4px 4px;
+					}
+				}
+			}
+		}
+	}
+
+	&.active {
+		box-shadow: 0 0 6px rgba(#000000, .16);
+
+		.repo-picker-input {
+			border-bottom-left-radius: 0;
+			border-bottom-right-radius: 0;
+
+			.repo-caret {
+				svg {
+					transform: rotate(180deg);
+				}
+			}
+		}
+
+		.repo-list {
+			display: block;
+		}
+	}
+}
