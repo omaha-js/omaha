@@ -2,14 +2,37 @@
 	import omaha from 'src/omaha';
 	import { bootstrapped } from 'src/omaha/bootstrap';
 
-	import { router, Route } from 'tinro';
+	import { router, Route, TinroRouteMeta } from 'tinro';
 	import Loader from './components/helpers/Loader.svelte';
 	import Loadable from './components/helpers/routing/Loadable.svelte';
+	import LoadableForRepo from './components/helpers/routing/LoadableForRepo.svelte';
 	import ProtectedRoute from './components/helpers/routing/ProtectedRoute.svelte';
 	import Layout from './components/layouts/Layout.svelte';
 	import NotificationTray from './components/layouts/notifications/NotificationTray.svelte';
+	import { Repository } from '@omaha/client';
 
 	const { account } = omaha.session;
+
+	const regex = /\/repository\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i;
+	const { repositories } = omaha.repositories;
+
+	let repository: Repository | undefined;
+
+	$: {
+		const match = $router.path.match(regex);
+
+		if (match) {
+			const activeId = match[1].toLowerCase();
+			const active = $repositories.find(repo => repo.id === activeId);
+
+			if (repository !== active) {
+				repository = active;
+			}
+		}
+		else if (repository !== undefined) {
+			repository = undefined;
+		}
+	}
 
 	router.subscribe(() => window.scrollTo(0, 0));
 </script>
@@ -17,18 +40,20 @@
 {#if !$bootstrapped}
 	<Loader full size={40} theme="gray" message="Loading" />
 {:else if $account}
-	<Layout>
+	<Layout {repository}>
 		<Route path="/">Admin</Route>
 
 		<!-- Repositories -->
 		<Route path="/repositories/create"><Loadable component={ () => import('./pages/repositories/create.svelte') } /></Route>
 		<Route path="/repository/:repo_id/*">
+			{#if repository}
 			<Route path="/" redirect="releases" />
-			<Route path="/releases">repo releases</Route>
-			<Route path="/assets">repo assets</Route>
-			<Route path="/tags">repo tags</Route>
-			<Route path="/stats">repo stats</Route>
-			<Route path="/settings/*">repo settings</Route>
+			<Route path="/releases"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases.svelte') } /></Route>
+			<Route path="/assets"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/assets.svelte') } /></Route>
+			<Route path="/tags"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
+			<Route path="/stats"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
+			<Route path="/settings/*"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
+			{/if}
 		</Route>
 
 		<!-- Account -->
