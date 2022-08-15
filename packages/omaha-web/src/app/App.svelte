@@ -21,6 +21,7 @@
 		<Route path="/">Admin</Route>
 
 		<!-- Repositories -->
+		<Route path="/repositories/create"><Loadable component={ () => import('./pages/repositories/create.svelte') } /></Route>
 		<Route path="/repository/:repo_id/*">
 			<Route path="/" redirect="releases" />
 			<Route path="/releases">repo releases</Route>
