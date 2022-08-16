@@ -17,6 +17,7 @@ body {
 @import 'layout/notifications';
 @import 'components/loader';
 @import 'components/tabs';
+@import 'components/helpers/promise';
 
 // Special pages
 @import 'pages/login';
