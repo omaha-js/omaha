@@ -63,9 +63,11 @@ header {
 
 		padding: 1rem 5rem;
 
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+		.container {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
 
 		.repo-navigation {
 			margin-left: -1.2rem;
@@ -100,6 +102,113 @@ header {
 						&.active {
 							color: #ff3342;
 							font-weight: 500;
+						}
+					}
+				}
+			}
+		}
+
+		.repo-actions {
+			display: flex;
+			align-items: stretch;
+			column-gap: 0.4rem;
+			flex-grow: 1;
+			justify-content: flex-end;
+
+			.action-button {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				width: 3.4rem;
+				height: 3.4rem;
+
+				cursor: pointer;
+
+				background-color: $oc-gray-1;
+				border-radius: 3px;
+				border: 0;
+
+				transition: background-color 0.2s, color 0.2s;
+				color: $oc-gray-6;
+
+				svg {
+					width: 1.8rem;
+					height: 1.8rem;
+				}
+
+				&:hover {
+					background-color: $oc-gray-2;
+					color: $oc-gray-7;
+				}
+			}
+
+			.action-search {
+				position: relative;
+
+				max-width: 27rem;
+				width: 100%;
+
+				label {
+					display: flex;
+					align-items: center;
+					height: 100%;
+
+					position: absolute;
+					color: $oc-gray-6;
+
+					padding-left: 0.9rem;
+					pointer-events: none;
+
+					svg {
+						width: 1.8rem;
+						height: 1.8rem;
+					}
+				}
+
+				input[type=text] {
+					height: 3.4rem;
+					line-height: 3.4rem;
+
+					font-size: 1.3rem;
+					padding: 0 3.5rem;
+
+					width: 100%;
+
+					background-color: $oc-gray-1;
+					border-radius: 3px;
+					border: 0;
+
+					transition: background-color 0.2s, color 0.2s;
+					color: $oc-gray-8;
+
+					outline: none !important;
+
+					&::placeholder {
+						color: $oc-gray-5;
+					}
+
+					&:focus, &:active {
+						background-color: $oc-gray-2;
+					}
+				}
+
+				&.error {
+					label {
+						color: $oc-red-5;
+					}
+
+					input {
+						background-color: $oc-red-1;
+						color: $oc-red-6;
+
+						&:focus, &:active {
+							background-color: $oc-red-1;
+							color: $oc-red-7;
+						}
+
+						&::placeholder {
+							color: $oc-red-4;
 						}
 					}
 				}

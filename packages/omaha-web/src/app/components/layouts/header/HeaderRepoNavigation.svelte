@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { Repository } from '@omaha/client';
-	import { active } from 'tinro';
+	import { active, router } from 'tinro';
+	import { getActionFromName, repoActions } from './scripts/repo-actions';
 
 	export let repository: Repository;
+
+	$: {
+		if ($repoActions.href !== $router.path) {
+			$repoActions.actions = [];
+		}
+	}
 </script>
 
 <div class="repo-header">
@@ -16,5 +23,10 @@
 				<li><a href="/repository/{repository.id}/settings" use:active={repository}>Settings</a></li>
 			</ul>
 		</nav>
+		<div class="repo-actions">
+			{#each $repoActions.actions as action}
+				<svelte:component this={getActionFromName(action.name)} {action} />
+			{/each}
+		</div>
 	</div>
 </div>
