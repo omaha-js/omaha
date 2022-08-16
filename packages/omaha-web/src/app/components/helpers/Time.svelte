@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 
 	let interval: NodeJS.Timeout | undefined = undefined;
-	let format = 'YYYY-MM-DD HH:mm A';
+	let format = 'YYYY-MM-DD hh:mm A';
 	let relative = true;
 
 	export let timestamp: Date | number | string;
