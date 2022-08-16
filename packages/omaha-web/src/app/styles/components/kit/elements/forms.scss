@@ -112,6 +112,14 @@
 	&:last-of-type {
 		margin-bottom: 0;
 	}
+
+	.attribute-list {
+		padding: 0.4rem 0 0;
+
+		label {
+			margin-bottom: 0;
+		}
+	}
 }
 
 .form-radio-list {
