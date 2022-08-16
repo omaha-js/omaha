@@ -8,15 +8,15 @@
 	import ProtectedRoute from './components/helpers/routing/ProtectedRoute.svelte';
 	import Layout from './components/layouts/Layout.svelte';
 	import NotificationTray from './components/layouts/notifications/NotificationTray.svelte';
-	import { Repository } from '@omaha/client';
+	import { Collaboration, Repository } from '@omaha/client';
 	import PromiseLoader from './components/helpers/PromiseLoader.svelte';
-import { client } from 'src/omaha/globals';
 
 	const { account } = omaha.session;
 
 	const regex = /\/repository\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i;
 	const { repositories } = omaha.repositories;
 
+	let collab: Collaboration | undefined;
 	let repository: Repository | undefined;
 	let repositoryPromise: Promise<Repository> | undefined;
 	let repositoryPromiseId = '';
@@ -32,6 +32,7 @@ import { client } from 'src/omaha/globals';
 
 			if (repository !== active) {
 				repository = active;
+				collab = active?.collaboration;
 			}
 
 			if (active && repositoryPromiseId !== active.id) {
@@ -57,16 +58,16 @@ import { client } from 'src/omaha/globals';
 		<Route path="/repositories/create"><Loadable component={ () => import('./pages/repositories/create.svelte') } /></Route>
 
 		<!-- Repositories -->
-		{#if repository && repositoryPromise}
-			<PromiseLoader promise={repositoryPromise} let:value={repository}>
+		{#if repository && collab && repositoryPromise}
+			<PromiseLoader promise={repositoryPromise} let:value={repo}>
 				<Route path="/repository/:repo_id/*" firstmatch>
 					<Route path="/" redirect="releases" />
-					<Route path="/releases"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases.svelte') } /></Route>
-					<Route path="/releases/create"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases/create.svelte') } /></Route>
-					<Route path="/assets"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/assets.svelte') } /></Route>
-					<Route path="/tags"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
-					<Route path="/stats"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
-					<Route path="/settings/*"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
+					<Route path="/releases"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/releases.svelte') } /></Route>
+					<Route path="/releases/:version"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/releases/release.svelte') } /></Route>
+					<Route path="/assets"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/assets.svelte') } /></Route>
+					<Route path="/tags"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
+					<Route path="/stats"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
+					<Route path="/settings/*"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
 			</PromiseLoader>
 		{/if}

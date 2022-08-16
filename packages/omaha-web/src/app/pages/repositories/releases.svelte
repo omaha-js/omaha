@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ReleasesCollection, ReleaseSearchRequest, ReleaseSearchResponse, ReleaseStatus, Repository } from '@omaha/client';
+	import { Collaboration, ReleasesCollection, ReleaseSearchRequest, ReleaseSearchResponse, ReleaseStatus, Repository } from '@omaha/client';
 	import PromiseLoader from 'src/app/components/helpers/PromiseLoader.svelte';
 	import Time from 'src/app/components/helpers/Time.svelte';
 	import RepoCreateAction from 'src/app/components/layouts/header/repositories/RepoCreateAction.svelte';
@@ -15,6 +15,7 @@
 	onDestroy(dispose);
 
 	export let repo: Repository;
+	export let collab: Collaboration;
 
 	let search = '';
 	let searchError = false;
@@ -75,7 +76,10 @@
 	error={searchError || searchSyntaxError}
 />
 <RepoRefreshAction on:invoke={onRefreshAction} title="Refresh this list" />
-<RepoCreateAction href="/repository/{repo.id}/releases/create" title="Create a new release" />
+
+{#if collab.scopes.includes('repo.releases.create')}
+	<RepoCreateAction href="/repository/{repo.id}/releases/create" title="Create a new release" />
+{/if}
 
 <PromiseLoader {promise} let:value={response}>
 	<div class="row">
