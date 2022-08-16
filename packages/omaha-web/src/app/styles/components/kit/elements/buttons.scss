@@ -1,13 +1,13 @@
 .btn {
-	height: 36px;
+	height: 3.6rem;
 	padding: 0 18px;
 	border: 1px solid transparent;
 	color: $oc-white;
 	border-radius: 4px;
-	font-weight: 600;
+	font-weight: 500;
 	position: relative;
 	line-height: 1;
-	font-size: 14px;
+	font-size: 1.3rem;
 
 	transition: color 0ms;
 
@@ -36,16 +36,16 @@
 	}
 
 	&.has-icon {
-		padding-left: 38px;
+		padding-left: 3.8rem;
 
 		.button-icon {
 			position: absolute;
-			top: 8px;
-			left: 14px;
+			top: 0.8rem;
+			left: 1.4rem;
 
 			svg {
-				width: 18px;
-				height: 18px;
+				width: 1.8rem;
+				height: 1.8rem;
 			}
 		}
 	}
