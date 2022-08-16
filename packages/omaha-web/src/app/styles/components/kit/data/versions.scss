@@ -1,7 +1,9 @@
 .version-tag {
-	font-family: monospace;
+	display: inline;
+	font-family: "JetBrains Mono";
 	font-weight: 400;
-	letter-spacing: -0.15rem;
-	font-size: 0.95em;
-	color: $oc-gray-8;
+	font-size: 0.9em;
+	line-height: 0.9em;
+	letter-spacing: -0.075rem;
+	color: $oc-gray-7;
 }
