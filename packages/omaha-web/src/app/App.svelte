@@ -59,23 +59,14 @@ import { client } from 'src/omaha/globals';
 		<!-- Repositories -->
 		{#if repository && repositoryPromise}
 			<PromiseLoader promise={repositoryPromise} let:value={repository}>
-				<Route path="/repository/:repo_id/*">
+				<Route path="/repository/:repo_id/*" firstmatch>
 					<Route path="/" redirect="releases" />
-					<Route path="/releases">
-						<LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases.svelte') } />
-					</Route>
-					<Route path="/assets">
-						<LoadableForRepo repo={repository} component={ () => import('./pages/repositories/assets.svelte') } />
-					</Route>
-					<Route path="/tags">
-						<LoadableForRepo repo={repository} component={ () => import('./pages/repositories/tags.svelte') } />
-					</Route>
-					<Route path="/stats">
-						<LoadableForRepo repo={repository} component={ () => import('./pages/repositories/stats.svelte') } />
-					</Route>
-					<Route path="/settings/*">
-						<LoadableForRepo repo={repository} component={ () => import('./pages/repositories/settings.svelte') } />
-					</Route>
+					<Route path="/releases"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases.svelte') } /></Route>
+					<Route path="/releases/create"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/releases/create.svelte') } /></Route>
+					<Route path="/assets"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/assets.svelte') } /></Route>
+					<Route path="/tags"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
+					<Route path="/stats"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
+					<Route path="/settings/*"><LoadableForRepo repo={repository} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
 			</PromiseLoader>
 		{/if}

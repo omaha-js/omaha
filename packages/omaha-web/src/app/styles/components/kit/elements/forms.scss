@@ -24,6 +24,23 @@
 	}
 }
 
+textarea.form-control {
+	background-color: $oc-gray-1;
+	border-color: $oc-gray-3;
+	font-size: 1.4rem;
+	line-height: 1.4;
+	border-radius: 3px;
+	color: $oc-dark-4;
+
+	padding: 0.7rem 1.1rem;
+
+	&:focus, &:active {
+		background-color: $oc-white;
+		border-color: $oc-gray-3;
+		color: $oc-dark-4;
+	}
+}
+
 .form-control, .form-check-input {
 	box-shadow: none !important;
 }
