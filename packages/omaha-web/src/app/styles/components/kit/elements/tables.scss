@@ -87,6 +87,10 @@ table.table {
 				&:last-child {
 					padding-right: 2rem;
 				}
+
+				.form-check-input {
+					margin-top: 0;
+				}
 			}
 
 			tr {
