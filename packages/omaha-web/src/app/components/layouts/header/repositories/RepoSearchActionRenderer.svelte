@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { RepoSearchAction } from '../scripts/repo-actions';
 	import Search from 'tabler-icons-svelte/icons/Search.svelte';
-import { onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 
 	export let action: RepoSearchAction;
 
@@ -10,7 +10,15 @@ import { onDestroy } from 'svelte';
 	let timeout: NodeJS.Timeout | undefined;
 
 	function onSubmit() {
+		deleteTimeout();
 		action.submit(value);
+	}
+
+	function deleteTimeout() {
+		if (timeout) {
+			clearTimeout(timeout);
+			timeout = undefined;
+		}
 	}
 
 	function onChange() {
@@ -18,11 +26,7 @@ import { onDestroy } from 'svelte';
 			previousChangeValue = value;
 			action.change(value);
 
-			if (timeout) {
-				clearTimeout(timeout);
-				timeout = undefined;
-			}
-
+			deleteTimeout();
 			timeout = setTimeout(() => {
 				action.typestop(value);
 			}, 250);
@@ -31,7 +35,7 @@ import { onDestroy } from 'svelte';
 
 	onDestroy(() => {
 		if (timeout) {
-			clearTimeout(timeout);
+			deleteTimeout();
 			timeout = undefined;
 		}
 	});
