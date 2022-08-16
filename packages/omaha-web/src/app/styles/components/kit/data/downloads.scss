@@ -1,0 +1,21 @@
+.download-count {
+	display: inline-block;
+	color: $oc-gray-6;
+
+	.download-count-flex {
+		display: flex;
+		align-items: center;
+	}
+
+	strong {
+		font-weight: 400;
+		color: $oc-gray-7;
+	}
+
+	svg {
+		margin-left: 0.4rem;
+		width: 1.4em;
+		height: 1.4em;
+		stroke-width: 1.5;
+	}
+}
