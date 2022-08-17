@@ -27,7 +27,13 @@ export function registerAction(href: string, action: RepoAction) {
 		let replaced = false;
 
 		const actions = existing.actions.map(a => {
-			if (a.name === action.name) {
+			if (action.name === 'custom') {
+				if (a.name === 'custom' && a.key === action.key) {
+					replaced = true;
+					return action;
+				}
+			}
+			else if (a.name === action.name) {
 				replaced = true;
 				return action;
 			}
@@ -64,6 +70,10 @@ export type RepoAction = RepoCustomAction | RepoSearchAction | RepoRefreshAction
 
 export interface RepoCustomAction {
 	name: 'custom';
+	/**
+	 * Provide a unique key for this action to prevent element duplication.
+	 */
+	key: string;
 	click: () => void;
 	href?: string;
 	title?: string;

@@ -4,6 +4,10 @@
 	import { router } from 'tinro';
 	import { registerAction } from '../scripts/repo-actions';
 
+	/**
+	 * Provide a unique key for this action to prevent duplication.
+	 */
+	export let key: string;
 	export let href: string | undefined = undefined;
 	export let title: string | undefined = undefined;
 	export let text: string | undefined = undefined;
@@ -16,6 +20,7 @@
 	$: {
 		registerAction($router.path, {
 			name: 'custom',
+			key,
 			href,
 			title,
 			text,

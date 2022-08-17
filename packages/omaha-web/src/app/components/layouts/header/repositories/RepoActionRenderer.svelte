@@ -5,7 +5,8 @@
 
 	$: className = (
 		`action-button btn-${action.color} ` + ($$props.class ?? '') + ' ' +
-		(action.icon ? 'has-icon' : '')
+		(action.icon ? 'has-icon' : '') + ' ' +
+		(action.text ? 'has-text' : '')
 	);
 
 	$: el = typeof action.href !== 'undefined' ? 'a' : 'button';

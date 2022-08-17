@@ -2,12 +2,16 @@
 	import { Repository } from '@omaha/client';
 	import { onDestroy } from 'svelte';
 	import omaha from 'src/omaha';
-	import { meta } from 'tinro';
+	import { meta, router } from 'tinro';
 	import PromiseLoader from 'src/app/components/helpers/PromiseLoader.svelte';
 	import DotsVertical from 'tabler-icons-svelte/icons/DotsVertical.svelte';
 	import ArrowDownCircle from 'tabler-icons-svelte/icons/ArrowDownCircle.svelte';
 	import File from 'tabler-icons-svelte/icons/File.svelte';
 	import FileOff from 'tabler-icons-svelte/icons/FileOff.svelte';
+	import Pencil from 'tabler-icons-svelte/icons/Pencil.svelte';
+	import Trash from 'tabler-icons-svelte/icons/Trash.svelte';
+	import CircleCheck from 'tabler-icons-svelte/icons/CircleCheck.svelte';
+	import Archive from 'tabler-icons-svelte/icons/Archive.svelte';
 	import Time from 'src/app/components/helpers/Time.svelte';
 	import { ReleaseStatus } from '@omaha/client';
 	import prettyBytes from 'pretty-bytes';
@@ -15,6 +19,8 @@
 	import ReleaseAttachmentUploader from 'src/app/components/pages/releases/ReleaseAttachmentUploader.svelte';
 	import Loader from 'src/app/components/helpers/Loader.svelte';
 	import DropdownToggle from 'src/app/components/kit/DropdownToggle.svelte';
+	import RepoAction from 'src/app/components/layouts/header/repositories/RepoAction.svelte';
+	import RepoActionContainer from 'src/app/components/layouts/header/repositories/RepoActionContainer.svelte';
 
 	export let repo: Repository;
 
@@ -82,9 +88,68 @@
 			expandedAsset = asset;
 		}
 	}
+
+	async function deleteRelease() {
+		if (confirm(`You're about to delete this release. Are you sure? This cannot be undone!`)) {
+			try {
+				const response = await client.releases.delete(repo.id, route.params.version);
+				omaha.alerts.success(response.message, 3500);
+				router.goto(`/repository/${repo.id}/releases`);
+			}
+			catch (error) {
+				omaha.alerts.error(error);
+			}
+		}
+	}
+
+	async function publishRelease() {
+		try {
+			await client.releases.publish(repo.id, route.params.version);
+			omaha.alerts.success('Release published successfully!', 3500);
+			refresh();
+		}
+		catch (error) {
+			omaha.alerts.error(error);
+		}
+	}
+
+	async function archiveRelease() {
+		if (confirm('Are you sure you want to archive this release? Attached files will be scheduled for deletion and cannot be downloaded further.')) {
+			try {
+				await client.releases.archive(repo.id, route.params.version);
+				omaha.alerts.success('Release archived successfully!', 3500);
+				refresh();
+			}
+			catch (error) {
+				omaha.alerts.error(error);
+			}
+		}
+	}
 </script>
 
 <PromiseLoader {promise} let:value={release}>
+	<RepoActionContainer>
+		{#if release.status === ReleaseStatus.Draft}
+			<RepoAction key="delete" on:click={ deleteRelease } title="Delete this release">
+				<Trash slot="icon" />
+			</RepoAction>
+		{/if}
+
+		<RepoAction key="edit" href="/repository/{repo.id}/releases/{release.version}/edit" title="Edit this release">
+			<Pencil slot="icon" />
+		</RepoAction>
+
+		{#if release.status === ReleaseStatus.Draft}
+			<RepoAction key="p" on:click={ publishRelease } title="Publish this release" text="Publish" color="blue">
+				<CircleCheck slot="icon" />
+			</RepoAction>
+		{:else if release.status === ReleaseStatus.Published}
+			<RepoAction key="p" on:click={ archiveRelease } title="Archive this release" text="Archive">
+				<Archive slot="icon" />
+			</RepoAction>
+		{/if}
+	</RepoActionContainer>
+
 	<div class="row release">
 		<div class="col-md-9">
 			<div class="heading-with-tags">
