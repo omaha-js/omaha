@@ -16,6 +16,10 @@ export class AttachmentsService {
 		return this.repository.save(attachment);
 	}
 
+	public async delete(attachment: ReleaseAttachment) {
+		return this.repository.delete(attachment.id);
+	}
+
 	public async create() {
 		return this.repository.create();
 	}

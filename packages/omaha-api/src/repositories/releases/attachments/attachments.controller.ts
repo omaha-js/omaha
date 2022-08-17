@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, ForbiddenException, Get, Logger, NotFoundException, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, ForbiddenException, Get, InternalServerErrorException, Logger, NotFoundException, Param, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Repository } from 'src/entities/Repository';
@@ -231,6 +231,47 @@ export class AttachmentsController {
 
 			throw err;
 		}
+	}
+
+	/**
+	 * Deletes an attachment.
+	 *
+	 * @param file
+	 * @returns
+	 */
+	@Delete()
+	@UseScopes('repo.releases.attachments.manage')
+	public async deleteAttachment(
+		@Repo() repo: Repository,
+		@Param('version') version: string,
+		@Param('asset') assetName: string,
+		@Collab() collab?: Collaboration
+	) {
+		const release = await this.releases.getFromVersionOrFail(repo, version);
+		const attachment = await this.getAttachment(repo, version, assetName, collab);
+
+		if (release.status !== ReleaseStatus.Draft) {
+			throw new BadRequestException('Cannot delete attachments from a published release');
+		}
+
+		// Delete the file
+		if (typeof attachment.object_name === 'string') {
+			try {
+				await this.storage.delete(this.storage.getObjectName(repo, attachment.object_name));
+			}
+			catch (err) {
+				this.logger.error('Failed to delete attachment:', err);
+				throw new InternalServerErrorException('Failed to delete attachment due to an internal error');
+			}
+		}
+
+		// Delete the record
+		await this.service.delete(attachment);
+
+		return {
+			success: true,
+			message: 'Attachment has been deleted successfully.'
+		};
 	}
 
 }
