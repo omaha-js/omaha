@@ -129,7 +129,7 @@ importers:
   packages/omaha-web:
     specifiers:
       '@baileyherbert/logging': ^2.1.0
-      '@omaha/client': 1.0.0-rc.4
+      '@omaha/client': 1.0.0-rc.5
       '@sveltejs/vite-plugin-svelte': ^1.0.1
       '@types/blueimp-md5': ^2.18.0
       '@vitejs/plugin-legacy': ^2.0.1
@@ -155,7 +155,7 @@ importers:
       vite-plugin-rewrite-all: ^1.0.0
     devDependencies:
       '@baileyherbert/logging': 2.1.0
-      '@omaha/client': 1.0.0-rc.4
+      '@omaha/client': 1.0.0-rc.5
       '@sveltejs/vite-plugin-svelte': 1.0.1_svelte@3.49.0+vite@3.0.7
       '@types/blueimp-md5': 2.18.0
       '@vitejs/plugin-legacy': 2.0.1_terser@5.14.2+vite@3.0.7
@@ -1184,8 +1184,8 @@ packages:
       - encoding
     dev: false
 
-  /@omaha/client/1.0.0-rc.4:
-    resolution: {integrity: sha512-QrBtMaL0rmsDKQngV6tNkk+zpDylViufZUxnVegEV5WqnMEkvT2faUNDDUqlcN4iAmrnAVmUfXqmoAwoxgoXtQ==}
+  /@omaha/client/1.0.0-rc.5:
+    resolution: {integrity: sha512-o2E5NH0PmzChZnjEonkvZisIzahgJUbq0m0rftr8I9GQm4MpKWOQlBy7iAbWG+FhfYl9z+khBgTmLC7SSFZpnQ==}
     engines: {node: '>=16.0.0'}
     dependencies:
       '@baileyherbert/events': 1.0.1
