@@ -1,4 +1,6 @@
 import { createStore } from 'src/omaha/helpers/stores';
+import { Color } from 'src/omaha/helpers/theme';
+import RepoActionRenderer from '../repositories/RepoActionRenderer.svelte';
 import RepoCreateActionRenderer from '../repositories/RepoCreateActionRenderer.svelte';
 import RepoRefreshActionRenderer from '../repositories/RepoRefreshActionRenderer.svelte';
 import RepoSearchActionRenderer from '../repositories/RepoSearchActionRenderer.svelte';
@@ -49,6 +51,7 @@ export function getActionFromName(name: RepoAction['name']) {
 		case 'search': return RepoSearchActionRenderer;
 		case 'refresh': return RepoRefreshActionRenderer;
 		case 'create': return RepoCreateActionRenderer;
+		case 'custom': return RepoActionRenderer;
 	}
 }
 
@@ -57,7 +60,17 @@ interface RepoActionsOptions {
 	actions: RepoAction[];
 }
 
-export type RepoAction = RepoSearchAction | RepoRefreshAction | RepoCreateAction;
+export type RepoAction = RepoCustomAction | RepoSearchAction | RepoRefreshAction | RepoCreateAction;
+
+export interface RepoCustomAction {
+	name: 'custom';
+	click: () => void;
+	href?: string;
+	title?: string;
+	text?: string;
+	icon?: string;
+	color?: Color;
+}
 
 export interface RepoSearchAction {
 	name: 'search';

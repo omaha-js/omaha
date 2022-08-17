@@ -141,6 +141,17 @@ header {
 					background-color: $oc-gray-2;
 					color: $oc-gray-7;
 				}
+
+				@each $map, $name in $oc-color-list {
+					&.btn-#{$name} {
+						color: $oc-white;
+						background-color: map-get($map, "8");
+
+						&:hover {
+							background-color: map-get($map, "7");
+						}
+					}
+				}
 			}
 
 			.action-search {
