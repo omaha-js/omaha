@@ -10,14 +10,16 @@
 		padding: 12px 20px 12px 14px;
 		margin: 0 0 10px;
 
-		background-color: $oc-dark-5;
+		background-color: $oc-gray-1;
+		box-shadow: 0 0 12px rgba(#000, 0.15);
+		border: 1px solid $oc-gray-3;
 		border-radius: 4px;
 
 		cursor: pointer;
 		transition: background-color 200ms;
 
 		&:hover {
-			background-color: $oc-dark-6;
+			background-color: $oc-gray-0;
 		}
 
 		.notification-icon {
@@ -26,7 +28,7 @@
 			justify-content: center;
 			width: 20px;
 			height: 20px;
-			margin-right: 14px;
+			margin-right: 10px;
 			flex: 0 0 20px;
 
 			svg {
@@ -51,7 +53,7 @@
 			p {
 				font-size: 14px;
 				line-height: 1.35;
-				color: $oc-gray-5;
+				color: $oc-gray-7;
 				margin: 0;
 			}
 		}
@@ -59,7 +61,7 @@
 		@each $map, $name in $oc-color-list {
 			&.#{$name} {
 				.notification-icon, .notification-content h4 {
-					color: map-get($map, "6");
+					color: map-get($map, "7");
 				}
 			}
 		}
