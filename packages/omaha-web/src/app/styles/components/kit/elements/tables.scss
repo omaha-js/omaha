@@ -134,5 +134,17 @@ table.table {
 				}
 			}
 		}
+
+		.icon-text-union {
+			display: flex;
+			align-items: center;
+
+			svg {
+				width: 2.2rem;
+				height: 2.2rem;
+				margin-right: 0.7rem;
+				color: $oc-gray-7;
+			}
+		}
 	}
 }

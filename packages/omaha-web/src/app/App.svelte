@@ -66,7 +66,11 @@
 					<Route path="/releases/create"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/releases/create.svelte') } /></Route>
 					<Route path="/releases/:version"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/releases/release.svelte') } /></Route>
 					<Route path="/releases/:version/edit"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/releases/edit.svelte') } /></Route>
+
 					<Route path="/assets"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/assets.svelte') } /></Route>
+					<Route path="/assets/create"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/assets/create.svelte') } /></Route>
+					<Route path="/assets/:asset"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/assets/edit.svelte') } /></Route>
+
 					<Route path="/tags"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
 					<Route path="/stats"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
 					<Route path="/settings/*"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
