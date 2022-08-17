@@ -20,6 +20,7 @@
 		"class-transformer": "^0.5.1",
 		"dayjs": "^1.11.5",
 		"postcss": "^8.4.16",
+		"pretty-bytes": "^5.6.0",
 		"reflect-metadata": "^0.1.13",
 		"sass": "^1.54.4",
 		"svelte": "^3.49.0",

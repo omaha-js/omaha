@@ -29,11 +29,16 @@
 	 */
 	export let message = '';
 
+	/**
+	 * Use `rem` for the size unit?
+	 */
+	export let rem = false;
+
 	type Theme = 'none' | 'gray' ;
 </script>
 
 <div class="loader theme-{theme}" class:full>
-	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width={size} height={size} viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width={size + (rem ? 'rem' : '')} height={size + (rem ? 'rem' : '')} viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
 		<path fill={color} d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
 		<animateTransform attributeType="xml"
 			attributeName="transform"

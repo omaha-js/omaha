@@ -71,6 +71,12 @@ table.table {
 		}
 
 		tbody {
+			tr {
+				&.clickable {
+					cursor: pointer;
+				}
+			}
+
 			td, th {
 				vertical-align: middle;
 				padding-top: 1.4rem;
@@ -88,6 +94,25 @@ table.table {
 					padding-right: 2rem;
 				}
 
+				&.clickable {
+					padding: 0;
+
+					a {
+						display: block;
+						padding: 1.4rem 0.5rem;
+						text-decoration: none;
+						color: inherit;
+					}
+
+					&:first-child a {
+						padding-left: 2rem;
+					}
+
+					&:last-child a {
+						padding-right: 2rem;
+					}
+				}
+
 				.form-check-input {
 					margin-top: 0;
 				}
@@ -96,6 +121,8 @@ table.table {
 			tr {
 				&:last-of-type {
 					td, th {
+						border-bottom: 0;
+
 						&:first-child {
 							border-bottom-left-radius: 4px;
 						}

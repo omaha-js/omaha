@@ -20,4 +20,22 @@
 		border-radius: 4px 4px 0 0;
 		border-bottom: 1px solid $oc-gray-3;
 	}
+
+	.panel-body {
+		font-size: 1.4rem;
+
+		&.padded {
+			padding: 1.6rem;
+		}
+	}
+
+	&.panel-cozy {
+		.panel-header {
+			padding: 0.5rem 2rem;
+		}
+
+		.panel-body.padded {
+			padding: 2rem;
+		}
+	}
 }

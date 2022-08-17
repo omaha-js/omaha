@@ -1,0 +1,180 @@
+.row.release {
+	h1 {
+		margin-bottom: 1.8rem;
+	}
+
+	.heading-with-tags {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1.8rem;
+
+		h1 {
+			margin-right: 1.6rem;
+			margin-bottom: 0;
+
+			font-family: "JetBrains Mono";
+			font-weight: 400;
+			font-size: 1.9rem;
+			line-height: 0.9em;
+			letter-spacing: -0.25rem;
+		}
+	}
+
+	tr.dropzone {
+		background-color: $oc-blue-0;
+
+		* {
+			pointer-events: none;
+			user-select: none;
+		}
+	}
+
+	td.attachment-icon {
+		color: $oc-gray-5;
+		width: 0.1%;
+		white-space: nowrap;
+		padding-right: 1.5rem;
+
+		&.active {
+			color: #000;
+		}
+
+		svg {
+			width: 2.2rem;
+			height: 2.2rem;
+		}
+	}
+
+	td.dropdown-column {
+		padding: 0 2rem 0 0;
+		text-align: right;
+	}
+
+	td.upload-file {
+		color: $oc-gray-5;
+		cursor: pointer;
+	}
+
+	td.status-uploading {
+		.status-progress {
+			display: flex;
+			align-items: center;
+
+			svg {
+				margin-right: 1rem;
+			}
+		}
+	}
+
+	td.status-dropzone {
+		color: $oc-gray-8;
+	}
+
+	td.status-error {
+		color: $oc-red-8;
+		cursor: pointer;
+	}
+
+	.dropdown {
+		button.btn {
+			background-color: transparent;
+			color: $oc-gray-5;
+			border-radius: 4px;
+
+			padding: 0;
+			height: auto;
+
+			padding: 0.7rem;
+			outline: none !important;
+			box-shadow: none !important;
+
+			transition: background-color 0.2s, color 0.2s;
+
+			svg {
+				width: 1.8rem;
+				height: 1.8rem;
+			}
+
+			&:hover, &[aria-expanded="true"] {
+				background-color: $oc-gray-2;
+				color: $oc-gray-6;
+			}
+		}
+
+		.dropdown-menu {
+			transform: translate(0, 3.6rem) !important;
+			min-width: 15rem;
+			box-shadow: 0 0 5px rgba(#000, 0.08);
+			border-color: $oc-gray-4;
+			padding: 0.8rem 0;
+
+			button.dropdown-item {
+				font-size: 1.4rem;
+				padding: 0.8rem 1.6rem;
+
+				&.danger {
+					color: $oc-red-7;
+				}
+			}
+		}
+	}
+
+	tr.has-nested {
+		td {
+			border-bottom: 0;
+		}
+	}
+
+	tr.nested {
+		& > td {
+			padding-top: 0;
+
+			table {
+				background-color: $oc-gray-0;
+				border-radius: 4px;
+			}
+		}
+	}
+
+	.attachment-details {
+		strong {
+			display: block;
+			font-size: 1.2rem;
+			font-weight: 400;
+			color: $oc-gray-5;
+			margin-bottom: 0.3rem;
+		}
+
+		p {
+			user-select: all;
+			font-family: "JetBrains Mono";
+			font-weight: 400;
+			font-size: 1.4rem;
+			letter-spacing: -0.075rem;
+			color: $oc-gray-7;
+		}
+	}
+
+	.release-info {
+		.release-info-row {
+			border-bottom: 1px solid $oc-gray-3;
+			padding: 1.3rem 1.5rem;
+
+			h3 {
+				font-size: 1.3rem;
+				font-weight: 400;
+				color: $oc-gray-6;
+				margin-bottom: 0.3rem;
+			}
+
+			p {
+				font-size: 1.8rem;
+				font-weight: 400;
+			}
+
+			&:first-of-type {
+				padding-top: 0;
+			}
+		}
+	}
+}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Collaboration, ReleasesCollection, ReleaseSearchRequest, ReleaseSearchResponse, ReleaseStatus, Repository } from '@omaha/client';
+	import { Collaboration, ReleaseSearchRequest, ReleaseSearchResponse, ReleaseStatus, Repository } from '@omaha/client';
 	import PromiseLoader from 'src/app/components/helpers/PromiseLoader.svelte';
 	import Time from 'src/app/components/helpers/Time.svelte';
 	import RepoCreateAction from 'src/app/components/layouts/header/repositories/RepoCreateAction.svelte';
@@ -105,31 +105,41 @@
 							<td>
 								<input type="checkbox" class="form-check-input" />
 							</td>
-							<td>
-								<div class="version-tag">{result.version}</div>
+							<td class="clickable">
+								<a href="/repository/{repo.id}/releases/{result.version}">
+									<div class="version-tag">{result.version}</div>
+								</a>
 							</td>
-							<td>
-								<div class="attribute status {result.status}">
-									{result.status}
-								</div>
-							</td>
-							<td>
-								{#each result.tags ?? [] as tag}
-									<div class="attribute tag">
-										{tag}
+							<td class="clickable">
+								<a href="/repository/{repo.id}/releases/{result.version}">
+									<div class="attribute status {result.status}">
+										{result.status}
 									</div>
-								{/each}
+								</a>
 							</td>
-							<td class="text-end">
-								<Time timestamp={result.published_at || result.created_at} />
+							<td class="clickable">
+								<a href="/repository/{repo.id}/releases/{result.version}">
+									{#each result.tags ?? [] as tag}
+										<div class="attribute tag">
+											{tag}
+										</div>
+									{/each}
+								</a>
 							</td>
-							<td class="text-end">
-								<div class="download-count">
-									<div class="download-count-flex">
-										<strong>{result.download_count}</strong>
-										<ArrowDownCircle />
+							<td class="text-end clickable">
+								<a href="/repository/{repo.id}/releases/{result.version}">
+									<Time timestamp={result.published_at || result.created_at} />
+								</a>
+							</td>
+							<td class="text-end clickable">
+								<a href="/repository/{repo.id}/releases/{result.version}">
+									<div class="download-count">
+										<div class="download-count-flex">
+											<strong>{result.download_count}</strong>
+											<ArrowDownCircle />
+										</div>
 									</div>
-								</div>
+								</a>
 							</td>
 						</tr>
 					{:else}
