@@ -57,6 +57,7 @@
 			}
 			catch (err) {
 				omaha.alerts.error(err);
+				$error = undefined;
 			}
 		}
 	}
