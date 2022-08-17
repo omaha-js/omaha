@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Asset } from 'src/entities/Asset';
 import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
+import { AttachmentsService } from '../releases/attachments/attachments.service';
 import { CreateAssetDto } from './dto/CreateAssetDto';
 import { UpdateAssetDto } from './dto/UpdateAssetDto';
 
@@ -11,6 +12,7 @@ export class AssetsService {
 
 	public constructor(
 		@InjectRepository(Asset) private readonly repository: TypeOrmRepository<Asset>,
+		private readonly attachments: AttachmentsService
 	) {}
 
 	/**
@@ -94,6 +96,12 @@ export class AssetsService {
 	 * @returns
 	 */
 	public async deleteAsset(asset: Asset) {
+		const amount = await this.attachments.getForAssetCount(asset);
+
+		if (amount > 0) {
+			throw new BadRequestException('You cannot delete this asset because it is being used');
+		}
+
 		return this.repository.delete({
 			id: asset.id
 		});
