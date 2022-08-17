@@ -74,10 +74,6 @@ export class AssetsService {
 	 * @returns
 	 */
 	public async updateAsset(asset: Asset, dto: UpdateAssetDto) {
-		if (typeof dto.name === 'string') {
-			asset.name = dto.name;
-		}
-
 		if (typeof dto.description === 'string') {
 			asset.description = dto.description;
 		}

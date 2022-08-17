@@ -4,11 +4,6 @@ export class UpdateAssetDto {
 
 	@IsOptional()
 	@IsString()
-	@MaxLength(32)
-	name!: string;
-
-	@IsOptional()
-	@IsString()
 	@MaxLength(2048)
 	description: string = '';
 

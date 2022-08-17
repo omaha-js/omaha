@@ -14,7 +14,6 @@
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
 	onDestroy(dispose);
 
-	let assetName = '';
 	let assetDescription = '';
 	let assetRequired = false;
 
@@ -22,7 +21,6 @@
 	const promise = client.assets.get(repo.id, route.params.asset);
 
 	promise.then(asset => {
-		assetName = asset.name;
 		assetDescription = asset.description;
 		assetRequired = asset.required;
 	});
@@ -30,7 +28,6 @@
 	async function onSubmit() {
 		try {
 			await client.assets.update(repo.id, route.params.asset, {
-				name: assetName,
 				description: assetDescription,
 				required: assetRequired
 			});
@@ -69,10 +66,10 @@
 	</RepoAction>
 </RepoActionContainer>
 
-<PromiseLoader {promise}>
+<PromiseLoader {promise} let:value>
 	<div class="form-container">
 		<form class="form" on:submit|preventDefault={ onSubmit }>
-			<h1>Edit asset</h1>
+			<h1>Edit {value.name}</h1>
 
 			<div class="form-section top">
 				{#if $error}
@@ -81,10 +78,6 @@
 					</div>
 				{/if}
 
-				<div class="form-group">
-					<label for="inputName">Name</label>
-					<input type="text" class="form-control half" id="inputName" bind:value={assetName}>
-				</div>
 				<div class="form-group">
 					<label for="inputDescription">Description <span class="tip">(optional)</span></label>
 					<input type="text" class="form-control" id="inputDescription" bind:value={assetDescription}>
