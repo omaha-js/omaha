@@ -63,10 +63,10 @@
 	</RepoAction>
 </RepoActionContainer>
 
-<PromiseLoader {promise}>
+<PromiseLoader {promise} let:value>
 	<div class="form-container">
 		<form class="form" on:submit|preventDefault={ onSubmit }>
-			<h1>Edit tag</h1>
+			<h1>Edit {value.name}</h1>
 
 			<div class="form-section top">
 				{#if $error}
