@@ -152,6 +152,7 @@ importers:
       tinro: ^0.6.12
       typescript: ^4.7.4
       vite: ^3.0.7
+      vite-plugin-rewrite-all: ^1.0.0
     devDependencies:
       '@baileyherbert/logging': 2.1.0
       '@omaha/client': 1.0.0-rc.4
@@ -177,6 +178,7 @@ importers:
       tinro: 0.6.12
       typescript: 4.7.4
       vite: 3.0.7_sass@1.54.4+terser@5.14.2
+      vite-plugin-rewrite-all: 1.0.0_vite@3.0.7
 
 packages:
 
@@ -2371,6 +2373,11 @@ packages:
       readable-stream: 2.3.7
       typedarray: 0.0.6
     dev: false
+
+  /connect-history-api-fallback/1.6.0:
+    resolution: {integrity: sha512-e54B99q/OUoH64zYYRf3HBP5z24G38h5D3qXu23JGRoigpX5Ss4r9ZnDk3g0Z8uQC2x2lPaJ+UlWBc1ZWBWdLg==}
+    engines: {node: '>=0.8'}
+    dev: true
 
   /consola/2.15.3:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
@@ -6297,6 +6304,16 @@ packages:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
     dev: false
+
+  /vite-plugin-rewrite-all/1.0.0_vite@3.0.7:
+    resolution: {integrity: sha512-XScNU1F73ImgsNQUuDTBd09r8nSz8Umr5PVhfmGJ8FTrFvfcci+P1pD7lT5BIdua75ZoNZGfHgdNYwnZB4cszQ==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      vite: ^2.0.0 || ^3.0.0
+    dependencies:
+      connect-history-api-fallback: 1.6.0
+      vite: 3.0.7_sass@1.54.4+terser@5.14.2
+    dev: true
 
   /vite/3.0.7_sass@1.54.4+terser@5.14.2:
     resolution: {integrity: sha512-dILhvKba1mbP1wCezVQx/qhEK7/+jVn9ciadEcyKMMhZpsuAi/eWZfJRMkmYlkSFG7Qq9NvJbgFq4XOBxugJsA==}

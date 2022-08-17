@@ -25,6 +25,7 @@ import legacy from '@vitejs/plugin-legacy';
 import autoprefixer from 'autoprefixer';
 import pkg from './package.json';
 import tsconfig from './tsconfig.json';
+import pluginRewriteAll from 'vite-plugin-rewrite-all';
 
 const production = process.env.NODE_ENV === 'production';
 const config = <UserConfig> defineConfig({
@@ -37,6 +38,7 @@ const config = <UserConfig> defineConfig({
 				dev: !production,
 			},
 		}),
+		pluginRewriteAll()
 	],
 	server: {
 		host: 'localhost',
