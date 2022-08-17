@@ -72,6 +72,9 @@
 					<Route path="/assets/:asset"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/assets/edit.svelte') } /></Route>
 
 					<Route path="/tags"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags.svelte') } /></Route>
+					<Route path="/tags/create"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags/create.svelte') } /></Route>
+					<Route path="/tags/:tag"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags/edit.svelte') } /></Route>
+
 					<Route path="/stats"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
 					<Route path="/settings/*"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
