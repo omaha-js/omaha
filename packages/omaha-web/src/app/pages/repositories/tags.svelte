@@ -7,7 +7,7 @@
 	import RepoRefreshAction from 'src/app/components/layouts/header/repositories/RepoRefreshAction.svelte';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
-	import File from 'tabler-icons-svelte/icons/File.svelte';
+	import TagIcon from 'tabler-icons-svelte/icons/Tag.svelte';
 
 	export let repo: Repository;
 	export let collab: Collaboration;
@@ -48,7 +48,7 @@
 					<td class="clickable">
 						<a href="/repository/{repo.id}/tags/{tag.name}">
 							<div class="icon-text-union">
-								<File />
+								<TagIcon />
 								{tag.name}
 							</div>
 						</a>
