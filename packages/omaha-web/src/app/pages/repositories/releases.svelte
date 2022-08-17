@@ -9,6 +9,7 @@
 	import ArrowDownCircle from 'tabler-icons-svelte/icons/ArrowDownCircle.svelte';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
+	import RepoActionContainer from 'src/app/components/layouts/header/repositories/RepoActionContainer.svelte';
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
 
@@ -68,18 +69,20 @@
 	}
 </script>
 
-<RepoSearchAction
-	bind:value={search}
-	placeholder="Search for releases..."
-	on:typestop={ () => onSearchAction() }
-	on:submit={ () => onSearchAction(true) }
-	error={searchError || searchSyntaxError}
-/>
-<RepoRefreshAction on:invoke={onRefreshAction} title="Refresh this list" />
+<RepoActionContainer>
+	<RepoSearchAction
+		bind:value={search}
+		placeholder="Search for releases..."
+		on:typestop={ () => onSearchAction() }
+		on:submit={ () => onSearchAction(true) }
+		error={searchError || searchSyntaxError}
+	/>
+	<RepoRefreshAction on:invoke={onRefreshAction} title="Refresh this list" />
 
-{#if collab.scopes.includes('repo.releases.create')}
-	<RepoCreateAction href="/repository/{repo.id}/releases/create" title="Create a new release" />
-{/if}
+	{#if collab.scopes.includes('repo.releases.create')}
+		<RepoCreateAction href="/repository/{repo.id}/releases/create" title="Create a new release" />
+	{/if}
+</RepoActionContainer>
 
 <PromiseLoader {promise} let:value={response}>
 	<div class="row">
