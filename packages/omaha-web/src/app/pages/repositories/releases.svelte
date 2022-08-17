@@ -38,6 +38,7 @@
 	let promise: Promise<ReleaseSearchResponse>;
 
 	$: {
+		client.abort();
 		promise = client.releases.search(repo.id, params);
 		promise.then(
 			() => searchError = false,
@@ -50,8 +51,7 @@
 	}
 
 	function onRefreshAction() {
-		client.abort();
-		promise = client.releases.search(repo.id, params);
+		params = params;
 	}
 
 	function onSearchAction(submit = false) {
@@ -84,9 +84,9 @@
 	{/if}
 </RepoActionContainer>
 
-<PromiseLoader {promise} let:value={response}>
-	<div class="row">
-		<div class="col-md-9">
+<div class="row">
+	<div class="col-md-9">
+		<PromiseLoader {promise} let:value={response}>
 			<table class="table themed">
 				<thead>
 					<tr>
@@ -154,98 +154,98 @@
 					{/each}
 				</tbody>
 			</table>
-		</div>
-		<div class="col-md-3">
-			<form on:submit|preventDefault={ () => {} }>
-				<div class="panel">
-					<div class="panel-header">
-						Status
-					</div>
-					<div class="panel-body">
-						<div class="attribute-list">
-							<label class="attribute-list-item" for="status_published">
-								<input
-									type="checkbox"
-									class="form-check-input"
-									bind:group={params.status}
-									name="status"
-									value={ReleaseStatus.Published}
-									id="status_published"
-								/>
-								<strong>published</strong>
-							</label>
-							<label class="attribute-list-item" for="status_archived">
-								<input
-									type="checkbox"
-									class="form-check-input"
-									bind:group={params.status}
-									name="status"
-									value={ReleaseStatus.Archived}
-									id="status_archived"
-								/>
-								<strong>archived</strong>
-							</label>
-							<label class="attribute-list-item" for="status_draft">
-								<input
-									type="checkbox"
-									class="form-check-input"
-									bind:group={params.status}
-									name="status"
-									value={ReleaseStatus.Draft}
-									id="status_draft"
-								/>
-								<strong>draft</strong>
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div class="panel">
-					<div class="panel-header">
-						Tags
-					</div>
-					<div class="panel-body">
-						<div class="attribute-list">
-							{#each tags as tag}
-								<label class="attribute-list-item" for="tag_{tag.name}">
-									<input
-										type="checkbox"
-										class="form-check-input"
-										bind:group={params.tags}
-										name="tags"
-										value={tag.name}
-										id="tag_{tag.name}"
-									/>
-									<strong>{tag.name}</strong>
-								</label>
-							{/each}
-						</div>
-					</div>
-				</div>
-
-				<div class="panel">
-					<div class="panel-header">
-						Assets
-					</div>
-					<div class="panel-body">
-						<div class="attribute-list">
-							{#each assets as asset}
-								<label class="attribute-list-item" for="asset_{asset.name}">
-									<input
-										type="checkbox"
-										class="form-check-input"
-										bind:group={params.assets}
-										name="assets"
-										value={asset.name}
-										id="asset_{asset.name}"
-									/>
-									<strong>{asset.name}</strong>
-								</label>
-							{/each}
-						</div>
-					</div>
-				</div>
-			</form>
-		</div>
+		</PromiseLoader>
 	</div>
-</PromiseLoader>
+	<div class="col-md-3">
+		<form on:submit|preventDefault={ () => {} }>
+			<div class="panel">
+				<div class="panel-header">
+					Status
+				</div>
+				<div class="panel-body">
+					<div class="attribute-list">
+						<label class="attribute-list-item" for="status_published">
+							<input
+								type="checkbox"
+								class="form-check-input"
+								bind:group={params.status}
+								name="status"
+								value={ReleaseStatus.Published}
+								id="status_published"
+							/>
+							<strong>published</strong>
+						</label>
+						<label class="attribute-list-item" for="status_archived">
+							<input
+								type="checkbox"
+								class="form-check-input"
+								bind:group={params.status}
+								name="status"
+								value={ReleaseStatus.Archived}
+								id="status_archived"
+							/>
+							<strong>archived</strong>
+						</label>
+						<label class="attribute-list-item" for="status_draft">
+							<input
+								type="checkbox"
+								class="form-check-input"
+								bind:group={params.status}
+								name="status"
+								value={ReleaseStatus.Draft}
+								id="status_draft"
+							/>
+							<strong>draft</strong>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="panel">
+				<div class="panel-header">
+					Tags
+				</div>
+				<div class="panel-body">
+					<div class="attribute-list">
+						{#each tags as tag}
+							<label class="attribute-list-item" for="tag_{tag.name}">
+								<input
+									type="checkbox"
+									class="form-check-input"
+									bind:group={params.tags}
+									name="tags"
+									value={tag.name}
+									id="tag_{tag.name}"
+								/>
+								<strong>{tag.name}</strong>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+
+			<div class="panel">
+				<div class="panel-header">
+					Assets
+				</div>
+				<div class="panel-body">
+					<div class="attribute-list">
+						{#each assets as asset}
+							<label class="attribute-list-item" for="asset_{asset.name}">
+								<input
+									type="checkbox"
+									class="form-check-input"
+									bind:group={params.assets}
+									name="assets"
+									value={asset.name}
+									id="asset_{asset.name}"
+								/>
+								<strong>{asset.name}</strong>
+							</label>
+						{/each}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
