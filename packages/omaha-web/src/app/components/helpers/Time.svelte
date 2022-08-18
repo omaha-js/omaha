@@ -4,14 +4,21 @@
 
 	let interval: NodeJS.Timeout | undefined = undefined;
 	let format = 'YYYY-MM-DD hh:mm A';
+	let formatted = '';
 	let relative = true;
 
 	export let timestamp: Date | number | string;
+	export let future = false;
 
-	$: date = new Date(timestamp).toISOString();
+	$: date = new Date(timestamp);
 
 	onMount(() => {
 		interval = setInterval(() => {
+			if (date.getTime() >= Date.now() && !future) {
+				formatted = 'just now';
+				return;
+			}
+
 			formatted = relative ? dayjs(timestamp).from(undefined) : dayjs(timestamp).format(format);
 		}, 60000);
 
@@ -26,13 +33,21 @@
 		const time = new Date(timestamp).getTime();
 		const ago = (Date.now() - time) / 1000;
 
-		relative = ago < 86400;
+		relative = ago < 86400 && (future || ago >= 0);
 	}
 
-	$: formatted = relative ? dayjs(timestamp).from(undefined) : dayjs(timestamp).format(format);
-	$: title = date;
+	$: {
+		if (date.getTime() >= Date.now() && !future) {
+			formatted = 'just now';
+		}
+		else {
+			formatted = relative ? dayjs(timestamp).from(undefined) : dayjs(timestamp).format(format);
+		}
+	}
+
+	$: title = date.toISOString();
 </script>
 
-<time {...$$restProps} {title} datetime={date}>
+<time {...$$restProps} {title} datetime={date.toISOString()}>
   {formatted}
 </time>
