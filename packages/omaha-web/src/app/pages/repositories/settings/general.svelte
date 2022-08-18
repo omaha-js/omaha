@@ -9,7 +9,7 @@
 	import InfoCircle from 'tabler-icons-svelte/icons/InfoCircle.svelte';
 	import Button from 'src/app/components/kit/Button.svelte';
 	import { Repository, RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
-	import { onDestroy } from 'svelte';
+	import { getContext, onDestroy } from 'svelte';
 	import omaha from 'src/omaha';
 
 	export let repo: Repository;
@@ -23,8 +23,9 @@
 	let repoArchiveExpiration = repo.settings['releases.archives.expiration'];
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
-
 	onDestroy(dispose);
+
+	const { refreshRepository } = getContext('app');
 
 	async function onSubmit() {
 		try {
@@ -41,6 +42,8 @@
 			});
 
 			await omaha.repositories.refresh();
+			await refreshRepository();
+
 			omaha.alerts.success('Changes saved successfully!', 3000);
 		}
 		catch (err) {

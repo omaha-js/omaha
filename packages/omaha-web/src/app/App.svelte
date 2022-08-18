@@ -10,6 +10,7 @@
 	import NotificationTray from './components/layouts/notifications/NotificationTray.svelte';
 	import { Collaboration, Repository } from '@omaha/client';
 	import PromiseLoader from './components/helpers/PromiseLoader.svelte';
+	import { setContext } from 'svelte';
 
 	const { account } = omaha.session;
 
@@ -37,6 +38,7 @@
 
 			if (active && repositoryPromiseId !== active.id) {
 				repositoryPromiseId = active.id;
+				client.abort();
 				repositoryPromise = client.repos.get(repositoryPromiseId);
 			}
 		}
@@ -44,6 +46,18 @@
 			repository = undefined;
 		}
 	}
+
+	setContext('app', {
+		async refreshRepository() {
+			if (repositoryPromiseId) {
+				try {
+					const repo = await client.repos.get(repositoryPromiseId);
+					repositoryPromise = Promise.resolve(repo);
+				}
+				catch (err) {}
+			}
+		}
+	})
 
 	router.subscribe(() => window.scrollTo(0, 0));
 </script>
