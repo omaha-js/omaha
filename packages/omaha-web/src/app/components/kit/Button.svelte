@@ -17,7 +17,21 @@
 
 {#if href}
 	<a {href} class={className}>
-		<slot />
+		{#if icon}
+		<div class="button-icon">
+			<svelte:component this={icon} />
+		</div>
+		{/if}
+
+		{#if loading}
+		<div class="button-loader">
+			<Loader size={20} />
+		</div>
+		{/if}
+
+		<div class="btn-text">
+			<slot />
+		</div>
 	</a>
 {:else}
 	<button {type} class={className} on:click>

@@ -76,3 +76,22 @@
 		}
 	}
 }
+
+a.btn {
+	color: $oc-white;
+	text-decoration: none;
+
+	&:hover {
+		color: $oc-white;
+
+		&.loading {
+			color: transparent;
+		}
+	}
+
+	.btn-text {
+		height: 3.4rem;
+		display: flex;
+		align-items: center;
+	}
+}
