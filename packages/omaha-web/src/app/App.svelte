@@ -96,6 +96,9 @@
 			</PromiseLoader>
 		{/if}
 
+		<!-- Restore repositories -->
+		<Route path="/restore/repository/:repo_id"><Loadable component={ () => import('./pages/restore/repository.svelte') } /></Route>
+
 		<!-- Account -->
 		<Route path="/account/repositories"><Loadable component={ () => import('./pages/protected/account/repositories/index.svelte') } /></Route>
 		<Route path="/account/tokens"><Loadable component={ () => import('./pages/protected/account/tokens/index.svelte') } /></Route>
