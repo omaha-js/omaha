@@ -63,18 +63,26 @@ export class CollaborationsController {
 			params.scopes = params.scopes.filter(scope => collab.hasPermission(scope));
 		}
 
+		// Role indices
+		const roles: CollaborationRole[] = [
+			CollaborationRole.Owner,
+			CollaborationRole.Manager,
+			CollaborationRole.Auditor,
+			CollaborationRole.Custom
+		];
+
+		const collabIndex = roles.indexOf(collab.role);
+		const targetExistingIndex = roles.indexOf(target.role);
+
+		if (targetExistingIndex < collabIndex) {
+			throw new BadRequestException('You cannot manage this collaborator because they are a higher role than you');
+		}
+
 		// Prevent assignment of roles beyond our own
 		if (params.role && params.role !== CollaborationRole.Custom) {
-			const roles: CollaborationRole[] = [
-				CollaborationRole.Owner,
-				CollaborationRole.Manager,
-				CollaborationRole.Auditor,
-				CollaborationRole.Custom
-			];
-			const collabIndex = roles.indexOf(collab.role);
 			const targetIndex = roles.indexOf(params.role);
 
-			if (collabIndex < 0) {
+			if (collab.role === CollaborationRole.Custom) {
 				throw new BadRequestException('You cannot assign special roles, please use custom instead');
 			}
 
