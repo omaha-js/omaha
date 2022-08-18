@@ -13,7 +13,7 @@
 	registerTab(tab);
 </script>
 
-<Route path={path}>
+<Route path={path.replace(/\/+$/, '') + '/*'} firstmatch>
 	<div class="tab-panel">
 		<slot />
 	</div>
