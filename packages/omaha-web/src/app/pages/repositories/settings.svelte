@@ -39,7 +39,7 @@ import { Route } from 'tinro';
 	<TabSection name="Logs" />
 
 	<Tab name="Download log" path="/logs/downloads" icon={DownloadIcon}>
-		Not implemented!
+		<LoadableForRepo {repo} {collab} component={ () => import('./settings/logs/downloads.svelte') } />
 	</Tab>
 
 	<Tab name="Audit log" path="/logs/audit" icon={AuditIcon}>
