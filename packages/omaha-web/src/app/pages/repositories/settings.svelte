@@ -10,6 +10,7 @@
 	import KeyIcon from 'tabler-icons-svelte/icons/Key.svelte';
 	import DownloadIcon from 'tabler-icons-svelte/icons/Download.svelte';
 	import AuditIcon from 'tabler-icons-svelte/icons/History.svelte';
+import { Route } from 'tinro';
 
 	export let repo: Repository;
 	export let collab: Collaboration;
@@ -22,7 +23,10 @@
 
 	<TabSection name="Access" />
 	<Tab name="Collaborators" path="/collaborators" icon={UsersIcon}>
-		Not implemented!
+		<Route path="/invites/create"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/create.svelte') } /></Route>
+		<Route path="/invites/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/edit.svelte') } /></Route>
+		<Route path="/"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/index.svelte') } /></Route>
+		<Route path="/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/edit.svelte') } /></Route>
 	</Tab>
 	<Tab name="Access tokens" path="/tokens" icon={KeyIcon}>
 		Not implemented!

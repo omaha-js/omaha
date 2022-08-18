@@ -24,6 +24,28 @@
 			color: rgba($oc-black, 0.7);
 		}
 	}
+
+	&.role {
+		&.owner {
+			background-color: $oc-violet-4;
+			color: $oc-white;
+		}
+
+		&.manager {
+			background-color: $oc-indigo-4;
+			color: $oc-white;
+		}
+
+		&.auditor {
+			background-color: $oc-blue-4;
+			color: $oc-white;
+		}
+
+		&.custom {
+			background-color: $oc-gray-5;
+			color: $oc-white;
+		}
+	}
 }
 
 .attribute-list {

@@ -199,12 +199,26 @@ table.table {
 			border-color: $oc-gray-4;
 			padding: 0.8rem 0;
 
-			button.dropdown-item {
+			.dropdown-item {
 				font-size: 1.4rem;
 				padding: 0.8rem 1.6rem;
+				color: $oc-dark-4;
 
 				&.danger {
 					color: $oc-red-7;
+				}
+
+				&:focus, &:active {
+					background-color: $oc-gray-3;
+				}
+			}
+
+			a.dropdown-item {
+				text-decoration: none;
+				color: $oc-dark-4;
+
+				&:hover {
+					color: $oc-dark-4;
 				}
 			}
 		}

@@ -1,27 +1,36 @@
+@mixin form-control-themed {
+	background-color: $oc-gray-1;
+	border-color: $oc-gray-3;
+
+	&:focus, &:active {
+		background-color: $oc-white;
+		border-color: $oc-gray-3;
+		color: $oc-dark-4;
+	}
+
+	height: 3.4rem;
+	min-height: 3.4rem;
+	line-height: 3.4rem;
+	font-size: 1.4rem;
+	border-radius: 3px;
+	color: $oc-dark-4;
+
+	padding: 0.4rem 1.1rem;
+
+	&.half {
+		max-width: 34rem;
+	}
+}
+
 .form-control {
 	&[type=text], &[type=email], &[type=password], &[type=number] {
-		background-color: $oc-gray-1;
-		border-color: $oc-gray-3;
-
-		&:focus, &:active {
-			background-color: $oc-white;
-			border-color: $oc-gray-3;
-			color: $oc-dark-4;
-		}
-
-		height: 3.4rem;
-		min-height: 3.4rem;
-		line-height: 3.4rem;
-		font-size: 1.4rem;
-		border-radius: 3px;
-		color: $oc-dark-4;
-
-		padding: 0.4rem 1.1rem;
-
-		&.half {
-			max-width: 34rem;
-		}
+		@include form-control-themed;
 	}
+}
+
+.form-select {
+	@include form-control-themed;
+	line-height: 1;
 }
 
 textarea.form-control {
