@@ -1,7 +1,7 @@
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import { AuthScopeId } from 'src/auth/auth.scopes';
 import { TokenType } from 'src/entities/enum/TokenType';
-import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';
@@ -46,5 +46,16 @@ export class Token {
 
 	@UpdateDateColumn()
 	public updated_at!: Date;
+
+	@DeleteDateColumn()
+	@Exclude()
+	public deleted_at!: Date | null;
+
+	@Expose({ name: 'deleted_at' })
+	protected get jsonPropDeletedAt() {
+		if ((this as any).deleted_at) {
+			return (this as any).deleted_at;
+		}
+	}
 
 }

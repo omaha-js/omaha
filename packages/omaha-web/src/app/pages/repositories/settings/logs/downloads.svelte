@@ -44,9 +44,15 @@
 					<td>{row.ip}</td>
 					<td>
 						{#if row.token}
-							<div class="icon-text-union" title="This client was authenticated with a token">
+							<div class="icon-text-union" title="This client was authenticated with a token" class:deleted={!!row.token.deleted_at}>
 								<Key />
-								{row.token.name}
+
+								{#if row.token.deleted_at}
+									<s>{row.token.name}</s>
+									<div class="attribute deleted">Deleted</div>
+								{:else}
+									{row.token.name}
+								{/if}
 							</div>
 						{:else}
 							<div class="icon-text-union grayed" title="This client was not authenticated">

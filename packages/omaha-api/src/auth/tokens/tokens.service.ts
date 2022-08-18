@@ -160,8 +160,14 @@ export class TokensService {
 		};
 	}
 
+	/**
+	 * Soft deletes the given database token. Tokens should never actually be deleted so we can keep records on them.
+	 *
+	 * @param token
+	 * @returns
+	 */
 	public async deleteDatabaseToken(token: Token) {
-		return this.repository.delete({
+		return this.repository.softDelete({
 			id: token.id
 		});
 	}

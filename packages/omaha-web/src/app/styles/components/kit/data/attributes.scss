@@ -46,6 +46,11 @@
 			color: $oc-white;
 		}
 	}
+
+	&.deleted {
+		background-color: $oc-red-1;
+		color: $oc-red-7;
+	}
 }
 
 .attribute-list {

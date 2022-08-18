@@ -105,6 +105,7 @@ export class DownloadsService {
 		else if (target instanceof ReleaseAttachment) query.where('ReleaseDownload.attachment_id = :id', target);
 
 		// Left join tokens
+		query.withDeleted();
 		query.leftJoinAndSelect('ReleaseDownload.token', 'Token');
 		query.leftJoinAndSelect('ReleaseDownload.release', 'Release');
 		query.leftJoinAndSelect('ReleaseDownload.attachment', 'ReleaseAttachment');

@@ -9,13 +9,15 @@ import { Repo } from 'src/support/Repo';
 import { RepositoriesGuard } from '../repositories.guard';
 import { CreateRepoTokenDto } from './dto/CreateRepoTokenDto';
 import { UpdateRepoTokenDto } from './dto/UpdateRepoTokenDto';
+import { DownloadsService } from '../releases/downloads/downloads.service';
 
 @Controller('repositories/:repo_id/tokens')
 @UseGuards(RepositoriesGuard)
 export class TokensController {
 
 	public constructor(
-		private readonly service: TokensService
+		private readonly service: TokensService,
+		private readonly downloads: DownloadsService,
 	) {}
 
 	@Get()

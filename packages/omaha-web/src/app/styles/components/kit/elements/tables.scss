@@ -153,6 +153,18 @@ table.table {
 					color: $oc-gray-5;
 				}
 			}
+
+			&.deleted {
+				color: $oc-red-7;
+
+				svg {
+					color: $oc-red-7;
+				}
+
+				.attribute.deleted {
+					margin-left: 1rem;
+				}
+			}
 		}
 
 		.avatar-text-union {
