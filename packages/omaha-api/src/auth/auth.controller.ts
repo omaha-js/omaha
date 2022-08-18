@@ -93,7 +93,6 @@ export class AuthController {
 			scopes: AuthScopes.map(scope => {
 				return {
 					...scope,
-					groups: undefined,
 					active: token ? token.scopes.includes(scope.id) : false
 				};
 			})
