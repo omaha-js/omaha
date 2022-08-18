@@ -13,6 +13,7 @@ import { Token } from './Token';
 export class ReleaseDownload {
 
 	@PrimaryGeneratedColumn({ unsigned: true })
+	@Exclude()
 	public id!: number;
 
 	@ManyToOne(() => ReleaseAttachment, attachment => attachment.downloads, { onDelete: 'CASCADE' })
