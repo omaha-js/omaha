@@ -22,20 +22,26 @@ import { Route } from 'tinro';
 	</Tab>
 
 	<TabSection name="Access" />
+
 	<Tab name="Collaborators" path="/collaborators" icon={UsersIcon}>
 		<Route path="/invites/create"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/create.svelte') } /></Route>
 		<Route path="/invites/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/edit.svelte') } /></Route>
 		<Route path="/"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/index.svelte') } /></Route>
 		<Route path="/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/edit.svelte') } /></Route>
 	</Tab>
+
 	<Tab name="Access tokens" path="/tokens" icon={KeyIcon}>
-		Not implemented!
+		<Route path="/"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/index.svelte') } /></Route>
+		<Route path="/create"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/create.svelte') } /></Route>
+		<Route path="/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/edit.svelte') } /></Route>
 	</Tab>
 
 	<TabSection name="Logs" />
+
 	<Tab name="Download log" path="/logs/downloads" icon={DownloadIcon}>
 		Not implemented!
 	</Tab>
+
 	<Tab name="Audit log" path="/logs/audit" icon={AuditIcon}>
 		Not implemented!
 	</Tab>
