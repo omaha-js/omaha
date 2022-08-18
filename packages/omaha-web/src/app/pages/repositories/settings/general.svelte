@@ -8,11 +8,13 @@
 	import Archive from 'tabler-icons-svelte/icons/Archive.svelte';
 	import InfoCircle from 'tabler-icons-svelte/icons/InfoCircle.svelte';
 	import Button from 'src/app/components/kit/Button.svelte';
-	import { Repository, RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
+	import { Collaboration, CollaborationRole, Repository, RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
 	import { getContext, onDestroy } from 'svelte';
 	import omaha from 'src/omaha';
+	import { router } from 'tinro';
 
 	export let repo: Repository;
+	export let collab: Collaboration;
 
 	let repoName = repo.name;
 	let repoDescription = repo.description;
@@ -48,6 +50,25 @@
 		}
 		catch (err) {
 			window.scrollTo(0, 0);
+		}
+	}
+
+	async function deleteRepo() {
+		const message = `Are you sure you want to delete this repository? We'll send you an email with a link to ` +
+			`revert this action. If you don't revert it within 7 days, the repository and all of its data will be ` +
+			`permanently deleted.`;
+
+		if (confirm(message)) {
+			try {
+				const response = await client.repos.delete(repo.id);
+				await omaha.repositories.refresh();
+
+				omaha.alerts.success(response.message, 3000);
+				router.goto('/');
+			}
+			catch (err) {
+				window.scrollTo(0, 0);
+			}
 		}
 	}
 </script>
@@ -288,4 +309,20 @@
 			<Button type="submit" color="blue" loading={$loading}>Save changes</Button>
 		</div>
 	</form>
+
+	{#if collab.role === CollaborationRole.Owner}
+		<div class="form-section top">
+			<h1>Danger zone</h1>
+
+			<div class="form-card">
+				<div class="details">
+					<h3>Delete this repository</h3>
+					<p>You will be able to restore the repository within 7 days.</p>
+				</div>
+				<div class="action">
+					<Button color="red" on:click={ deleteRepo } loading={$loading}>Delete</Button>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>

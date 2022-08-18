@@ -118,6 +118,31 @@ textarea.form-control {
 	}
 }
 
+.form-card {
+	border: 1px solid $oc-gray-3;
+	border-radius: 4px;
+	background-color: transparent;
+
+	display: flex;
+	align-items: center;
+	padding: 1.8rem 1.8rem;
+
+	h3 {
+		font-size: 1.6rem;
+		color: $oc-dark-4;
+		margin-bottom: 0.3rem;
+	}
+
+	p {
+		font-size: 1.4rem;
+		color: $oc-gray-6;
+	}
+
+	.details {
+		flex-grow: 1;
+	}
+}
+
 .form-group {
 	margin-bottom: 1.5rem;
 
