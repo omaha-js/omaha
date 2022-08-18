@@ -10,6 +10,7 @@
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
 	import RepoActionContainer from 'src/app/components/layouts/header/repositories/RepoActionContainer.svelte';
+	import Pagination from 'src/app/components/helpers/Pagination.svelte';
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
 
@@ -32,7 +33,8 @@
 		sort: 'version',
 		sort_order: 'desc',
 		tags: [],
-		assets: []
+		assets: [],
+		page: 1
 	};
 
 	let promise: Promise<ReleaseSearchResponse>;
@@ -154,6 +156,8 @@
 					{/each}
 				</tbody>
 			</table>
+
+			<Pagination bind:current={params.page} limit={response.pagination.page_count} />
 		</PromiseLoader>
 	</div>
 	<div class="col-md-3">
