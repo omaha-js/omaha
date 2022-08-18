@@ -76,7 +76,8 @@
 					<Route path="/tags/:tag"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/tags/edit.svelte') } /></Route>
 
 					<Route path="/stats"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/stats.svelte') } /></Route>
-					<Route path="/settings/*"><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
+					<Route path="/settings" redirect="settings/general" />
+					<Route path="/settings/*" firstmatch><LoadableForRepo {collab} {repo} component={ () => import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
 			</PromiseLoader>
 		{/if}
