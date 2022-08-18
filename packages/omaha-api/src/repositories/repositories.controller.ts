@@ -128,6 +128,36 @@ export class RepositoriesController {
 		throw new ForbiddenException('You do not have permission to perform this operation');
 	}
 
+	@Get('restore/:repo_id')
+	@Private()
+	public async getDeletedRepository(@Param('repo_id') id: string, @User() token: BaseToken) {
+		const repo = await this.service.getDeletedRepository(id);
+
+		if ((!token || !token.isForAccount()) || token.isDatabaseToken()) {
+			throw new BadRequestException('Invalid authentication type');
+		}
+
+		if (!token.hasPermission('account.repos.manage')) {
+			throw new ForbiddenException('You do not have access to the requested repository');
+		}
+
+		const collabs = await repo.collaborators;
+
+		for (const collab of collabs) {
+			const account = await collab.account;
+
+			if (account.id === token.account.id) {
+				if (collab.role === CollaborationRole.Owner) {
+					return repo;
+				}
+
+				break;
+			}
+		}
+
+		throw new ForbiddenException('You do not have permission to perform this operation');
+	}
+
 	/**
 	 * Lists all published version strings for the repository. These version strings are sorted by the driver in
 	 * descending order (highest version first).
