@@ -148,7 +148,7 @@
 				</tr>
 			{:else}
 				<tr>
-					<td colspan="4">
+					<td colspan="5">
 						No invitations found.
 					</td>
 				</tr>
