@@ -65,7 +65,12 @@ export class CollaborationsController {
 
 		// Prevent assignment of roles beyond our own
 		if (params.role && params.role !== CollaborationRole.Custom) {
-			const roles: CollaborationRole[] = [CollaborationRole.Owner, CollaborationRole.Manager, CollaborationRole.Auditor];
+			const roles: CollaborationRole[] = [
+				CollaborationRole.Owner,
+				CollaborationRole.Manager,
+				CollaborationRole.Auditor,
+				CollaborationRole.Custom
+			];
 			const collabIndex = roles.indexOf(collab.role);
 			const targetIndex = roles.indexOf(params.role);
 
@@ -101,7 +106,13 @@ export class CollaborationsController {
 
 		// Prevent deletion of roles beyond our own
 		if (target.role !== CollaborationRole.Custom) {
-			const roles: CollaborationRole[] = [CollaborationRole.Owner, CollaborationRole.Manager, CollaborationRole.Auditor];
+			const roles: CollaborationRole[] = [
+				CollaborationRole.Owner,
+				CollaborationRole.Manager,
+				CollaborationRole.Auditor,
+				CollaborationRole.Custom
+			];
+
 			const collabIndex = roles.indexOf(collab.role);
 			const targetIndex = roles.indexOf(target.role);
 
