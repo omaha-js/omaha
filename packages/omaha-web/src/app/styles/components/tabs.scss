@@ -2,8 +2,8 @@
 	display: flex;
 
 	.tabs-navigation {
-		width: 250px;
-		margin-right: 30px;
+		width: 25rem;
+		margin-right: 4rem;
 
 		ul {
 			list-style: none;
@@ -17,12 +17,12 @@
 					display: flex;
 					align-items: center;
 
-					height: 32px;
+					height: 3.2rem;
 					border-radius: 4px;
 
-					font-size: 14px;
+					font-size: 1.4rem;
 					text-decoration: none;
-					color: $oc-dark-0;
+					color: $oc-dark-4;
 
 					padding: 0 2px;
 					transition: background-color 150ms;
@@ -32,9 +32,9 @@
 						align-items: center;
 						justify-content: center;
 
-						color: $oc-dark-3;
-						width: 32px;
-						margin-right: 2px;
+						color: $oc-dark-4;
+						width: 3.2rem;
+						margin-right: 0;
 
 						svg {
 							width: 18px;
@@ -43,14 +43,15 @@
 					}
 
 					&:hover {
-						background-color: $oc-dark-6;
+						background-color: $oc-gray-2;
 					}
 				}
 
 				&.active {
 					a {
-						background-color: $oc-dark-6;
-						font-weight: 600;
+						background-color: $oc-gray-2;
+						font-weight: 500;
+						color: $oc-dark-6;
 
 						&:after {
 							position: absolute;
@@ -67,14 +68,14 @@
 
 				&.tab-separator {
 					.tab-section {
-						font-size: 12px;
-						font-weight: 600;
-						color: $oc-dark-2;
+						font-size: 1.2rem;
+						font-weight: 500;
+						color: $oc-gray-6;
 
-						padding: 12px 0 10px 10px;
-						margin-top: 10px;
+						padding: 1.5rem 0 0.8rem 1rem;
+						margin-top: 1rem;
 
-						border-top: 1px solid $oc-dark-5;
+						border-top: 1px solid $oc-gray-2;
 					}
 
 					&:first-of-type {
