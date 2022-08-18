@@ -2,7 +2,7 @@
 	import { CollaborationRole, Repository, RepositoryScope } from '@omaha/client';
 	import PromiseLoader from 'src/app/components/helpers/PromiseLoader.svelte';
 	import Button from 'src/app/components/kit/Button.svelte';
-	import ScopePicker from 'src/app/components/pages/collaborations/ScopePicker.svelte';
+	import ScopePicker from 'src/app/components/pages/settings/ScopePicker.svelte';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
 	import { router } from 'tinro';
