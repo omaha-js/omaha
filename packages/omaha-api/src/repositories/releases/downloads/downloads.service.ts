@@ -108,6 +108,7 @@ export class DownloadsService {
 		query.leftJoinAndSelect('ReleaseDownload.token', 'Token');
 		query.leftJoinAndSelect('ReleaseDownload.release', 'Release');
 		query.leftJoinAndSelect('ReleaseDownload.attachment', 'ReleaseAttachment');
+		query.leftJoinAndSelect('ReleaseAttachment.asset', 'Asset');
 
 		// Date range & grouping
 		query.orderBy('ReleaseDownload.id', 'DESC');
