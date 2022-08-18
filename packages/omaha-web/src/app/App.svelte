@@ -66,7 +66,7 @@
 	<Loader full size={40} theme="gray" message="Loading" />
 {:else if $account}
 	<Layout {repository}>
-		<Route path="/">Admin</Route>
+		<Route path="/"><Loadable component={ () => import('./pages/index.svelte') } /></Route>
 
 		<!-- Repository management (account side) -->
 		<Route path="/repositories/create"><Loadable component={ () => import('./pages/repositories/create.svelte') } /></Route>
