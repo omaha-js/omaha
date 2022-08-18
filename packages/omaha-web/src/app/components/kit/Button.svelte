@@ -5,13 +5,13 @@
 	export let href: string | undefined = undefined;
 	export let icon: any = undefined;
 	export let loading: boolean = false;
-	export let color: Color = 'gray';
+	export let color: Color | undefined = undefined;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
 
-	$: effectiveColor = loading ? 'gray' : color;
+	$: effectiveColor = loading ? 'gray' : color ?? '';
 	$: className = (
 		`btn btn-${effectiveColor} ` + ($$props.class ?? '') + ' ' + (loading ? 'loading' : '') + ' ' +
-		(icon ? 'has-icon' : '')
+		(icon ? 'has-icon' : '') + ' ' + (!$$slots['default'] ? 'without-text' : '')
 	);
 </script>
 

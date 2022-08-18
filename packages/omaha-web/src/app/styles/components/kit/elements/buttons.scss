@@ -2,18 +2,20 @@
 	height: 3.6rem;
 	padding: 0 18px;
 	border: 1px solid transparent;
-	color: $oc-white;
+	color: $oc-gray-7;
 	border-radius: 4px;
 	font-weight: 500;
 	position: relative;
 	line-height: 1;
 	font-size: 1.3rem;
+	background-color: $oc-gray-3;
 
 	transition: color 0ms;
 
 	&:hover, &:active, &:focus {
 		border-color: transparent;
-		color: $oc-white;
+		color: $oc-gray-7;
+		background-color: $oc-gray-4;
 	}
 
 	.button-loader {
@@ -31,7 +33,7 @@
 	}
 
 	&.loading {
-		color: transparent;
+		color: transparent !important;
 		cursor: default;
 	}
 
@@ -48,10 +50,27 @@
 				height: 1.8rem;
 			}
 		}
+
+		&.without-text {
+			width: 3.6rem;
+			padding: 0;
+
+			.button-icon {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+		}
 	}
 
 	@each $map, $name in $oc-color-list {
 		&.btn-#{$name} {
+			color: $oc-white;
 			background-color: map-get($map, "8");
 
 			&:hover {
@@ -78,20 +97,22 @@
 }
 
 a.btn {
-	color: $oc-white;
+	color: $oc-gray-7;
 	text-decoration: none;
 
 	&:hover {
-		color: $oc-white;
-
-		&.loading {
-			color: transparent;
-		}
+		color: $oc-gray-7;
 	}
 
 	.btn-text {
 		height: 3.4rem;
 		display: flex;
 		align-items: center;
+	}
+
+	@each $map, $name in $oc-color-list {
+		&.btn-#{$name} {
+			color: $oc-white;
+		}
 	}
 }
