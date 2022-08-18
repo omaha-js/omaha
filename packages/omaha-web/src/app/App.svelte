@@ -99,6 +99,9 @@
 		<!-- Restore repositories -->
 		<Route path="/restore/repository/:repo_id"><Loadable component={ () => import('./pages/restore/repository.svelte') } /></Route>
 
+		<!-- Invitations -->
+		<Route path="/invitation/:id"><Loadable component={ () => import('./pages/invitations/user.svelte') } /></Route>
+
 		<!-- Account -->
 		<Route path="/account/repositories"><Loadable component={ () => import('./pages/protected/account/repositories/index.svelte') } /></Route>
 		<Route path="/account/tokens"><Loadable component={ () => import('./pages/protected/account/tokens/index.svelte') } /></Route>
@@ -109,6 +112,7 @@
 	<Route>
 		<Route path="/login"><Loadable component={ () => import('./pages/guard/login.svelte') } /></Route>
 		<Route path="/register"><Loadable component={ () => import('./pages/guard/register.svelte') } /></Route>
+		<Route path="/invitation/:id"><Loadable component={ () => import('./pages/invitations/guest.svelte') } /></Route>
 		<ProtectedRoute fallback />
 	</Route>
 {/if}

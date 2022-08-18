@@ -11,8 +11,31 @@
 	let inputRemember = false;
 
 	const [api, error, loading, dispose] = omaha.client.useFromComponent();
-	const returnTo = decodeURIComponent($router.query.return ?? '/');
-	const returnToParam = returnTo !== '/' ? ('?return=' + encodeURIComponent(returnTo)) : '';
+
+	$: returnTo = decodeURIComponent($router.query.return ?? '/');
+	let params = '';
+
+	$: {
+		const search = new URLSearchParams();
+
+		if (returnTo !== '/') {
+			search.set('return', $router.query.return);
+		}
+
+		if ($router.query.invitation) {
+			search.set('invitation', $router.query.invitation);
+		}
+
+		if ($router.query.invitation_token) {
+			search.set('invitation_token', $router.query.invitation_token);
+		}
+
+		params = search.toString();
+
+		if (params.length > 0) {
+			params = '?' + params;
+		}
+	}
 
 	onDestroy(dispose);
 
@@ -23,6 +46,8 @@
 					name: inputName,
 					email: inputEmail,
 					password: inputPassword,
+					invitation: $router.query.invitation,
+					invitationToken: $router.query.invitation_token
 				});
 
 				if (!await omaha.session.login(response.token, inputRemember)) {
@@ -90,7 +115,7 @@
 		<div class="login-footer">
 			<p>
 				Already have an account?
-				<a href="/login{returnToParam}">Log in here!</a>
+				<a href="/login{params}">Log in here!</a>
 			</p>
 		</div>
 	</div>

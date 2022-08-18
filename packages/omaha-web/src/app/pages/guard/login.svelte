@@ -11,8 +11,31 @@
 	let inputRemember = false;
 
 	const [api, error, loading, dispose] = omaha.client.useFromComponent();
-	const returnTo = decodeURIComponent($router.query.return ?? '/');
-	const returnToParam = returnTo !== '/' ? ('?return=' + encodeURIComponent(returnTo)) : '';
+
+	$: returnTo = decodeURIComponent($router.query.return ?? '/');
+	let params = '';
+
+	$: {
+		const search = new URLSearchParams();
+
+		if (returnTo !== '/') {
+			search.set('return', $router.query.return);
+		}
+
+		if ($router.query.invitation) {
+			search.set('invitation', $router.query.invitation);
+		}
+
+		if ($router.query.invitation_token) {
+			search.set('invitation_token', $router.query.invitation_token);
+		}
+
+		params = search.toString();
+
+		if (params.length > 0) {
+			params = '?' + params;
+		}
+	}
 
 	onDestroy(dispose);
 
@@ -26,6 +49,17 @@
 
 				if (!await omaha.session.login(response.token, inputRemember)) {
 					$error = "Something went wrong! Try again?";
+					return;
+				}
+
+				if ($router.query.invitation) {
+					const id = $router.query.invitation;
+					router.goto(`/invitation/${id}`);
+
+					if ($router.query.invitation_token) {
+						router.location.query.set('token', $router.query.invitation_token);
+					}
+
 					return;
 				}
 
@@ -80,7 +114,7 @@
 		<div class="login-footer">
 			<p>
 				Don't have an account yet?
-				<a href="/register{returnToParam}">Create one!</a>
+				<a href="/register{params.toString()}">Create one!</a>
 			</p>
 		</div>
 	</div>
