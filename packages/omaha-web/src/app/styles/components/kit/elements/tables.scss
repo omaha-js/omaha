@@ -182,7 +182,9 @@ table.table {
 	}
 
 	td.dropdown-column {
-		padding: 0 2rem 0 0;
+		padding-top: 0 !important;
+		padding-bottom: 0 !important;
+
 		text-align: right;
 	}
 
