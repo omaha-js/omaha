@@ -113,6 +113,14 @@ export class CollaborationsController {
 			}
 		}
 
+		// Make sure at least one owner will remain
+		const collabs = await repo.collaborators;
+		const owners = collabs.filter(collab => collab.role === CollaborationRole.Owner && collab.id !== target.id);
+
+		if (owners.length === 0) {
+			throw new BadRequestException('There must be at least one owner remaining in the repository');
+		}
+
 		// Prevent deletion of roles beyond our own
 		if (target.role !== CollaborationRole.Custom) {
 			const roles: CollaborationRole[] = [
