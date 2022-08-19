@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Color } from 'src/omaha/helpers/theme';
+	import { createEventDispatcher } from 'svelte';
 	import Loader from '../helpers/Loader.svelte';
 
 	export let href: string | undefined = undefined;
@@ -13,6 +14,14 @@
 		`btn btn-${effectiveColor} ` + ($$props.class ?? '') + ' ' + (loading ? 'loading' : '') + ' ' +
 		(icon ? 'has-icon' : '') + ' ' + (!$$slots['default'] ? 'without-text' : '')
 	);
+
+	const dispatch = createEventDispatcher();
+
+	function onClick() {
+		if (!loading) {
+			dispatch('click');
+		}
+	}
 </script>
 
 {#if href}
@@ -34,7 +43,7 @@
 		</div>
 	</a>
 {:else}
-	<button {type} class={className} on:click>
+	<button {type} class={className} on:click={ onClick }>
 		{#if icon}
 		<div class="button-icon">
 			<svelte:component this={icon} />
