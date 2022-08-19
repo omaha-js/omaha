@@ -124,9 +124,13 @@ textarea.form-control {
 	}
 }
 
-.form-card {
+.form-card-container {
 	border: 1px solid $oc-gray-3;
 	border-radius: 4px;
+}
+
+.form-card {
+	border-bottom: 1px solid $oc-gray-3;
 	background-color: transparent;
 
 	display: flex;
@@ -146,6 +150,10 @@ textarea.form-control {
 
 	.details {
 		flex-grow: 1;
+	}
+
+	&:last-of-type {
+		border-bottom: 0;
 	}
 }
 

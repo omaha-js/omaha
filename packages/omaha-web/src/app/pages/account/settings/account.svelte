@@ -56,13 +56,15 @@
 	<h1 class="spacious">Danger zone</h1>
 
 	<div class="form-section">
-		<div class="form-card">
-			<div class="details">
-				<h3 class="text-danger">Delete your account</h3>
-				<p>We'll remove your account, repositories, and any associated data.</p>
-			</div>
-			<div class="action">
-				<Button color="red" on:click={ () => alert('Not implemented!') } loading={$loading}>Delete</Button>
+		<div class="form-card-container">
+			<div class="form-card">
+				<div class="details">
+					<h3 class="text-danger">Delete your account</h3>
+					<p>We'll remove your account, repositories, and any associated data.</p>
+				</div>
+				<div class="action">
+					<Button color="red" on:click={ () => alert('Not implemented!') } loading={$loading}>Delete</Button>
+				</div>
 			</div>
 		</div>
 	</div>
