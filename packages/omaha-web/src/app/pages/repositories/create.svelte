@@ -59,7 +59,7 @@
 		</div>
 
 		<!-- Basic repository information -->
-		<div class="form-section top">
+		<div class="form-section border-top">
 			{#if $error}
 				<div class="alert alert-danger mb-4" role="alert">
 					{$error}
@@ -77,7 +77,7 @@
 		</div>
 
 		<!-- Access level -->
-		<div class="form-section">
+		<div class="form-section border-top">
 			<div class="form-group">
 				<div class="form-label">Access level</div>
 
@@ -129,7 +129,7 @@
 		</div>
 
 		<!-- Version scheme -->
-		<div class="form-section">
+		<div class="form-section border-top">
 			<div class="form-group">
 				<div class="form-label">Version scheme</div>
 
@@ -202,7 +202,7 @@
 		</div>
 
 		<!-- Archive behavior -->
-		<div class="form-section">
+		<div class="form-section border-top">
 			<div class="form-group">
 				<div class="form-label">Archive behavior</div>
 

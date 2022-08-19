@@ -20,8 +20,12 @@ h3 {
 }
 
 .heading-group {
+	margin-bottom: 2rem;
+
 	h1, h2 {
-		margin-bottom: 0.75rem;
+		margin-bottom: 0.75rem !important;
+		padding-bottom: 0 !important;
+		border: 0 !important;
 	}
 
 	p {

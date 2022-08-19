@@ -75,10 +75,10 @@
 
 <div class="form-container">
 	<form class="form" on:submit|preventDefault={ onSubmit }>
-		<h1>General</h1>
+		<h1>Profile</h1>
 
 		<!-- Basic repository information -->
-		<div class="form-section top">
+		<div class="form-section">
 			{#if $error}
 				<div class="alert alert-danger mb-4" role="alert">
 					{$error}
@@ -95,11 +95,14 @@
 			</div>
 		</div>
 
+		<div class="form-section">
+			<Button type="submit" color="blue" loading={$loading}>Save changes</Button>
+		</div>
+
 		<!-- Access level -->
+		<h1 class="spacious">Access</h1>
 		<div class="form-section">
 			<div class="form-group">
-				<div class="form-label">Access level</div>
-
 				<div class="form-radio-list">
 					<div class="form-radio-list-item">
 						<div class="radio">
@@ -147,11 +150,14 @@
 			</div>
 		</div>
 
+		<div class="form-section">
+			<Button type="submit" loading={$loading}>Save changes</Button>
+		</div>
+
 		<!-- Version scheme -->
+		<h1 class="spacious">Versions</h1>
 		<div class="form-section">
 			<div class="form-group">
-				<div class="form-label">Version scheme</div>
-
 				<div class="form-radio-list">
 					<div class="form-radio-list-item">
 						<div class="radio">
@@ -220,11 +226,14 @@
 			</div>
 		</div>
 
+		<div class="form-section">
+			<Button type="submit" loading={$loading}>Save changes</Button>
+		</div>
+
 		<!-- Archive behavior -->
+		<h1 class="spacious">Archiving</h1>
 		<div class="form-section">
 			<div class="form-group">
-				<div class="form-label">Archive behavior</div>
-
 				<div class="form-radio-list">
 					<div class="form-radio-list-item">
 						<div class="radio">
@@ -306,14 +315,13 @@
 		{/if}
 
 		<div class="form-section bottom">
-			<Button type="submit" color="blue" loading={$loading}>Save changes</Button>
+			<Button type="submit" loading={$loading}>Save changes</Button>
 		</div>
 	</form>
 
 	{#if collab.role === CollaborationRole.Owner}
-		<div class="form-section top">
-			<h1>Danger zone</h1>
-
+	<h1 class="spacious">Danger zone</h1>
+		<div class="form-section">
 			<div class="form-card">
 				<div class="details">
 					<h3>Delete this repository</h3>
