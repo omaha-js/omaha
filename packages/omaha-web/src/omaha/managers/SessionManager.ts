@@ -85,6 +85,15 @@ export class SessionManager extends Manager {
 	}
 
 	/**
+	 * Clears the token but keeps other state unchanged. This is only intended for immediate reauthorization (e.g.
+	 * after changing an account's password).
+	 */
+	public clearForReauth() {
+		this.token.set(undefined);
+		this.client.setToken();
+	}
+
+	/**
 	 * Fetches the account and scopes associated with the given token, updates internal state, and returns `true` if
 	 * successful, or `false` if the token was invalid.
 	 *
