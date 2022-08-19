@@ -71,7 +71,8 @@
 					ignoreNoSelection = true;
 					router.goto(
 						base.replace(/\/+$/, '') + '/' +
-						first.path.replace(/^\/+/, '')
+						first.path.replace(/^\/+/, ''),
+						true
 					);
 				}
 			}
