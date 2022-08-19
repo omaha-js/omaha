@@ -3,7 +3,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { TokenCollaboration } from 'src/repositories/collaborations/collaborations.service';
-import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';
@@ -44,6 +44,10 @@ export class Collaboration {
 
 	@UpdateDateColumn()
 	public updated_at!: Date;
+
+	@DeleteDateColumn()
+	@Exclude()
+	public deleted_at!: Date | null;
 
 	@Expose({ name: 'scopes' })
 	public getFullScopes(): RepositoryScopeId[] {
@@ -92,6 +96,13 @@ export class Collaboration {
 	@Expose({ name: 'repository', groups: ['repo'] })
 	public get jsonPropRepository() {
 		return (this as any).__repository__;
+	}
+
+	@Expose({ name: 'deleted_at' })
+	protected get jsonPropDeletedAt() {
+		if ((this as any).deleted_at) {
+			return (this as any).deleted_at;
+		}
 	}
 
 }

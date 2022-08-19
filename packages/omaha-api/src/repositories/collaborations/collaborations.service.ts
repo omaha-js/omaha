@@ -373,7 +373,7 @@ export class CollaborationsService {
 	 * @returns
 	 */
 	public async delete(collab: Collaboration) {
-		await this.collaborations.delete(collab.id);
+		await this.collaborations.softDelete(collab.id);
 
 		return {
 			success: true,
