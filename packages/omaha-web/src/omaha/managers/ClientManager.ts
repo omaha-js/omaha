@@ -5,6 +5,11 @@ import { createStore, Store } from '../helpers/stores';
 export class ClientManager extends Manager {
 
 	/**
+	 * A boolean indicating whether or not the client is currently having trouble connecting to the backend.
+	 */
+	private isConnectError = false;
+
+	/**
 	 * Constructs a new instance of the manager.
 	 */
 	public constructor() {
@@ -37,21 +42,37 @@ export class ClientManager extends Manager {
 		});
 
 		client.on('client_error', (err, attempt) => {
-			if (attempt === 0) {
-				this.omaha.alerts.error(
-					`We're having trouble connecting to the server right now. ` +
-					`We'll keep trying in the background.`
-				);
-			}
+			this.recordConnectError();
 		});
 
 		client.on('client_recovered', (attempts) => {
-			if (attempts > 0) {
-				this.omaha.alerts.success('Reconnected to the server successfully.', 5000);
-			}
+			this.recordConnectSuccess();
 		});
 
 		return [client, error, loading, dispose];
+	}
+
+	/**
+	 * Notifies the user that we're having trouble connecting.
+	 */
+	private recordConnectError() {
+		if (!this.isConnectError) {
+			this.isConnectError = true;
+			this.omaha.alerts.error(
+				`We're having trouble connecting to the server right now. ` +
+				`We'll keep trying in the background.`
+			);
+		}
+	}
+
+	/**
+	 * Notifies the user that we're reconnected.
+	 */
+	private recordConnectSuccess() {
+		if (this.isConnectError) {
+			this.isConnectError = false;
+			this.omaha.alerts.success('Reconnected successfully.', 5000);
+		}
 	}
 
 }
