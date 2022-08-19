@@ -19,7 +19,7 @@
 
 <TabGroup base="/account/settings">
 	<Tab name="Profile" path="/profile" icon={ProfileIcon}>
-		<Loadable component={ () => import('./settings/profile.svelte') } />
+		<Loadable component={ import('./settings/profile.svelte') } />
 	</Tab>
 	<Tab name="Notifications" path="/notifications" icon={NotificationsIcon}>
 		This is the notifications tab!
@@ -27,7 +27,7 @@
 
 	<TabSection name="Access" />
 	<Tab name="Password & security" path="/security" icon={SecurityIcon}>
-		<Loadable component={ () => import('./settings/security.svelte') } />
+		<Loadable component={ import('./settings/security.svelte') } />
 	</Tab>
 	<Tab name="Access tokens" path="/tokens" icon={AccessTokensIcon}>
 		This is the notifications tab!

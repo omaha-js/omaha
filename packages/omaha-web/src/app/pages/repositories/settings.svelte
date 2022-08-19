@@ -3,7 +3,7 @@
 	import TabGroup from 'src/app/components/tabs/TabGroup.svelte';
 	import Tab from 'src/app/components/tabs/Tab.svelte';
 	import TabSection from 'src/app/components/tabs/TabSection.svelte';
-	import LoadableForRepo from 'src/app/components/helpers/routing/LoadableForRepo.svelte';
+	import Loadable from 'src/app/components/helpers/routing/Loadable.svelte';
 
 	import SettingsIcon from 'tabler-icons-svelte/icons/Settings.svelte';
 	import UsersIcon from 'tabler-icons-svelte/icons/Users.svelte';
@@ -18,28 +18,28 @@ import { Route } from 'tinro';
 
 <TabGroup base="/repository/{repo.id}/settings">
 	<Tab name="General" path="/general" icon={SettingsIcon}>
-		<LoadableForRepo {repo} {collab} component={ () => import('./settings/general.svelte') } />
+		<Loadable {repo} {collab} component={ import('./settings/general.svelte') } />
 	</Tab>
 
 	<TabSection name="Access" />
 
 	<Tab name="Collaborators" path="/collaborators" icon={UsersIcon}>
-		<Route path="/invites/create"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/create.svelte') } /></Route>
-		<Route path="/invites/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/invites/edit.svelte') } /></Route>
-		<Route path="/"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/index.svelte') } /></Route>
-		<Route path="/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/collaborators/edit.svelte') } /></Route>
+		<Route path="/invites/create"><Loadable {repo} {collab} component={ import('./settings/invites/create.svelte') } /></Route>
+		<Route path="/invites/:id"><Loadable {repo} {collab} component={ import('./settings/invites/edit.svelte') } /></Route>
+		<Route path="/"><Loadable {repo} {collab} component={ import('./settings/collaborators/index.svelte') } /></Route>
+		<Route path="/:id"><Loadable {repo} {collab} component={ import('./settings/collaborators/edit.svelte') } /></Route>
 	</Tab>
 
 	<Tab name="Access tokens" path="/tokens" icon={KeyIcon}>
-		<Route path="/"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/index.svelte') } /></Route>
-		<Route path="/create"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/create.svelte') } /></Route>
-		<Route path="/:id"><LoadableForRepo {repo} {collab} component={ () => import('./settings/tokens/edit.svelte') } /></Route>
+		<Route path="/"><Loadable {repo} {collab} component={ import('./settings/tokens/index.svelte') } /></Route>
+		<Route path="/create"><Loadable {repo} {collab} component={ import('./settings/tokens/create.svelte') } /></Route>
+		<Route path="/:id"><Loadable {repo} {collab} component={ import('./settings/tokens/edit.svelte') } /></Route>
 	</Tab>
 
 	<TabSection name="Logs" />
 
 	<Tab name="Download log" path="/logs/downloads" icon={DownloadIcon}>
-		<LoadableForRepo {repo} {collab} component={ () => import('./settings/logs/downloads.svelte') } />
+		<Loadable {repo} {collab} component={ import('./settings/logs/downloads.svelte') } />
 	</Tab>
 
 	<Tab name="Audit log" path="/logs/audit" icon={AuditIcon}>
