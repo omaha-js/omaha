@@ -12,4 +12,22 @@
 			height: 5rem;
 		}
 	}
+
+	.dropdown.btn-group {
+		button.btn {
+			padding: 0;
+
+			&:hover, &[aria-expanded="true"] {
+				background-color: transparent;
+
+				.avatar {
+					border-color: $oc-gray-4;
+				}
+			}
+
+			&[aria-expanded="true"] .avatar {
+				border-color: $oc-gray-5;
+			}
+		}
+	}
 }
