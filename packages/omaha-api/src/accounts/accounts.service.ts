@@ -189,6 +189,10 @@ export class AccountsService {
 	 */
 	public async setAccountEmail(account: Account, email: string) {
 		if (account.email !== email) {
+			if (await this.repository.count({ where: { email }}) > 0) {
+				throw new BadRequestException('An account with that email already exists');
+			}
+
 			account.email = email;
 			account.verified = false;
 
