@@ -104,6 +104,7 @@
 		<Route path="/account/repositories"><Loadable component={ import('./pages/protected/account/repositories/index.svelte') } /></Route>
 		<Route path="/account/tokens"><Loadable component={ import('./pages/protected/account/tokens/index.svelte') } /></Route>
 		<Route path="/account/settings/*"><Loadable component={ import('./pages/protected/account/settings.svelte') } /></Route>
+		<Route path="/account/logout"><Loadable component={ import('./pages/account/logout.svelte') } /></Route>
 	</Layout>
 {:else}
 	<Route>

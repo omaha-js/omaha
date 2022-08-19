@@ -12,7 +12,7 @@
 		const url = $router.url;
 		router.goto('/login');
 
-		if (url !== '/') {
+		if (url !== '/' && url !== '/account/logout') {
 			router.location.query.set('return', encodeURIComponent(url));
 		}
 	}
