@@ -56,7 +56,7 @@
 					</td>
 					<td class="clickable">
 						<a href="/repository/{repo.id}/assets/{asset.name}">
-							<div class="d-block text-truncate">{asset.description}</div>
+							<div class="d-block long-text">{asset.description}</div>
 						</a>
 					</td>
 					<td>{asset.required ? "Yes" : "No"}</td>

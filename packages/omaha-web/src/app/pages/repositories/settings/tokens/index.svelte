@@ -48,7 +48,6 @@
 			<tr>
 				<th scope="col">Token</th>
 				<th scope="col">Description</th>
-				<th scope="col" class="text-center">Scopes</th>
 				<th scope="col">Created</th>
 				<th scope="col">Expiration</th>
 				<th scope="col"></th>
@@ -64,9 +63,8 @@
 						</div>
 					</td>
 					<td>
-						<div class="d-block text-truncate">{token.description}</div>
+						<div class="d-block long-text">{token.description}</div>
 					</td>
-					<td class="text-center">{token.scopes.length}</td>
 					<td><Time timestamp={token.created_at} /></td>
 					<td>
 						{#if token.expires_at}
@@ -91,7 +89,7 @@
 				</tr>
 			{:else}
 				<tr>
-					<td colspan="6">No tokens found.</td>
+					<td colspan="5">No tokens found.</td>
 				</tr>
 			{/each}
 		</tbody>

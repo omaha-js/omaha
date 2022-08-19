@@ -55,7 +55,7 @@
 					</td>
 					<td class="clickable">
 						<a href="/repository/{repo.id}/tags/{tag.name}">
-							<div class="d-block text-truncate">{tag.description}</div>
+							<div class="d-block long-text">{tag.description}</div>
 						</a>
 					</td>
 					<td><Time timestamp={tag.created_at} /></td>

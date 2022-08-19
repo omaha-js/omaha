@@ -3,6 +3,7 @@
 
 	.tabs-navigation {
 		width: 25rem;
+		flex-shrink: 0;
 		margin-right: 4rem;
 
 		ul {

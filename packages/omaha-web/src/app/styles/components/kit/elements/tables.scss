@@ -58,6 +58,8 @@ table.table {
 				line-height: 3.5rem;
 				border-bottom-color: $oc-gray-3;
 
+				padding: 0.5rem 1rem;
+
 				&:first-of-type {
 					border-top-left-radius: 4px;
 					padding-left: 2rem;
@@ -79,8 +81,7 @@ table.table {
 
 			td, th {
 				vertical-align: middle;
-				padding-top: 1.4rem;
-				padding-bottom: 1.4rem;
+				padding: 1.4rem 1rem;
 
 				font-size: 1.4rem;
 				color: $oc-gray-7;
@@ -186,5 +187,9 @@ table.table {
 		padding-bottom: 0 !important;
 
 		text-align: right;
+	}
+
+	.long-text {
+		line-height: 1.4;
 	}
 }
