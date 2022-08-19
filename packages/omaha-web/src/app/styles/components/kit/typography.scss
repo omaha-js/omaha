@@ -42,8 +42,11 @@ h3 {
 	}
 }
 
-span.required {
-	color: $oc-red-6;
+div.required {
+	margin-left: 0.5rem;
+	color: $oc-red-4;
+	font-size: 1.2rem;
+	padding-bottom: 0.3rem;
 }
 
 .mono {

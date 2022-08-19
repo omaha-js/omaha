@@ -166,7 +166,6 @@
 			<table class="table themed mb-4">
 				<thead>
 					<tr>
-						<th scope="col"></th>
 						<th scope="col">Asset</th>
 						<th scope="col">Name</th>
 						<th scope="col">Size</th>
@@ -192,18 +191,20 @@
 							on:uploaded={ refresh }
 							on:click={ e => expand(e, asset.name) }
 						>
-							<td class="attachment-icon" class:active={!!asset.attachment}>
-								{#if asset.attachment || release.status !== ReleaseStatus.Draft}
-									<File />
-								{:else}
-									<FileOff />
-								{/if}
-							</td>
 							<td title={asset.description}>
-								<div class="attribute tag">{asset.name}</div>
-								{#if asset.required && release.status === ReleaseStatus.Draft}
-									<span class="required">*</span>
-								{/if}
+								<div class="icon-text-union">
+									{#if asset.attachment || release.status !== ReleaseStatus.Draft}
+										<File />
+									{:else}
+										<FileOff />
+									{/if}
+									{asset.name}
+									{#if asset.required && release.status === ReleaseStatus.Draft}
+										<div class="required">
+											*
+										</div>
+									{/if}
+								</div>
 							</td>
 							{#if uploading}
 								<td colspan="3" class="status-uploading">
