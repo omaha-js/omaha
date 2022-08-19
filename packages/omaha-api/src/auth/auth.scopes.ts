@@ -5,27 +5,27 @@ export const AccountScopes = [
 	{
 		id: 'account.settings.read',
 		name: 'View settings',
-		description: `Allows clients to view an account's name and email`
+		description: `View the account's name and email`
 	},
 	{
 		id: 'account.settings.manage',
 		name: 'Manage settings',
-		description: `Allows clients to change the account's name, email, and password`
+		description: `Change the account's name, email, and password`
 	},
 	{
 		id: 'account.tokens.list',
 		name: 'List tokens',
-		description: 'Allows clients to view a list of tokens generated for the account'
+		description: 'View a list of access tokens for the account'
 	},
 	{
 		id: 'account.tokens.manage',
 		name: 'Manage tokens',
-		description: 'Allows clients to create, edit, and delete tokens generated for the account'
+		description: 'Create, edit, and delete access tokens for the account'
 	},
 	{
 		id: 'account.repos.manage',
 		name: 'Manage repositories',
-		description: `Allows clients to create and delete repositories`
+		description: `Create and delete repositories`
 	},
 ] as const;
 
@@ -36,73 +36,73 @@ export const RepositoryScopes = [
 	{
 		id: 'repo.manage',
 		name: 'Manage repositories',
-		description: `Allows clients to edit repositories that they have access to`,
+		description: `Edit repositories that they have access to`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.tokens.list',
 		name: 'List tokens',
-		description: `Allows clients to view a list of tokens generated for the repository`,
+		description: `View a list of access tokens`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.tokens.manage',
 		name: 'Manage tokens',
-		description: `Allows clients to create, edit, and delete tokens generated for the repository`,
+		description: `Create, edit, and delete access tokens`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.collaborations.list',
 		name: 'List collaborators',
-		description: `Allows clients to view a list of all collaborators in the repository`,
+		description: `View a list of all collaborators`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.collaborations.manage',
 		name: 'Manage collaborators',
-		description: `Allows clients to add new or manage existing collaborators in the repository`,
+		description: `Manage and add new collaborators`,
 		groups: ['owner']
 	},
 	{
 		id: 'repo.releases.create',
 		name: 'Create releases',
-		description: `Allows clients to create new releases and edit draft releases`,
+		description: `Create new releases and edit draft releases`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.releases.edit',
 		name: 'Edit releases',
-		description: `Allows clients to edit published releases`,
+		description: `Edit the details of published releases`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.releases.attachments.manage',
 		name: 'Manage release attachments',
-		description: `Allows clients to manage attached files for draft releases`,
+		description: `Manage attached files for draft releases`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.releases.attachments.download',
 		name: 'Download releases',
-		description: `Allows clients to download files attached to releases`,
+		description: `Download files attached to releases`,
 		groups: ['owner', 'manager', 'auditor']
 	},
 	{
 		id: 'repo.tags.manage',
 		name: 'Manage tags',
-		description: `Allows clients to create, edit, and delete release tags for the repository`,
+		description: `Create, edit, and delete tags`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.assets.manage',
 		name: 'Manage assets',
-		description: `Allows clients to create, edit, and delete release assets for the repository`,
+		description: `Create, edit, and delete assets`,
 		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.audit.downloads',
 		name: 'View download logs',
-		description: `Allows clients to view the download logs for all releases in a repository`,
+		description: `View the download logs for the entire repository`,
 		groups: ['owner', 'manager']
 	},
 ] as const;

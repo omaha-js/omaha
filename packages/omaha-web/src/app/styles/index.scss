@@ -12,13 +12,16 @@ body {
 	background-color: $oc-gray-0;
 }
 
-// Components
+// Layout
 @import 'layout/header';
 @import 'layout/notifications';
+
+// Components
 @import 'components/loader';
 @import 'components/tabs';
 @import 'components/helpers/promise';
 @import 'components/pagination';
+@import 'components/scopes';
 
 // Special pages
 @import 'pages/login';
