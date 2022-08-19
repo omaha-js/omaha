@@ -4,13 +4,12 @@
 	import Tab from 'src/app/components/tabs/Tab.svelte';
 	import TabSection from 'src/app/components/tabs/TabSection.svelte';
 	import Loadable from 'src/app/components/helpers/routing/Loadable.svelte';
+	import { Route } from 'tinro';
 
 	import SettingsIcon from 'tabler-icons-svelte/icons/Settings.svelte';
 	import UsersIcon from 'tabler-icons-svelte/icons/Users.svelte';
 	import KeyIcon from 'tabler-icons-svelte/icons/Key.svelte';
 	import DownloadIcon from 'tabler-icons-svelte/icons/Download.svelte';
-	import AuditIcon from 'tabler-icons-svelte/icons/History.svelte';
-import { Route } from 'tinro';
 
 	export let repo: Repository;
 	export let collab: Collaboration;
@@ -38,11 +37,7 @@ import { Route } from 'tinro';
 
 	<TabSection name="Logs" />
 
-	<Tab name="Download log" path="/logs/downloads" icon={DownloadIcon}>
+	<Tab name="Downloads" path="/logs/downloads" icon={DownloadIcon}>
 		<Loadable {repo} {collab} component={ import('./settings/logs/downloads.svelte') } />
-	</Tab>
-
-	<Tab name="Audit log" path="/logs/audit" icon={AuditIcon}>
-		Not implemented!
 	</Tab>
 </TabGroup>
