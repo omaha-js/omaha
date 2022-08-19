@@ -150,6 +150,23 @@ export class AccountsService {
 	}
 
 	/**
+	 * Checks that the given password matches the account. Throws an error if not.
+	 *
+	 * @param account
+	 * @param password
+	 * @returns
+	 */
+	public async verifyPassword(account: Account, password?: string) {
+		if (typeof password !== 'string' || password.length === 0) {
+			throw new BadRequestException('You must confirm your existing password for this update');
+		}
+
+		if (!await bcrypt.compare(password, account.password)) {
+			throw new BadRequestException('Existing password does not match');
+		}
+	}
+
+	/**
 	 * Changes an account's name.
 	 *
 	 * @param account

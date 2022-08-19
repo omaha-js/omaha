@@ -24,16 +24,18 @@ export class AccountsController {
 	@Patch()
 	@UseScopes('account.settings.manage')
 	public async updateAccount(@User() token: AccountToken, @Body() dto: UpdateAccountDto) {
-		if (dto.name !== undefined) {
-			await this.service.setAccountName(token.account, dto.name);
-		}
-
 		if (dto.email !== undefined) {
+			await this.service.verifyPassword(token.account, dto.existingPassword);
 			await this.service.setAccountEmail(token.account, dto.email);
 		}
 
 		if (dto.password !== undefined) {
+			await this.service.verifyPassword(token.account, dto.existingPassword);
 			await this.service.setAccountPassword(token.account, dto.password);
+		}
+
+		if (dto.name !== undefined) {
+			await this.service.setAccountName(token.account, dto.name);
 		}
 
 		return token.account;

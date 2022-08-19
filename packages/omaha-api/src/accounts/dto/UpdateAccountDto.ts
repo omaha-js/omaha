@@ -25,4 +25,11 @@ export class UpdateAccountDto {
 	@IsOptional()
 	password?: string;
 
+	/**
+	 * The current password for the user – only required when changing email or password.
+	 */
+	@IsNotEmpty()
+	@IsOptional()
+	existingPassword?: string;
+
 }
