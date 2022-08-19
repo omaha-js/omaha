@@ -71,6 +71,24 @@
 			}
 		}
 	}
+
+	async function leaveRepo() {
+		const message = `Are you sure you want to leave this repository? You won't be able to get access again ` +
+			`without an invitation from another member.`;
+
+		if (confirm(message)) {
+			try {
+				await client.collabs.delete(repo.id, collab.id);
+				await omaha.repositories.refresh();
+
+				omaha.alerts.success('You have left this repository.', 3000);
+				router.goto('/');
+			}
+			catch (err) {
+				window.scrollTo(0, 0);
+			}
+		}
+	}
 </script>
 
 <div class="form-container">
@@ -319,18 +337,30 @@
 		</div>
 	</form>
 
-	{#if collab.role === CollaborationRole.Owner}
 	<h1 class="spacious">Danger zone</h1>
-		<div class="form-section">
+	<div class="form-section">
+		<div class="form-card-container">
 			<div class="form-card">
 				<div class="details">
-					<h3>Delete this repository</h3>
-					<p>You will be able to restore the repository within 7 days.</p>
+					<h3>Leave this repository</h3>
+					<p>You won't have access to this repository any longer.</p>
 				</div>
 				<div class="action">
-					<Button color="red" on:click={ deleteRepo } loading={$loading}>Delete</Button>
+					<Button on:click={ leaveRepo } loading={$loading}>Leave</Button>
 				</div>
 			</div>
+
+			{#if collab.role === CollaborationRole.Owner}
+				<div class="form-card">
+					<div class="details">
+						<h3 class="text-danger">Delete this repository</h3>
+						<p>You will be able to restore the repository within 7 days.</p>
+					</div>
+					<div class="action">
+						<Button color="red" on:click={ deleteRepo } loading={$loading}>Delete</Button>
+					</div>
+				</div>
+			{/if}
 		</div>
-	{/if}
+	</div>
 </div>

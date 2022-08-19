@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
@@ -95,7 +95,6 @@ export class CollaborationsController {
 	}
 
 	@Delete(':collab_id')
-	@UseScopes('repo.collaborations.manage')
 	public async deleteCollaboration(
 		@Repo() repo: Repository,
 		@Param('collab_id') id: string,
@@ -107,9 +106,11 @@ export class CollaborationsController {
 			throw new NotFoundException('No collaboration matching that ID could be found for this repository');
 		}
 
-		// Prevent self deletion
-		if (collab.id === target.id) {
-			throw new BadRequestException('You cannot delete your own collaboration');
+		// Enforce scope unless this is our own collaboration
+		if (collab.id !== target.id) {
+			if (!collab.hasPermission('repo.collaborations.manage')) {
+				throw new ForbiddenException('You do not have privileges to access this endpoint');
+			}
 		}
 
 		// Prevent deletion of roles beyond our own

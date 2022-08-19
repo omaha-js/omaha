@@ -10,6 +10,7 @@
 	import { ButtonDropdown, DropdownItem, DropdownMenu } from 'sveltestrap';
 	import DotsVertical from 'tabler-icons-svelte/icons/DotsVertical.svelte';
 	import Plus from 'tabler-icons-svelte/icons/Plus.svelte';
+	import { router } from 'tinro';
 
 	export let repo: Repository;
 	export let collab: Collaboration;
@@ -45,6 +46,24 @@
 			}
 			catch (error) {
 				omaha.alerts.error(error);
+			}
+		}
+	}
+
+	async function leaveRepo() {
+		const message = `Are you sure you want to leave this repository? You won't be able to get access again ` +
+			`without an invitation from another member.`;
+
+		if (confirm(message)) {
+			try {
+				await client.collabs.delete(repo.id, collab.id);
+				await omaha.repositories.refresh();
+
+				omaha.alerts.success('You have left this repository.', 3000);
+				router.goto('/');
+			}
+			catch (err) {
+				window.scrollTo(0, 0);
 			}
 		}
 	}
@@ -94,6 +113,15 @@
 								<DropdownMenu end={true}>
 									<DropdownItem href="collaborators/{row.id}">Edit</DropdownItem>
 									<DropdownItem on:click={ () => deleteCollaborator(row.id, row.account.name) } class="danger">Remove</DropdownItem>
+								</DropdownMenu>
+							</ButtonDropdown>
+						{:else if collab.id === row.id}
+							<ButtonDropdown class="dropdown">
+								<DropdownToggle>
+									<DotsVertical />
+								</DropdownToggle>
+								<DropdownMenu end={true}>
+									<DropdownItem on:click={ leaveRepo } class="danger">Leave</DropdownItem>
 								</DropdownMenu>
 							</ButtonDropdown>
 						{/if}
