@@ -89,7 +89,6 @@
 					<Route path="/tags/:tag"><Loadable {collab} {repo} component={ import('./pages/repositories/tags/edit.svelte') } /></Route>
 
 					<Route path="/stats"><Loadable {collab} {repo} component={ import('./pages/repositories/stats.svelte') } /></Route>
-					<Route path="/settings" redirect="settings/general" />
 					<Route path="/settings/*" firstmatch><Loadable {collab} {repo} component={ import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
 			</PromiseLoader>
@@ -104,7 +103,6 @@
 		<!-- Account -->
 		<Route path="/account/repositories"><Loadable component={ import('./pages/protected/account/repositories/index.svelte') } /></Route>
 		<Route path="/account/tokens"><Loadable component={ import('./pages/protected/account/tokens/index.svelte') } /></Route>
-		<Route path="/account/settings" redirect="/account/settings/profile" />
 		<Route path="/account/settings/*"><Loadable component={ import('./pages/protected/account/settings.svelte') } /></Route>
 	</Layout>
 {:else}
