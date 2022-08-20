@@ -60,7 +60,10 @@ export class RepositoriesGuard implements CanActivate {
 
 			if (scopes.length > 0) {
 				for (const scope of scopes) {
-					if (!collaboration.hasPermission(scope)) {
+					if (scope.startsWith('repo.') && !collaboration.hasPermission(scope)) {
+						throw new ForbiddenException('You do not have privileges to access this endpoint');
+					}
+					else if (scope.startsWith('account.') && !token.hasPermission(scope)) {
 						throw new ForbiddenException('You do not have privileges to access this endpoint');
 					}
 				}
