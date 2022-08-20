@@ -22,6 +22,24 @@
 			omaha.alerts.error(err);
 		}
 	}
+
+	async function onSetAll(state: boolean) {
+		for (const key in value) {
+			value[key] = state;
+		}
+
+		onSubmit();
+	}
+
+	function hasAnyEnabled(value: any) {
+		for (const key in value) {
+			if (value[key]) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 </script>
 
 <PromiseLoader {promise} let:value={response}>
@@ -37,6 +55,12 @@
 
 			<div class="form-section save">
 				<Button type="submit" color="blue" loading={$loading}>Update preferences</Button>
+
+				{#if hasAnyEnabled(value)}
+					<Button type="button" color="gray" loading={$loading} on:click={ () => onSetAll(false) }>Disable all</Button>
+					{:else}
+					<Button type="button" color="gray" loading={$loading} on:click={ () => onSetAll(true) }>Enable all</Button>
+				{/if}
 			</div>
 
 			<div class="form-section info mt-5">

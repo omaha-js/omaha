@@ -47,6 +47,8 @@
 		{/each}
 
 		<div class="form-label mt-4">For your repositories</div>
+		{:else}
+		<div class="form-label mt-4">For this repository</div>
 	{/if}
 
 	{#each filterRepos as notification}
