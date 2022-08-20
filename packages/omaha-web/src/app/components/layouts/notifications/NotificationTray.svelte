@@ -19,6 +19,7 @@
 				message={alert.message}
 				color={alert.color}
 				icon={alert.icon}
+				on:click={ () => omaha.alerts.dismiss(alert.id) }
 			/>
 		</div>
 	{/each}

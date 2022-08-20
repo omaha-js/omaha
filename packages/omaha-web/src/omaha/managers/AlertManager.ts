@@ -56,6 +56,17 @@ export class AlertManager extends Manager {
 	}
 
 	/**
+	 * Dismisses the alert with the specified ID.
+	 *
+	 * @param id
+	 */
+	public dismiss(id: number) {
+		this.alerts.update(alerts => {
+			return alerts.filter(n => n.id !== id);
+		});
+	}
+
+	/**
 	 * Shows a success alert.
 	 *
 	 * @param message

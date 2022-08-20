@@ -25,7 +25,7 @@
 	export let message: string;
 </script>
 
-<div class="notification {color}">
+<div class="notification {color}" on:click>
 	<div class="notification-icon">
 		{#if icon === 'checkmark'}
 			<CircleCheck />
