@@ -66,6 +66,15 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 		for (const collaborator of collabs) {
 			if (roles.includes(collaborator.role)) {
 				const account = await collaborator.account;
+
+				if (Array.isArray(account.notifications) && account.notifications.includes(id)) {
+					continue;
+				}
+
+				if (Array.isArray(collaborator.notifications) && collaborator.notifications.includes(id)) {
+					continue;
+				}
+
 				const [subject, content] = await this.render(id, { ...args, repository, account });
 				const title = `[${repository.name}] ${subject}`;
 
@@ -92,6 +101,10 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
 		if (!event) {
 			throw new InternalServerErrorException(`Missing notification list entry for ${id}`);
+		}
+
+		if (Array.isArray(account.notifications) && account.notifications.includes(id)) {
+			return;
 		}
 
 		const [subject, content] = await this.render(id, { ...args, account });

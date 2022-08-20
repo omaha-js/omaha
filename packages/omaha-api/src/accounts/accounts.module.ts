@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Account } from 'src/entities/Account';
 import { AccountsService } from './accounts.service';
@@ -6,6 +6,7 @@ import { AccountsController } from './accounts.controller';
 import { TokensController } from './tokens/tokens.controller';
 import { TokensModule } from './tokens/tokens.module';
 
+@Global()
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([ Account ]),

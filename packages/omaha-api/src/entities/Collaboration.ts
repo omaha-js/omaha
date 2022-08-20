@@ -2,6 +2,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Exclude, Expose } from 'class-transformer';
 import { RepositoryScopeId, RepositoryScopes } from 'src/auth/auth.scopes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
+import { RepoNotificationId } from 'src/notifications/notifications.types';
 import { TokenCollaboration } from 'src/repositories/collaborations/collaborations.service';
 import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -38,6 +39,10 @@ export class Collaboration {
 	@Column({ type: 'json' })
 	@Exclude()
 	public scopes!: RepositoryScopeId[];
+
+	@Column({ type: 'json' })
+	@Exclude()
+	public notifications!: RepoNotificationId[];
 
 	@CreateDateColumn()
 	public created_at!: Date;

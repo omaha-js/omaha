@@ -10,6 +10,7 @@ import { Repository } from 'src/entities/Repository';
 import { Repository as TypeOrmRepository } from 'typeorm';
 import { CollaborationRole } from '../../entities/enum/CollaborationRole';
 import { BaseToken, TokenForRepository } from 'src/auth/tokens/models/BaseToken';
+import { RepoNotificationId } from 'src/notifications/notifications.types';
 import crypto from 'crypto';
 
 @Injectable()
@@ -348,6 +349,18 @@ export class CollaborationsService {
 		collab.role = effectiveRole;
 		collab.scopes = effectiveScopes;
 
+		return this.collaborations.save(collab);
+	}
+
+	/**
+	 * Updates a collaborations's notifications array.
+	 *
+	 * @param collab
+	 * @param notifications
+	 * @returns
+	 */
+	public async setNotifications(collab: Collaboration, notifications: RepoNotificationId[]) {
+		collab.notifications = notifications;
 		return this.collaborations.save(collab);
 	}
 

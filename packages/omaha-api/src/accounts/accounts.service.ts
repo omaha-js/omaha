@@ -7,6 +7,7 @@ import { LoginDto } from 'src/auth/dto/LoginDto';
 import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
 import { CollaborationInvite } from 'src/entities/CollaborationInvite';
 import { Environment } from 'src/app.environment';
+import { NotificationId } from 'src/notifications/notifications.types';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
@@ -35,7 +36,8 @@ export class AccountsService {
 		const account = this.repository.create({
 			name: dto.name,
 			email: dto.email,
-			password: hash
+			password: hash,
+			notifications: []
 		});
 
 		// Save to the database
@@ -209,6 +211,18 @@ export class AccountsService {
 	 */
 	public async setAccountPassword(account: Account, password: string) {
 		account.password = await this.getPasswordHash(password);
+		return this.repository.save(account);
+	}
+
+	/**
+	 * Updates an account's notifications array.
+	 *
+	 * @param account
+	 * @param notifications
+	 * @returns
+	 */
+	public async setNotifications(account: Account, notifications: NotificationId[]) {
+		account.notifications = notifications;
 		return this.repository.save(account);
 	}
 

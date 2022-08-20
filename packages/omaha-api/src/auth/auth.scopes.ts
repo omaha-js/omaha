@@ -27,6 +27,11 @@ export const AccountScopes = [
 		name: 'Manage repositories',
 		description: `Create and delete repositories`
 	},
+	{
+		id: 'account.notifications.manage',
+		name: 'Manage notifications',
+		description: 'View and change notification settings for the account'
+	}
 ] as const;
 
 /**

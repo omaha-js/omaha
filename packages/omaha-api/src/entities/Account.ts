@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { NotificationId } from 'src/notifications/notifications.types';
 import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Collaboration } from './Collaboration';
@@ -21,6 +22,10 @@ export class Account {
 	@Column()
 	@Exclude()
 	public password!: string;
+
+	@Column({ type: 'json' })
+	@Exclude()
+	public notifications!: NotificationId[];
 
 	@Column({ default: false })
 	public verified!: boolean;
