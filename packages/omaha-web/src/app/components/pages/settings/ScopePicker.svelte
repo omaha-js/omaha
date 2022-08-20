@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CollaborationRole, Scope, ScopesResponse } from '@omaha/client';
+	import { CollaborationRole, Scope, ScopeDescriptor, ScopesResponse } from '@omaha/client';
 
 	type T = $$Generic<Scope>;
 
@@ -37,6 +37,32 @@
 
 	$: scopesForRepo = scopesList.filter(scope => scope.id.startsWith('repo.'));
 	$: scopesForAccount = scopesList.filter(scope => scope.id.startsWith('account.'));
+
+	function areAllEnabled(selected: string[], scopes: ScopeDescriptor[]) {
+		for (const {id} of scopes) {
+			if (!selected.includes(id as T)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function onBigCheckChanged(event: Event & { currentTarget: HTMLInputElement }, scopes: ScopeDescriptor[]) {
+		if (event.currentTarget.checked) {
+			for (const {id} of scopes) {
+				if (!selected.includes(id as T)) {
+					selected.push(id as T);
+				}
+			}
+
+			selected = selected;
+		}
+		else {
+			const ids = scopes.map(scope => scope.id);
+			selected = selected.filter(id => !ids.includes(id));
+		}
+	}
 </script>
 
 <div class="scope-picker">
@@ -44,7 +70,26 @@
 		<tbody>
 			{#if scopesForAccount.length > 0}
 				<tr class="scope-picker-header">
-					<td colspan="3">account</td>
+					<td>
+						<label for="scope_all_account" class:disabled={!editable}>
+							{#if editable}
+								<input
+									type="checkbox"
+									class="form-check-input"
+									id="scope_all_account"
+									checked={areAllEnabled(selected, scopesForAccount)}
+									on:change={e=>onBigCheckChanged(e, scopesForAccount)}
+								/>
+							{:else}
+								<input type="checkbox" class="form-check-input" checked={areAllEnabled(selected, scopesForAccount)} disabled />
+							{/if}
+						</label>
+					</td>
+					<td colspan="2">
+						<label for="scope_all_account" class:disabled={!editable}>
+							account
+						</label>
+					</td>
 				</tr>
 
 				{#each scopesForAccount as scope, index}
@@ -73,7 +118,26 @@
 			{/if}
 			{#if scopesForRepo.length > 0}
 				<tr class="scope-picker-header">
-					<td colspan="3">repositories</td>
+					<td>
+						<label for="scope_all_repo" class:disabled={!editable}>
+							{#if editable}
+								<input
+									type="checkbox"
+									class="form-check-input"
+									id="scope_all_repo"
+									checked={areAllEnabled(selected, scopesForRepo)}
+									on:change={e=>onBigCheckChanged(e, scopesForRepo)}
+								/>
+							{:else}
+								<input type="checkbox" class="form-check-input" checked={areAllEnabled(selected, scopesForRepo)} disabled />
+							{/if}
+						</label>
+					</td>
+					<td colspan="2">
+						<label for="scope_all_repo" class:disabled={!editable}>
+							repositories
+						</label>
+					</td>
 				</tr>
 
 				{#each scopesForRepo as scope, index}

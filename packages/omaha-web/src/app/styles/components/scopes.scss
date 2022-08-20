@@ -10,10 +10,30 @@
 		background-color: $oc-gray-3;
 
 		td {
-			padding: 0.9rem 1.2rem;
-			font-size: 1.3rem;
-			font-weight: 500;
-			color: $oc-dark-5;
+			label {
+				font-size: 1.3rem;
+				font-weight: 600;
+				color: $oc-dark-6;
+
+				padding: 0;
+				margin: 0;
+
+				input {
+					margin: 0;
+					padding: 0;
+
+					width: 1.5rem;
+					height: 1.5rem;
+				}
+			}
+
+			&:first-of-type {
+				padding: 1rem 0 1rem 1.2rem;
+			}
+
+			&:last-of-type {
+				padding: 1rem 0 1rem 0.5rem;
+			}
 		}
 	}
 
