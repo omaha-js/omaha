@@ -6,11 +6,11 @@ import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { BaseToken } from 'src/auth/tokens/models/BaseToken';
 import { Collaboration } from 'src/entities/Collaboration';
 import { Repository } from 'src/entities/Repository';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { User } from 'src/support/User';
 import { CollaborationRole } from '../entities/enum/CollaborationRole';
-import { CollaborationsService } from './collaborations/collaborations.service';
 import { CreateRepoDto } from './dto/CreateRepoDto';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
 import { ReleasesService } from './releases/releases.service';
@@ -23,7 +23,7 @@ export class RepositoriesController {
 	public constructor(
 		private readonly service: RepositoriesService,
 		private readonly releases: ReleasesService,
-		private readonly collaborations: CollaborationsService,
+		private readonly notifications: NotificationsService,
 	) {}
 
 	/**
@@ -71,7 +71,17 @@ export class RepositoriesController {
 	@UseScopes('repo.manage')
 	@UseGuards(RepositoriesGuard)
 	public async updateRepository(@Repo() repo: Repository, @Body() dto: UpdateRepoDto) {
-		return await this.service.updateRepository(repo, dto);
+		const originalAccess = repo.access;
+		const response = await this.service.updateRepository(repo, dto);
+
+		if (response.access !== originalAccess) {
+			await this.notifications.sendForRepo(repo, 'repo_visibility_updated', {
+				previous: originalAccess,
+				next: response.access
+			});
+		}
+
+		return response;
 	}
 
 	@Delete(':repo_id')

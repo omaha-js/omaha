@@ -3,6 +3,7 @@ import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { Repository } from 'src/entities/Repository';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { RepositoriesGuard } from '../repositories.guard';
@@ -15,7 +16,8 @@ import { UpdateCollaborationDto } from './dto/UpdateCollaborationDto';
 export class CollaborationsController {
 
 	public constructor(
-		private readonly service: CollaborationsService
+		private readonly service: CollaborationsService,
+		private readonly notifications: NotificationsService
 	) {}
 
 	@Get()
@@ -138,7 +140,16 @@ export class CollaborationsController {
 			}
 		}
 
-		return this.service.delete(target);
+		const account = await target.account;
+		const response = await this.service.delete(target);
+
+		await this.notifications.sendForRepo(repo, 'repo_collab_removed', {
+			collaboration: target,
+			collaborationAccount: account,
+			wasKicked: target.id !== collab.id
+		});
+
+		return response;
 	}
 
 	@Post()
@@ -152,7 +163,12 @@ export class CollaborationsController {
 			throw new BadRequestException('An invitation already exists for that email address');
 		}
 
-		return this.service.createInvite(repo, params.email, params.role, params.scopes ?? []);
+		const invite = await this.service.createInvite(repo, params.email, params.role, params.scopes ?? []);
+		await this.notifications.sendForRepo(repo, 'repo_collab_invite', {
+			invite
+		});
+
+		return invite;
 	}
 
 	@Get('invites/:invite_id')

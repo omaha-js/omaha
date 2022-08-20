@@ -1,0 +1,11 @@
+@@ {{ collaborationAccount.name }} has {{ wasKicked ? "been removed from" : "left" }} your repository
+
+Hi {{ account.name }},
+
+We're writing to let you know that {{ collaborationAccount.name }} <{{ collaborationAccount.email }}> has {{ wasKicked ? "been removed from" : "left" }} the "{{ repository.name }}" repository that you manage.
+
+You can review your collaborators here:
+{{ url('/repository', repository.id, 'settings/collaborators') }}
+
+Thanks,
+Omaha

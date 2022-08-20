@@ -19,6 +19,8 @@ import { EmailModule } from './email/email.module';
 import { CollaborationInvite } from './entities/CollaborationInvite';
 import { RealtimeModule } from './realtime/realtime.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { NotificationsModule } from './notifications/notifications.module';
+import { QueuedNotification } from './entities/QueuedNotification';
 import path from 'path';
 
 @Module({
@@ -44,6 +46,7 @@ import path from 'path';
 				ReleaseAttachment,
 				ReleaseDownload,
 				Token,
+				QueuedNotification
 			],
 		}),
 		RepositoriesModule,
@@ -53,7 +56,8 @@ import path from 'path';
 		RealtimeModule,
 		ServeStaticModule.forRoot({
 			rootPath: path.resolve(__dirname, '../node_modules/@omaha/omaha-web/dist')
-		})
+		}),
+		NotificationsModule
 	],
 })
 export class AppModule {}

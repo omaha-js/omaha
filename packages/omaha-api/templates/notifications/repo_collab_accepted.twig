@@ -1,0 +1,11 @@
+@@ {{ collaborationAccount.name }} has joined your repository
+
+Hi {{ account.name }},
+
+We're writing to let you know that {{ collaborationAccount.name }} <{{ collaborationAccount.email }}> has gained {{ collaboration.role }} access to the "{{ repository.name }}" repository that you manage using an invitation link.
+
+You can review your collaborators here:
+{{ url('/repository', repository.id, 'settings/collaborators') }}
+
+Thanks,
+Omaha

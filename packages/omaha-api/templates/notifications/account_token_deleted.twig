@@ -1,0 +1,14 @@
+@@ An access token was deleted from your account
+
+Hi {{ account.name }},
+
+We're writing to let you know that an access token has been deleted from your account. Here are the details:
+
+•  Name: {{ token.name }}
+•  Description: {{ token.description ?: "None provided" }}
+
+You can review your access tokens here:
+{{ url('/account/settings/tokens') }}
+
+Regards,
+{{ env.APP_NAME }}

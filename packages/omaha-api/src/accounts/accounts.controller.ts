@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, Get, NotFoundException, Param, P
 import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
 import { User } from 'src/support/User';
 import { AccountsService } from './accounts.service';
@@ -13,6 +14,7 @@ export class AccountsController {
 	public constructor(
 		private readonly service: AccountsService,
 		private readonly collaborations: CollaborationsService,
+		private readonly notifications: NotificationsService,
 	) {}
 
 	@Get()
@@ -80,6 +82,11 @@ export class AccountsController {
 		);
 
 		await this.collaborations.deleteInvite(invite);
+		await this.notifications.sendForRepo(repository, 'repo_collab_accepted', {
+			collaboration: collab,
+			collaborationAccount: account
+		});
+
 		return instanceToPlain(collab, { groups: ['repo'] });
 	}
 

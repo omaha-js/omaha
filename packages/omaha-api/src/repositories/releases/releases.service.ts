@@ -18,6 +18,8 @@ import { RealtimeService } from 'src/realtime/realtime.service';
 import prettyBytes from 'pretty-bytes';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { EmailService } from 'src/email/email.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { getAppLink } from 'src/support/utilities/links';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -31,6 +33,7 @@ export class ReleasesService {
 		private readonly tags: TagsService,
 		private readonly storage: StorageService,
 		private readonly email: EmailService,
+		private readonly notifications: NotificationsService,
 		private readonly ws: RealtimeService,
 	) {}
 
@@ -346,7 +349,11 @@ export class ReleasesService {
 
 		// Emit the published event and send notifications
 		if (published) {
-			this.internSendPublishNotifications(repo, release, ip);
+			await this.notifications.sendForRepo(repo, 'repo_release_published', {
+				release,
+				remoteAddress: ip
+			});
+
 			this.ws.emit(repo, 'release_published', { release });
 		}
 
@@ -618,37 +625,6 @@ export class ReleasesService {
 		}
 
 		return [];
-	}
-
-	/**
-	 * Sends an email to all owners and managers on the repository to notify about the new release.
-	 *
-	 * @param repository
-	 * @param release
-	 * @param ip
-	 */
-	public async internSendPublishNotifications(repository: Repository, release: Release, ip: string) {
-		const collabs = await repository.collaborators;
-		const attachments = await release.attachments;
-
-		for (const collab of collabs) {
-			if ([CollaborationRole.Owner, CollaborationRole.Manager].includes(collab.role)) {
-				const account = await collab.account;
-
-				this.email.send({
-					subject: `Successfully published ${repository.name}@${release.version}`,
-					template: 'repo_release_published',
-					to: account.email,
-					context: {
-						repository,
-						account,
-						release,
-						attachments,
-						ip,
-					}
-				});
-			}
-		}
 	}
 
 }

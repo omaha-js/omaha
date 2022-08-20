@@ -1,0 +1,15 @@
+@@ Successfully published {{ repository.name }}@{{ release.version }}
+
+Hi {{ account.name }},
+
+We're writing to confirm that a new release has just been published in the "{{ repository.name }}" repository that you manage. Here are the details:
+
+•  Version: {{ release.version }}
+•  Timestamp: {{ release.published_at.toISOString() }}
+•  Address: {{ remoteAddress }}
+
+You can review this release at the following link:
+{{ url('/repository', repository.id, 'releases', release.version) }}
+
+Regards,
+{{ env.APP_NAME }}

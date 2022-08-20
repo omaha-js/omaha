@@ -3,6 +3,7 @@ import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { TokensService } from 'src/auth/tokens/tokens.service';
 import { TokenType } from 'src/entities/enum/TokenType';
+import { NotificationsService } from 'src/notifications/notifications.service';
 import { User } from 'src/support/User';
 import { CreateAccountTokenDto } from './dto/CreateAccountTokenDto';
 import { UpdateAccountTokenDto } from './dto/UpdateAccountTokenDto';
@@ -11,7 +12,8 @@ import { UpdateAccountTokenDto } from './dto/UpdateAccountTokenDto';
 export class TokensController {
 
 	public constructor(
-		private readonly service: TokensService
+		private readonly service: TokensService,
+		private readonly notifications: NotificationsService
 	) {}
 
 	@Get()
@@ -24,8 +26,7 @@ export class TokensController {
 	@UseScopes('account.tokens.manage')
 	public async createToken(@User() token: AccountToken, @Body() params: CreateAccountTokenDto) {
 		const scopes = params.scopes.filter(scope => token.hasPermission(scope));
-
-		return await this.service.createDatabaseToken({
+		const response = await this.service.createDatabaseToken({
 			name: params.name,
 			description: params.description,
 			expiration: params.expiration,
@@ -33,6 +34,12 @@ export class TokensController {
 			account: token.account,
 			scopes
 		});
+
+		await this.notifications.sendForAccount(token.account, 'account_token_created', {
+			token: response.token
+		});
+
+		return response;
 	}
 
 
@@ -71,6 +78,9 @@ export class TokensController {
 		}
 
 		await this.service.deleteDatabaseToken(match);
+		await this.notifications.sendForAccount(token.account, 'account_token_deleted', {
+			token: match
+		});
 
 		return {
 			success: true,

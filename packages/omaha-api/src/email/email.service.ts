@@ -35,7 +35,10 @@ export class EmailService implements OnModuleInit {
 				auth: {
 					user: env.SMTP_USERNAME,
 					pass: env.SMTP_PASSWORD
-				}
+				},
+				connectionTimeout: 30000,
+				socketTimeout: 30000,
+				greetingTimeout: 30000,
 			});
 
 			this.fromAddress = env.SMTP_FROM_ADDRESS;
@@ -80,6 +83,27 @@ export class EmailService implements OnModuleInit {
 	}
 
 	/**
+	 * Sends a raw email with the given options.
+	 *
+	 * @param options
+	 */
+	public async sendRaw(options: RawSendMailOptions) {
+		if (!this.transport) {
+			throw new BadRequestException('Email is not enabled on this server');
+		}
+
+		await this.transport!.sendMail({
+			to: options.to,
+			from: {
+				name: this.fromName!,
+				address: this.fromAddress!
+			},
+			subject: options.subject,
+			text: options.content
+		});
+	}
+
+	/**
 	 * Renders the template from the given options.
 	 *
 	 * @param options
@@ -99,6 +123,12 @@ export class EmailService implements OnModuleInit {
 		});
 	}
 
+}
+
+export interface RawSendMailOptions {
+	to: string;
+	subject: string;
+	content: string;
 }
 
 export interface SendMailOptions {

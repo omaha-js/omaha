@@ -9,7 +9,7 @@ import { Repo } from 'src/support/Repo';
 import { RepositoriesGuard } from '../repositories.guard';
 import { CreateRepoTokenDto } from './dto/CreateRepoTokenDto';
 import { UpdateRepoTokenDto } from './dto/UpdateRepoTokenDto';
-import { DownloadsService } from '../releases/downloads/downloads.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Controller('repositories/:repo_id/tokens')
 @UseGuards(RepositoriesGuard)
@@ -17,7 +17,7 @@ export class TokensController {
 
 	public constructor(
 		private readonly service: TokensService,
-		private readonly downloads: DownloadsService,
+		private readonly notifications: NotificationsService,
 	) {}
 
 	@Get()
@@ -30,8 +30,7 @@ export class TokensController {
 	@UseScopes('repo.tokens.manage')
 	public async createToken(@Repo() repo: Repository, @Body() params: CreateRepoTokenDto, @Collab() collab: Collaboration) {
 		const scopes = params.scopes.filter(scope => collab.hasPermission(scope));
-
-		return await this.service.createDatabaseToken({
+		const response = await this.service.createDatabaseToken({
 			name: params.name,
 			description: params.description,
 			expiration: params.expiration,
@@ -39,6 +38,12 @@ export class TokensController {
 			repository: repo,
 			scopes
 		});
+
+		await this.notifications.sendForRepo(repo, 'repo_token_created', {
+			token: response.token
+		});
+
+		return response;
 	}
 
 	@Get(':id')
@@ -84,6 +89,9 @@ export class TokensController {
 		}
 
 		await this.service.deleteDatabaseToken(token);
+		await this.notifications.sendForRepo(repo, 'repo_token_deleted', {
+			token
+		});
 
 		return {
 			success: true,
