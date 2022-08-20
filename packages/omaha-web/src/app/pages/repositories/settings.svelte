@@ -10,6 +10,7 @@
 	import UsersIcon from 'tabler-icons-svelte/icons/Users.svelte';
 	import KeyIcon from 'tabler-icons-svelte/icons/Key.svelte';
 	import DownloadIcon from 'tabler-icons-svelte/icons/Download.svelte';
+	import NotificationsIcon from 'tabler-icons-svelte/icons/Bell.svelte';
 
 	export let repo: Repository;
 	export let collab: Collaboration;
@@ -18,6 +19,9 @@
 <TabGroup base="/repository/{repo.id}/settings">
 	<Tab name="General" path="/general" icon={SettingsIcon}>
 		<Loadable {repo} {collab} component={ import('./settings/general.svelte') } />
+	</Tab>
+	<Tab name="Notifications" path="/notifications" icon={NotificationsIcon}>
+		<Loadable {repo} component={ import('./settings/notifications.svelte') } />
 	</Tab>
 
 	<TabSection name="Access" />

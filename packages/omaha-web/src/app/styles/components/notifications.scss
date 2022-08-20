@@ -1,0 +1,25 @@
+.notification-picker {
+	.notification-row {
+		label {
+			display: flex;
+			align-items: center;
+			padding: 0.3rem 0;
+
+			font-weight: 400;
+			color: $oc-dark-3;
+
+			input {
+				margin: 0 1rem 0 0;
+			}
+
+			&.disabled {
+				color: $oc-dark-1;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	.form-label {
+		margin-bottom: 0.8rem;
+	}
+}

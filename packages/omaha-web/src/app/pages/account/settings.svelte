@@ -9,6 +9,7 @@
 	import SecurityIcon from 'tabler-icons-svelte/icons/ShieldLock.svelte';
 	import AccessTokensIcon from 'tabler-icons-svelte/icons/Key.svelte';
 	import SettingsIcon from 'tabler-icons-svelte/icons/Settings.svelte';
+	import NotificationsIcon from 'tabler-icons-svelte/icons/Bell.svelte';
 </script>
 
 <h1>Settings</h1>
@@ -19,6 +20,9 @@
 	</Tab>
 	<Tab name="Account" path="/account" icon={SettingsIcon}>
 		<Loadable component={ import('./settings/account.svelte') } />
+	</Tab>
+	<Tab name="Notifications" path="/notifications" icon={NotificationsIcon}>
+		<Loadable component={ import('./settings/notifications.svelte') } />
 	</Tab>
 
 	<TabSection name="Access" />
