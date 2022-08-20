@@ -66,4 +66,9 @@
 			}
 		}
 	}
+
+	.notification-fading {
+		pointer-events: none;
+		user-select: none;
+	}
 }
