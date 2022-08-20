@@ -32,7 +32,7 @@ export class AlertManager extends Manager {
 
 		// Add the notification
 		this.alerts.update(alerts => {
-			alerts.unshift({
+			alerts.push({
 				id,
 				title: alert.title,
 				message: alert.message,
@@ -41,7 +41,7 @@ export class AlertManager extends Manager {
 			});
 
 			if (alerts.length > 5) {
-				alerts.pop();
+				alerts.shift();
 			}
 
 			return alerts;

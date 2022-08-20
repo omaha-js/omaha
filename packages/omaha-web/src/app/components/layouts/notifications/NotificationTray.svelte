@@ -13,7 +13,7 @@
 
 <div class="notifications">
 	{#each $alerts as alert (alert.id)}
-		<div in:fly="{{ y: -200, duration: 300 }}" out:flyfade="{{ y: 200, duration: 600 }}">
+		<div in:fly="{{ y: 200, duration: 300 }}" out:flyfade="{{ y: -200, duration: 600 }}">
 			<Notification
 				title={alert.title}
 				message={alert.message}
