@@ -12,8 +12,10 @@
 
 	$: promise = client.invites.getForAccount(invitation)
 		.then(() => client.invites.accept(invitation))
-		.then(response => {
+		.then(async response => {
 			const repo = response.repository;
+			await omaha.repositories.refresh();
+			omaha.alerts.success(`You are now a member of this repository!`, 5000);
 			router.goto(`/repository/${repo.id}`);
 		});
 </script>
