@@ -14,6 +14,11 @@ export enum CollaborationRole {
 	Manager = 'manager',
 
 	/**
+	 * Grants all permissions necessary to create and publish releases.
+	 */
+	Publisher = 'publisher',
+
+	/**
 	 * Grants read-only permissions.
 	 */
 	Auditor = 'auditor',

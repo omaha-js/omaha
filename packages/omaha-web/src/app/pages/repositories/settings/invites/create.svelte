@@ -64,6 +64,7 @@
 					<select id="inputRole" class="form-select half" bind:value={role}>
 						<option value={CollaborationRole.Owner}>Owner</option>
 						<option value={CollaborationRole.Manager}>Manager</option>
+						<option value={CollaborationRole.Publisher}>Publisher</option>
 						<option value={CollaborationRole.Auditor}>Auditor</option>
 						<option value={CollaborationRole.Custom}>Custom</option>
 					</select>

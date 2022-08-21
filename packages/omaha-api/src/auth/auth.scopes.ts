@@ -71,8 +71,8 @@ export const RepositoryScopes = [
 	{
 		id: 'repo.releases.create',
 		name: 'Create releases',
-		description: `Create new releases and edit draft releases`,
-		groups: ['owner', 'manager']
+		description: `Create and publish new releases, and edit drafts`,
+		groups: ['owner', 'manager', 'publisher']
 	},
 	{
 		id: 'repo.releases.edit',
@@ -84,7 +84,7 @@ export const RepositoryScopes = [
 		id: 'repo.releases.attachments.manage',
 		name: 'Manage release attachments',
 		description: `Manage attached files for draft releases`,
-		groups: ['owner', 'manager']
+		groups: ['owner', 'manager', 'publisher']
 	},
 	{
 		id: 'repo.releases.attachments.download',
