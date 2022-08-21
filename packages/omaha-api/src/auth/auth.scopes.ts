@@ -66,7 +66,7 @@ export const RepositoryScopes = [
 		id: 'repo.collaborations.manage',
 		name: 'Manage collaborators',
 		description: `Manage and add new collaborators`,
-		groups: ['owner']
+		groups: ['owner', 'manager']
 	},
 	{
 		id: 'repo.releases.create',
