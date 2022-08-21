@@ -126,6 +126,10 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 			return;
 		}
 
+		if (!this.email.enabled) {
+			return;
+		}
+
 		const tasks = await this.repository.manager.transaction(async manager => {
 			const notifications = new Array<QueuedNotification>();
 
