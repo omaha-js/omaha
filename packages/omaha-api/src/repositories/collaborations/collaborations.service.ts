@@ -240,7 +240,8 @@ export class CollaborationsService {
 	public create(repository: Repository, account: Account, role: CollaborationRole, scopes?: RepositoryScopeId[]) {
 		const collab = this.collaborations.create({
 			role,
-			scopes: scopes ?? []
+			scopes: scopes ?? [],
+			notifications: []
 		});
 
 		collab.repository = Promise.resolve(repository);
