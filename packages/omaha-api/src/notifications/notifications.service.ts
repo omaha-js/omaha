@@ -67,6 +67,10 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 			if (roles.includes(collaborator.role)) {
 				const account = await collaborator.account;
 
+				if (!account.verified) {
+					return;
+				}
+
 				if (Array.isArray(account.notifications) && account.notifications.includes(id)) {
 					continue;
 				}
@@ -101,6 +105,10 @@ export class NotificationsService implements OnModuleInit, OnModuleDestroy {
 
 		if (!event) {
 			throw new InternalServerErrorException(`Missing notification list entry for ${id}`);
+		}
+
+		if (!account.verified) {
+			return;
 		}
 
 		if (Array.isArray(account.notifications) && account.notifications.includes(id)) {
