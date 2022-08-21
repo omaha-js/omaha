@@ -1,7 +1,7 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
 import { AuthScopeId } from 'src/auth/auth.scopes';
 import { TokenType } from 'src/entities/enum/TokenType';
-import { CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
+import { CreateDateColumn, DateColumn, DeleteDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Account } from './Account';
 import { Repository } from './Repository';
@@ -37,7 +37,7 @@ export class Token {
 	@Column({ type: 'json' })
 	public scopes!: AuthScopeId[];
 
-	@Column({ type: 'datetime', nullable: true, default: null })
+	@DateColumn({ nullable: true, default: null })
 	@Index()
 	public expires_at!: Date | null;
 
