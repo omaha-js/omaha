@@ -1,10 +1,12 @@
-import { HttpException, Logger } from '@nestjs/common';
+import { HttpException, Logger, UnauthorizedException } from '@nestjs/common';
 import { WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { TokensService } from 'src/auth/tokens/tokens.service';
 import { RealtimeService } from './realtime.service';
 import getipaddr from 'proxy-addr';
 import { Environment } from 'src/app.environment';
+import { RatelimitManager } from 'src/ratelimit/ratelimit.manager';
+import { RatelimitService } from 'src/ratelimit/ratelimit.service';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -13,11 +15,17 @@ import { Environment } from 'src/app.environment';
 export class RealtimeGateway {
 
 	private logger = new Logger('RealtimeGateway');
+	private connectionManager: RatelimitManager;
+	private missManager: RatelimitManager;
 
 	public constructor(
 		private readonly service: RealtimeService,
 		private readonly tokens: TokensService,
-	) {}
+		private readonly ratelimit: RatelimitService,
+	) {
+		this.connectionManager = this.ratelimit.getManager('ws_connect', 25, 50, 150);
+		this.missManager = this.ratelimit.getManager('ws_connect_miss', 5, 10, 20);
+	}
 
 	/**
 	 * Authenticates incoming connections and attaches listeners for their repositories.
@@ -25,6 +33,7 @@ export class RealtimeGateway {
 	public async handleConnection(socket: Socket, ...args: any[]) {
 		if (!socket || !socket.client || !socket.client.request) {
 			this.logger.error('Rejected connection due to erroneous client');
+			socket && socket.disconnect(true);
 			return false;
 		}
 
@@ -32,15 +41,38 @@ export class RealtimeGateway {
 			// Determine the remote address
 			socket.remoteAddress = this.getRemoteAddress(socket);
 
-			const auth = socket.client.request.headers.authorization;
-			const token = await this.getToken(auth);
-
-			if (!token) {
-				socket.disconnect();
+			// Miss guard
+			if (this.missManager.check(socket.remoteAddress) === 0) {
+				socket.emit('close_reason', `You've sent an incorrect token too many times! Try again later.`, 429);
+				socket.disconnect(true);
 				return false;
 			}
 
-			return await this.service.register(socket, token);
+			// Rate limiting
+			if (this.connectionManager.guard(socket.remoteAddress) === false) {
+				socket.emit('close_reason', `You're sending requests too quickly`, 429);
+				socket.disconnect(true);
+				return false;
+			}
+
+			try {
+				const auth = socket.client.request.headers.authorization;
+				const token = await this.getToken(auth);
+
+				return await this.service.register(socket, token);
+			}
+			catch (error) {
+				if (error instanceof HttpException) {
+					this.missManager.guard(socket.remoteAddress);
+					socket.emit('close_reason', error.message, 403);
+				}
+				else {
+					socket.emit('close_reason', 'Internal error', 500);
+				}
+			}
+
+			socket.disconnect(true);
+			return false;
 		}
 		catch (error) {
 			if (error instanceof Error && !(error instanceof HttpException)) {
@@ -52,7 +84,8 @@ export class RealtimeGateway {
 				);
 			}
 
-			socket.disconnect();
+			socket.emit('close_reason', 'Internal error', 500);
+			socket.disconnect(true);
 			return false;
 		}
 	}
@@ -75,11 +108,15 @@ export class RealtimeGateway {
 			const token = header.substring(7).trim();
 
 			if (token.length > 0) {
-				return this.tokens.getToken(token);
+				const match = await this.tokens.getToken(token);
+
+				if (match) {
+					return match;
+				}
 			}
 		}
 
-		return;
+		throw new UnauthorizedException('Invalid token');
 	}
 
 	/**

@@ -1,6 +1,8 @@
-import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, CanActivate, ExecutionContext, ForbiddenException, HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
+import { RatelimitManager } from 'src/ratelimit/ratelimit.manager';
+import { RatelimitService } from 'src/ratelimit/ratelimit.service';
 import { AuthScopeId } from './auth.scopes';
 import { BaseToken } from './tokens/models/BaseToken';
 import { TokensService } from './tokens/tokens.service';
@@ -8,10 +10,15 @@ import { TokensService } from './tokens/tokens.service';
 @Injectable()
 export class AuthGuard implements CanActivate {
 
+	private tokenMissManager: RatelimitManager;
+
 	public constructor(
 		private readonly reflector: Reflector,
-		private readonly tokens: TokensService
-	) {}
+		private readonly tokens: TokensService,
+		private readonly ratelimit: RatelimitService
+	) {
+		this.tokenMissManager = this.ratelimit.getManager('auth_token_misses', 5, 10, 20);
+	}
 
 	public async canActivate(context: ExecutionContext) {
 		switch (context.getType()) {
@@ -30,6 +37,13 @@ export class AuthGuard implements CanActivate {
 
 		// Set the token on the request
 		request.user = token;
+
+		// Rate limit database tokens
+		if (token && token.isDatabaseToken()) {
+			if (this.ratelimit.global.guard(token.token) === false) {
+				throw new HttpException(`You're sending requests too quickly`, 429);
+			}
+		}
 
 		// Implement guest logic
 		if (guests.allowGuest) {
@@ -98,11 +112,21 @@ export class AuthGuard implements CanActivate {
 	private async getToken(request: Request): Promise<BaseToken | undefined> {
 		const header = request.headers.authorization;
 
+		if (this.tokenMissManager.check(request.ip) === 0) {
+			throw new HttpException(`You've sent an incorrect token too many times! Try again later.`, 429);
+		}
+
 		if (header && header.toLowerCase().startsWith('bearer ')) {
 			const token = header.substring(7).trim();
 
 			if (token.length > 0) {
-				return this.tokens.getTokenOrFail(token);
+				try {
+					return await this.tokens.getTokenOrFail(token);
+				}
+				catch (error) {
+					this.tokenMissManager.guard(request.ip);
+					throw new UnauthorizedException('Invalid token');
+				}
 			}
 		}
 

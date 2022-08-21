@@ -3,6 +3,7 @@ import { instanceToPlain } from 'class-transformer';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { UseRateLimit } from 'src/ratelimit/ratelimit.decorator';
 import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
 import { User } from 'src/support/User';
 import { AccountsService } from './accounts.service';
@@ -45,6 +46,7 @@ export class AccountsController {
 
 	@Get('accept_invitation/:invite_id')
 	@UseScopes('account.repos.manage')
+	@UseRateLimit(5, 10, 10)
 	public async getInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
 		const account = token.account;
 		const invite = await this.collaborations.getInviteById(id);
@@ -69,6 +71,7 @@ export class AccountsController {
 
 	@Post('accept_invitation/:invite_id')
 	@UseScopes('account.repos.manage')
+	@UseRateLimit(5, 10, 10)
 	public async acceptInvitation(@User() token: AccountToken, @Param('invite_id') id: string) {
 		const account = token.account;
 		const invite = await this.getInvitation(token, id);

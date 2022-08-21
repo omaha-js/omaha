@@ -4,6 +4,7 @@ import { Collaboration } from 'src/entities/Collaboration';
 import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { Repository } from 'src/entities/Repository';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { UseRateLimit } from 'src/ratelimit/ratelimit.decorator';
 import { Collab } from 'src/support/Collab';
 import { Repo } from 'src/support/Repo';
 import { RepositoriesGuard } from '../repositories.guard';
@@ -154,6 +155,7 @@ export class CollaborationsController {
 
 	@Post()
 	@UseScopes('repo.collaborations.manage')
+	@UseRateLimit(10, 20, 30)
 	public async createCollaboration(@Repo() repo: Repository, @Body() params: CreateCollaborationDto) {
 		if (Array.isArray(params.scopes) && params.scopes.length > 0 && params.role !== CollaborationRole.Custom) {
 			throw new BadRequestException(`You cannot provide scopes when 'role' does not equal 'custom'`);
@@ -173,6 +175,7 @@ export class CollaborationsController {
 
 	@Get('invites/:invite_id')
 	@UseScopes('repo.collaborations.list')
+	@UseRateLimit(5, 10, 10)
 	public async getInvite(@Repo() repo: Repository, @Param('invite_id') id: string) {
 		const invite = await this.service.getInviteForRepositoryById(repo, id);
 

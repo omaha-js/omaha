@@ -21,10 +21,12 @@ import { RealtimeModule } from './realtime/realtime.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { NotificationsModule } from './notifications/notifications.module';
 import { QueuedNotification } from './entities/QueuedNotification';
+import { RatelimitModule } from './ratelimit/ratelimit.module';
 import path from 'path';
 
 @Module({
 	imports: [
+		RatelimitModule,
 		AuthModule,
 		AccountsModule,
 		TypeOrmModule.forRoot({

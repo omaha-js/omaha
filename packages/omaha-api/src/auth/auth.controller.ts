@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Post, UnauthorizedException } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
+import { UseRateLimit } from 'src/ratelimit/ratelimit.decorator';
 import { User } from 'src/support/User';
 import { AuthScopes } from './auth.scopes';
 import { Guest } from './decorators/guest.decorator';
@@ -36,6 +37,7 @@ export class AuthController {
 
 	@Post('login')
 	@Guest(false)
+	@UseRateLimit('login', 5, 25, 25)
 	public async login(@Body() dto: LoginDto) {
 		const account = await this.accounts.login({
 			email: dto.email ?? '',
@@ -52,6 +54,7 @@ export class AuthController {
 
 	@Post('register')
 	@Guest(false)
+	@UseRateLimit('register', 2, 5, 10)
 	public async register(@Body() dto: RegisterDto) {
 		const account = await this.accounts.createAccount(dto);
 		const token = await this.tokens.createWebToken(account);

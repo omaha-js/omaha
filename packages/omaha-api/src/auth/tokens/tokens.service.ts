@@ -245,19 +245,13 @@ export class TokensService {
 	 * @throws UnauthorizedException
 	 */
 	public async getTokenOrFail(token: string): Promise<BaseToken> {
-		const delimiterOffset = token.indexOf('.');
+		const match = await this.getToken(token);
 
-		if (delimiterOffset > 0) {
-			const type = Buffer.from(token.substring(0, delimiterOffset), 'base64').toString('ascii');
-			const data = token.substring(delimiterOffset + 1);
-
-			switch (type) {
-				case 'jsonwebtoken': return this.getTokenFromJWT(data);
-				case 'token': return this.getTokenFromDatabase(data);
-			}
+		if (!match) {
+			throw new UnauthorizedException('Invalid token');
 		}
 
-		throw new UnauthorizedException('Invalid token');
+		return match;
 	}
 
 	/**
