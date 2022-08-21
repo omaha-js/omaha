@@ -88,6 +88,10 @@ export class NotificationsController {
 			throw new BadRequestException('Invalid type of request body received');
 		}
 
+		if (!Array.isArray(existing)) {
+			existing = [];
+		}
+
 		let transformed = [...existing];
 
 		for (const key in body) {
