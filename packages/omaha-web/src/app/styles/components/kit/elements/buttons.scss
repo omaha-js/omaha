@@ -37,7 +37,7 @@
 		align-items: center;
 		justify-content: center;
 
-		color: #fff;
+		color: $oc-gray-7;
 	}
 
 	&.loading {
@@ -85,22 +85,18 @@
 				background-color: map-get($map, "7");
 			}
 
-			&.loading:hover {
-				background-color: map-get($map, "8");
-			}
-
 			&.btn-light {
 				background-color: lighten(map-get($map, "8"), 1.8%);
 
 				&:hover {
 					background-color: lighten(map-get($map, "7"), 1.8%);
 				}
-
-				&.loading:hover {
-					background-color: lighten(map-get($map, "8"), 1.8%);
-				}
 			}
 		}
+	}
+
+	&.loading {
+		background-color: $oc-gray-3 !important;
 	}
 }
 
