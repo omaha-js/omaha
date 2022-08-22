@@ -1,5 +1,6 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, InternalServerErrorException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
+import { Environment } from 'src/app.environment';
 import { Private } from 'src/auth/decorators/private.decorator';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
@@ -49,6 +50,24 @@ export class RepositoriesController {
 	@Post()
 	@UseScopes('account.repos.manage')
 	public async createRepository(@Body() dto: CreateRepoDto, @User() token: AccountToken) {
+		if (Environment.WHITELIST_CREATE_REPO.trim().length > 0) {
+			const allowedDomains = Environment.WHITELIST_CREATE_REPO
+				.split(',')
+				.map(str => str.trim().toLowerCase())
+				.filter(str => str.length > 0);
+
+			const match = token.account.email.match(/@([^@]+$)/);
+
+			if (!match) {
+				throw new InternalServerErrorException('Failed to check email address against whitelist');
+			}
+
+			const domain = match[1].toLowerCase();
+			if (!allowedDomains.includes(domain)) {
+				throw new BadRequestException('Your account is not eligible to create repositories');
+			}
+		}
+
 		if (token.account.verification_required) {
 			throw new BadRequestException('You must verify your email address before creating a repository!');
 		}

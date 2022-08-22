@@ -55,6 +55,12 @@ export const Environment = Env.rules({
 	 */
 	DISABLE_REGISTRATION: Env.schema.boolean().optional(false),
 
+	/**
+	 * A comma-separated list of domain names. When a user attempts to create a new repository, their email address
+	 * must match one of these domain names. When blank, all users can create repositories.
+	 */
+	WHITELIST_CREATE_REPO: Env.schema.string().optional(''),
+
 	/// =======================================================
 	/// == Database
 	/// =======================================================
