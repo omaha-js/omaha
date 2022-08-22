@@ -59,7 +59,8 @@ import { AccountAction } from './entities/AccountAction';
 		EmailModule,
 		RealtimeModule,
 		ServeStaticModule.forRoot({
-			rootPath: path.resolve(__dirname, '../node_modules/@omaha/omaha-web/dist')
+			rootPath: path.resolve(__dirname, '../node_modules/@omaha/omaha-web/dist'),
+			exclude: ['/v(\\d+)/(.*)']
 		}),
 		NotificationsModule
 	],
