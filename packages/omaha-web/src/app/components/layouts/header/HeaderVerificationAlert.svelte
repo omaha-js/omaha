@@ -11,7 +11,7 @@
 
 	async function resend() {
 		try {
-			const response = await client.post<{ message: string }>('/v1/account/actions/resend_verification');
+			const response = await client.account.resendVerificationEmail();
 			omaha.alerts.success(response.message, 4500);
 		}
 		catch (err) {

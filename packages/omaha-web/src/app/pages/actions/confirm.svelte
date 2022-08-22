@@ -10,7 +10,7 @@
 	onDestroy(dispose);
 
 	let token = decodeURIComponent(router.location.query.get('token') as string);
-	let promise = client.post<{message: string}>('/v1/auth/confirm', { token });
+	let promise = client.auth.confirm(token);
 	let { account } = omaha.session;
 
 	promise.then(() => omaha.session.refresh());

@@ -9,7 +9,7 @@
 	},
 	"devDependencies": {
 		"@baileyherbert/logging": "^2.1.0",
-		"@omaha/client": "1.0.0-rc.6",
+		"@omaha/client": "1.0.0-rc.7",
 		"@sveltejs/vite-plugin-svelte": "^1.0.1",
 		"@types/blueimp-md5": "^2.18.0",
 		"@vitejs/plugin-legacy": "^2.0.1",
