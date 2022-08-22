@@ -70,9 +70,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Login</title>
-</svelte:head>
+<svelte:head><title>{omaha.app.title('Login')}</title></svelte:head>
 
 <div class="login-wrapper">
 	<div class="login-container">

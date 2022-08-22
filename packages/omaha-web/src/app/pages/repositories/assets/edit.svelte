@@ -60,6 +60,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Edit asset', repo.name)}</title></svelte:head>
+
 <RepoActionContainer>
 	<RepoAction key="delete" title="Delete this asset" on:click={ deleteAsset }>
 		<Trash slot="icon" />

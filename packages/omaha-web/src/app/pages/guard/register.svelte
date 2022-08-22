@@ -62,9 +62,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Register</title>
-</svelte:head>
+<svelte:head><title>{omaha.app.title('Register')}</title></svelte:head>
 
 {#if omaha.app.constants.allows_registration || $router.query.invitation}
 <div class="login-wrapper">

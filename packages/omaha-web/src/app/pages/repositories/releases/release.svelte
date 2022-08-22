@@ -127,6 +127,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title(route.params.version, 'Releases', repo.name)}</title></svelte:head>
+
 <PromiseLoader {promise} let:value={release}>
 	<RepoActionContainer>
 		{#if release.status === ReleaseStatus.Draft}

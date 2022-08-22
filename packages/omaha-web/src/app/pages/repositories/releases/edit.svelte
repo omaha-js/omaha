@@ -40,6 +40,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Edit release', repo.name)}</title></svelte:head>
+
 <PromiseLoader {promise} let:value={release}>
 	<div class="form-container">
 		<form class="form" on:submit|preventDefault={ () => onSubmit(release) }>

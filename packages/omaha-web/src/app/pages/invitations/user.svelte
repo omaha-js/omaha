@@ -20,4 +20,6 @@
 		});
 </script>
 
+<svelte:head><title>{omaha.app.title('Invitation')}</title></svelte:head>
+
 <PromiseLoader {promise} />

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import omaha from 'src/omaha';
+
 	import { Collaboration, Repository } from '@omaha/client';
 	import TabGroup from 'src/app/components/tabs/TabGroup.svelte';
 	import Tab from 'src/app/components/tabs/Tab.svelte';
@@ -15,6 +17,8 @@
 	export let repo: Repository;
 	export let collab: Collaboration;
 </script>
+
+<svelte:head><title>{omaha.app.title('Settings', repo.name)}</title></svelte:head>
 
 <TabGroup base="/repository/{repo.id}/settings">
 	<Tab name="General" path="/general" icon={SettingsIcon}>

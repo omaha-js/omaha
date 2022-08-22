@@ -57,6 +57,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Edit tag', repo.name)}</title></svelte:head>
+
 <RepoActionContainer>
 	<RepoAction key="delete" title="Delete this tag" on:click={ deleteTag }>
 		<Trash slot="icon" />

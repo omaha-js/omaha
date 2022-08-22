@@ -23,6 +23,8 @@
 
 </script>
 
+<svelte:head><title>{omaha.app.title('Tags', repo.name)}</title></svelte:head>
+
 <RepoActionContainer>
 	<RepoRefreshAction on:invoke={ () => repo.id = repo.id } />
 

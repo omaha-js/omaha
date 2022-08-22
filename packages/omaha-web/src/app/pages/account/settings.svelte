@@ -1,4 +1,6 @@
 <script lang="ts">
+	import omaha from 'src/omaha';
+
 	import TabGroup from 'src/app/components/tabs/TabGroup.svelte';
 	import Tab from 'src/app/components/tabs/Tab.svelte';
 	import TabSection from 'src/app/components/tabs/TabSection.svelte';
@@ -11,6 +13,8 @@
 	import SettingsIcon from 'tabler-icons-svelte/icons/Settings.svelte';
 	import NotificationsIcon from 'tabler-icons-svelte/icons/Bell.svelte';
 </script>
+
+<svelte:head><title>{omaha.app.title('Settings')}</title></svelte:head>
 
 <h1>Settings</h1>
 

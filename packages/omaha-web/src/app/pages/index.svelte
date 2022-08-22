@@ -4,9 +4,7 @@
 	const { account } = omaha.session;
 </script>
 
-<svelte:head>
-	<title>Dashboard</title>
-</svelte:head>
+<svelte:head><title>{omaha.app.title('Dashboard')}</title></svelte:head>
 
 Hello {$account.name}!
 

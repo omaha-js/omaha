@@ -27,4 +27,20 @@ export class AppManager extends Manager {
 		return this._constants;
 	}
 
+	/**
+	 * Builds a page title for the application.
+	 *
+	 * @param segments
+	 * @returns
+	 */
+	public title(...segments: string[]) {
+		segments.push(this.constants.app_name);
+
+		return (
+			segments.map(s => s.trim())
+			.filter(s => s.length > 0)
+			.join(' - ')
+		);
+	}
+
 }

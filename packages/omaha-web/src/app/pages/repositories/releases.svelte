@@ -71,6 +71,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Releases', repo.name)}</title></svelte:head>
+
 <RepoActionContainer>
 	<RepoSearchAction
 		bind:value={search}

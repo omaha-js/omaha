@@ -16,6 +16,8 @@
 	promise.then(() => omaha.session.refresh());
 </script>
 
+<svelte:head><title>{omaha.app.title('Confirm email')}</title></svelte:head>
+
 <div class="action-page">
 	<PromiseLoader {promise} let:value={response}>
 		<div class="promise success">

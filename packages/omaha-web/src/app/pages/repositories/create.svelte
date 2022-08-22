@@ -50,6 +50,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Create repository')}</title></svelte:head>
+
 {#if !$account.verified}
 	<div class="promise error">
 		<div class="inner">

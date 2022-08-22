@@ -31,6 +31,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Create tag', repo.name)}</title></svelte:head>
+
 <div class="form-container">
 	<form class="form" on:submit|preventDefault={ onSubmit }>
 		<div class="heading-group">

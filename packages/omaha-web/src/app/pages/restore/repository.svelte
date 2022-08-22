@@ -28,6 +28,8 @@
 	}
 </script>
 
+<svelte:head><title>{omaha.app.title('Restore repository')}</title></svelte:head>
+
 <PromiseLoader {promise} let:value={repo}>
 	<div class="form-container">
 		<div class="heading-group mb-5">
