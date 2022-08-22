@@ -7,6 +7,7 @@
 	import User from 'tabler-icons-svelte/icons/User.svelte';
 	import Archive from 'tabler-icons-svelte/icons/Archive.svelte';
 	import InfoCircle from 'tabler-icons-svelte/icons/InfoCircle.svelte';
+	import Clipboard from 'tabler-icons-svelte/icons/Clipboard.svelte';
 	import Button from 'src/app/components/kit/Button.svelte';
 	import { Collaboration, CollaborationRole, Repository, RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
 	import { getContext, onDestroy } from 'svelte';
@@ -89,6 +90,11 @@
 			}
 		}
 	}
+
+	function copyId() {
+		navigator.clipboard.writeText(repo.id);
+		omaha.alerts.success('Text copied to clipboard!', 3500);
+	}
 </script>
 
 <div class="form-container">
@@ -102,6 +108,12 @@
 					{$error}
 				</div>
 			{/if}
+
+			<div class="form-group">
+				<label for="inputId">Repository ID</label>
+				<input type="text" class="form-control half" id="inputId" bind:value={repo.id} disabled>
+				<Button icon={Clipboard} class="bordered" title="Copy to clipboard" on:click={copyId} />
+			</div>
 
 			<div class="form-group">
 				<label for="inputName">Repository name</label>

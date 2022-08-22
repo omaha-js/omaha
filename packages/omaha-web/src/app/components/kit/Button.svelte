@@ -8,6 +8,7 @@
 	export let loading: boolean = false;
 	export let color: Color | undefined = undefined;
 	export let type: 'button' | 'submit' | 'reset' = 'button';
+	export let title: string = '';
 
 	$: effectiveColor = loading ? 'gray' : color ?? '';
 	$: className = (
@@ -25,7 +26,7 @@
 </script>
 
 {#if href}
-	<a {href} class={className}>
+	<a {href} class={className} {title}>
 		{#if icon}
 		<div class="button-icon">
 			<svelte:component this={icon} />
@@ -43,7 +44,7 @@
 		</div>
 	</a>
 {:else}
-	<button {type} class={className} on:click={ onClick }>
+	<button {type} class={className} on:click={ onClick } {title}>
 		{#if icon}
 		<div class="button-icon">
 			<svelte:component this={icon} />

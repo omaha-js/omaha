@@ -12,10 +12,18 @@
 
 	transition: color 0ms;
 
+	&.bordered {
+		border: 1px solid $oc-gray-4;
+	}
+
 	&:hover, &:active, &:focus {
 		border-color: transparent;
 		color: $oc-gray-7;
 		background-color: $oc-gray-4;
+
+		&.bordered {
+			border: 1px solid $oc-gray-5;
+		}
 	}
 
 	.button-loader {
