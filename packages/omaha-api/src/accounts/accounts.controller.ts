@@ -94,6 +94,7 @@ export class AccountsController {
 	}
 
 	@Post('actions/resend_verification')
+	@UseScopes('account.settings.manage')
 	@UseRateLimit(1, 3, 5)
 	public async resendVerification(@User() token: AccountToken) {
 		if (!token.account.verification_required) {
