@@ -24,6 +24,7 @@ import { QueuedNotification } from './entities/QueuedNotification';
 import { RatelimitModule } from './ratelimit/ratelimit.module';
 import path from 'path';
 import { AccountAction } from './entities/AccountAction';
+import { AppController } from './app.controller';
 
 @Module({
 	imports: [
@@ -64,5 +65,8 @@ import { AccountAction } from './entities/AccountAction';
 		}),
 		NotificationsModule
 	],
+	controllers: [
+		AppController
+	]
 })
 export class AppModule {}
