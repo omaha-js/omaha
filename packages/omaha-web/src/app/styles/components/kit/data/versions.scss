@@ -1,9 +1,30 @@
 .version-tag {
-	display: inline;
+	display: inline-block;
 	font-family: "JetBrains Mono";
 	font-weight: 400;
 	font-size: 0.9em;
 	line-height: 0.9em;
-	letter-spacing: -0.075rem;
+	letter-spacing: -0.1rem;
 	color: $oc-gray-7;
+	padding-top: 0.1rem;
+}
+
+.version-icon {
+	&.published {
+		svg {
+			color: $oc-blue-8 !important;
+		}
+	}
+
+	&.draft {
+		svg {
+			color: $oc-green-7 !important;
+		}
+	}
+
+	&.archived {
+		svg {
+			color: $oc-gray-5 !important;
+		}
+	}
 }

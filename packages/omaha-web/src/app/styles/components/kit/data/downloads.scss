@@ -1,6 +1,6 @@
 .download-count {
 	display: inline-block;
-	color: $oc-gray-6;
+	color: $oc-gray-5;
 
 	.download-count-flex {
 		display: flex;
@@ -14,8 +14,8 @@
 
 	svg {
 		margin-left: 0.4rem;
-		width: 1.4em;
-		height: 1.4em;
-		stroke-width: 1.5;
+		width: 1.2em;
+		height: 1.2em;
+		stroke-width: 2;
 	}
 }

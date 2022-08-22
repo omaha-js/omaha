@@ -1,6 +1,6 @@
 <script lang="ts">
-	import ArrowUp from 'tabler-icons-svelte/icons/ArrowUp.svelte';
-	import ArrowDown from 'tabler-icons-svelte/icons/ArrowDown.svelte';
+	import ArrowUp from 'tabler-icons-svelte/icons/ChevronUp.svelte';
+	import ArrowDown from 'tabler-icons-svelte/icons/ChevronDown.svelte';
 
 	export let key: string;
 	export let currentKey: string | undefined;

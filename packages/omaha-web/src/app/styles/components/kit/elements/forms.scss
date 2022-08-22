@@ -16,7 +16,9 @@
 	color: $oc-dark-4;
 	vertical-align: bottom;
 
-	padding: 0.4rem 1.1rem;
+	padding: 0.4rem 1.2rem;
+
+	box-shadow: inset 0 0.1rem 0 $oc-gray-2;
 
 	&.half {
 		max-width: 34rem;
@@ -60,7 +62,7 @@ textarea.form-control {
 	}
 }
 
-.form-control, .form-check-input {
+.form-check-input {
 	box-shadow: none !important;
 }
 

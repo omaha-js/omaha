@@ -80,7 +80,7 @@
 
 	let expandedAsset = '';
 
-	function expand(event: MouseEvent, asset: string) {
+	function expand(asset: string) {
 		if (expandedAsset === asset) {
 			expandedAsset = '';
 		}
@@ -155,7 +155,7 @@
 	<div class="row release">
 		<div class="col-md-9">
 			<div class="heading-with-tags">
-				<h1>{release.version}</h1>
+				<h1 class="user-select-all">{release.version}</h1>
 				<div class="tags">
 					{#each release.tags ?? [] as tag}
 						<div class="attribute tag">
@@ -190,8 +190,9 @@
 							asset={asset.name}
 							version={release.version}
 							class={"clickable " + (!!asset.attachment && expandedAsset === asset.name ? "has-nested" : "")}
+							empty={!asset.attachment}
 							on:uploaded={ refresh }
-							on:click={ e => expand(e, asset.name) }
+							on:click={ () => expand(asset.name) }
 						>
 							<td title={asset.description}>
 								<div class="icon-text-union">
@@ -220,7 +221,7 @@
 									Drop file here to upload.
 								</td>
 							{:else if errorText}
-								<td colspan="3" class="status-error" on:click={ selectFile }>
+								<td colspan="3" class="status-error">
 									{errorText}
 								</td>
 							{:else if asset.attachment}
@@ -232,7 +233,7 @@
 										<div class="download-count">
 											<div class="download-count-flex">
 												<strong>{release.download_count}</strong>
-												<ArrowDownCircle />
+												<div><ArrowDownCircle /></div>
 											</div>
 										</div>
 									</td>
@@ -241,7 +242,6 @@
 								<td
 									colspan={release.status !== ReleaseStatus.Draft ? 4 : 3}
 									class="upload-file"
-									on:click={ selectFile }
 								>
 									Click to select a file...
 								</td>

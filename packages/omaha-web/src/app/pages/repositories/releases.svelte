@@ -7,6 +7,8 @@
 	import RepoSearchAction from 'src/app/components/layouts/header/repositories/RepoSearchAction.svelte';
 	import SortedTableHeader from 'src/app/components/tables/SortedTableHeader.svelte';
 	import ArrowDownCircle from 'tabler-icons-svelte/icons/ArrowDownCircle.svelte';
+	import BoxIcon from 'tabler-icons-svelte/icons/Box.svelte';
+	import BoxOffIcon from 'tabler-icons-svelte/icons/BoxOff.svelte';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
 	import RepoActionContainer from 'src/app/components/layouts/header/repositories/RepoActionContainer.svelte';
@@ -94,7 +96,6 @@
 			<table class="table themed">
 				<thead>
 					<tr>
-						<th scope="col"></th>
 						<SortedTableHeader key="version" bind:currentKey={params.sort} bind:currentDirection={params.sort_order}>
 							Version
 						</SortedTableHeader>
@@ -109,12 +110,16 @@
 				<tbody>
 					{#each response.results as result (result.version)}
 						<tr>
-							<td>
-								<input type="checkbox" class="form-check-input" />
-							</td>
 							<td class="clickable">
 								<a href="/repository/{repo.id}/releases/{result.version}">
-									<div class="version-tag">{result.version}</div>
+									<div class="icon-text-union version-icon {result.status}">
+										{#if result.status !== ReleaseStatus.Archived}
+											<BoxIcon />
+										{:else}
+											<BoxOffIcon />
+										{/if}
+										<span class="version-tag">{result.version}</span>
+									</div>
 								</a>
 							</td>
 							<td class="clickable">
@@ -143,7 +148,7 @@
 									<div class="download-count">
 										<div class="download-count-flex">
 											<strong>{result.download_count}</strong>
-											<ArrowDownCircle />
+											<div><ArrowDownCircle /></div>
 										</div>
 									</div>
 								</a>

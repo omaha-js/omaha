@@ -10,6 +10,7 @@
 	export let version: string;
 	export let asset: string;
 	export let editable: boolean;
+	export let empty: boolean;
 
 	let dropzone = false;
 	let uploading = false;
@@ -54,8 +55,17 @@
 
 		input.click();
 	}
+
+	function onClick(event: MouseEvent) {
+		if (editable && empty) {
+			selectFile(event);
+		}
+		else {
+			dispatch('click');
+		}
+	}
 </script>
 
-<tr {...$$restProps} class:dropzone on:click>
+<tr {...$$restProps} class:dropzone on:click={ onClick }>
 	<slot {selectFile} {dropzone} {uploading} {errorText} />
 </tr>

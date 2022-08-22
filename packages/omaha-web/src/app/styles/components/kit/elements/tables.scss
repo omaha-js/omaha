@@ -14,7 +14,7 @@ table.table {
 			}
 
 			.sort-direction {
-				padding-left: 0.3rem;
+				padding-left: 0.6rem;
 				line-height: 1.7rem;
 				color: $oc-gray-5;
 
@@ -50,12 +50,12 @@ table.table {
 				background-color: $oc-gray-2;
 				color: inherit;
 
-				font-size: 1.4rem;
+				font-size: 1.3rem;
 				font-weight: 500;
 				color: $oc-gray-7;
 
 				vertical-align: middle;
-				line-height: 3.5rem;
+				line-height: 3.4rem;
 				border-bottom-color: $oc-gray-3;
 
 				padding: 0.5rem 1rem;
@@ -85,7 +85,7 @@ table.table {
 
 				font-size: 1.4rem;
 				color: $oc-gray-7;
-				border-bottom-color: $oc-gray-3;
+				border-bottom-color: $oc-gray-2;
 
 				&:first-child {
 					padding-left: 2rem;
@@ -100,7 +100,7 @@ table.table {
 
 					a {
 						display: block;
-						padding: 1.4rem 0.5rem;
+						padding: 1.4rem 1rem;
 						text-decoration: none;
 						color: inherit;
 					}
@@ -141,9 +141,9 @@ table.table {
 			align-items: center;
 
 			svg {
-				width: 2.2rem;
-				height: 2.2rem;
-				margin-right: 0.7rem;
+				width: 2.0rem;
+				height: 2.0rem;
+				margin-right: 0.9rem;
 				color: $oc-gray-7;
 			}
 
