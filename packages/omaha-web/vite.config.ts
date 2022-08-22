@@ -48,7 +48,12 @@ const config = <UserConfig> defineConfig({
 		}
 	},
 	build: {
-		sourcemap: sourceMapsInProduction
+		sourcemap: sourceMapsInProduction,
+		rollupOptions: {
+			output: {
+				manualChunks: () => 'app'
+			}
+		}
 	},
 	css: {
 		postcss: {
