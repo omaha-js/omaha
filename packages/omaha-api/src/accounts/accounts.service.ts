@@ -34,6 +34,17 @@ export class AccountsService {
 	 * @returns
 	 */
 	public async createAccount(dto: RegisterDto) {
+		// Require a valid invitation if registration is disabled
+		if (Environment.DISABLE_REGISTRATION) {
+			if (typeof dto.invitation !== 'string') {
+				throw new BadRequestException('This website does not allow registration without an invitation');
+			}
+
+			if (!await this.collaborations.getInviteById(dto.invitation)) {
+				throw new BadRequestException('This invitation is invalid, expired, or was already accepted');
+			}
+		}
+
 		// Check if the account already exists in the repository
 		if (await this.repository.count({ where: { email: dto.email }}) > 0) {
 			throw new BadRequestException('An account with that email already exists');

@@ -49,6 +49,12 @@ export const Environment = Env.rules({
 	 */
 	REQUIRE_EMAIL_VERIFICATION: Env.schema.boolean().optional(true),
 
+	/**
+	 * Whether or not to disable registration. Even if registration is disabled, visitors can still register accounts
+	 * with a valid invitation link.
+	 */
+	DISABLE_REGISTRATION: Env.schema.boolean().optional(false),
+
 	/// =======================================================
 	/// == Database
 	/// =======================================================

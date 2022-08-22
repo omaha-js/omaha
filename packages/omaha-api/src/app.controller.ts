@@ -9,7 +9,7 @@ export class AppController {
 		return {
 			app_name: Environment.APP_NAME,
 			app_url: Environment.APP_URL,
-			allows_registration: true
+			allows_registration: !Environment.DISABLE_REGISTRATION
 		};
 	}
 

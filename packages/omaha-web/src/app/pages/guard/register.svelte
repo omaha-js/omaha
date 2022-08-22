@@ -66,6 +66,7 @@
 	<title>Register</title>
 </svelte:head>
 
+{#if omaha.app.constants.allows_registration || $router.query.invitation}
 <div class="login-wrapper">
 	<div class="login-container">
 		<div class="login-header">
@@ -120,3 +121,29 @@
 		</div>
 	</div>
 </div>
+{:else}
+
+	<div class="login-wrapper">
+		<div class="login-container">
+			<div class="login-header">
+				<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+					<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+					<circle cx="12" cy="12" r="9" />
+					<circle cx="12" cy="10" r="3" />
+					<path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" />
+				</svg>
+				<h1>Register</h1>
+			</div>
+
+			<div class="login-content">
+				<form on:submit|preventDefault={ () => {} }>
+					<div class="form-error mb-3">
+						<ExclamationCircle />
+						<p>This website does not allow registration without an invitation</p>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+{/if}

@@ -111,11 +111,14 @@
 				</div>
 			</form>
 		</div>
+
+		{#if omaha.app.constants.allows_registration || $router.query.invitation}
 		<div class="login-footer">
 			<p>
 				Don't have an account yet?
 				<a href="/register{params.toString()}">Create one!</a>
 			</p>
 		</div>
+		{/if}
 	</div>
 </div>
