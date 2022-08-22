@@ -1,4 +1,4 @@
-import { Account, Omaha, Scope } from '@omaha/client';
+import { Account, Omaha, Scope, UnauthorizedError } from '@omaha/client';
 import { Manager } from '../framework/Manager';
 import { createStore } from '../helpers/stores';
 
@@ -157,17 +157,30 @@ export class SessionManager extends Manager {
 			return;
 		}
 
-		const client = this.createClientWithoutRetries();
-		const identity = await client.auth.identity();
+		try {
+			const client = this.createClientWithoutRetries();
+			const identity = await client.auth.identity();
 
-		if (identity.access !== 'account') {
-			throw new Error('The token was not for an account');
+			if (identity.access !== 'account') {
+				this.logger.warning('New authentication status was:', identity.access);
+				this.clear();
+				return;
+			}
+
+			this.account.set(identity.account);
+			this.scopes.set(identity.scopes);
+
+			this.logger.info('Refreshed account information');
 		}
+		catch (error) {
+			if (error instanceof UnauthorizedError) {
+				this.logger.warning('Authentication token is no longer valid');
+				this.clear();
+				return;
+			}
 
-		this.account.set(identity.account);
-		this.scopes.set(identity.scopes);
-
-		this.logger.info('Refreshed account information');
+			this.logger.error('Error while refreshing account information:', error);
+		}
 	}
 
 }
