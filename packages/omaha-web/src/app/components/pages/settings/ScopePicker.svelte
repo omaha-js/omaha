@@ -48,6 +48,9 @@
 		return true;
 	}
 
+	$: allForAccount = areAllEnabled(!editable && role ? preview : selected, scopesForAccount);
+	$: allForRepo = areAllEnabled(!editable && role ? preview : selected, scopesForRepo);
+
 	function onBigCheckChanged(event: Event & { currentTarget: HTMLInputElement }, scopes: ScopeDescriptor[]) {
 		if (event.currentTarget.checked) {
 			for (const {id} of scopes) {
@@ -77,11 +80,11 @@
 									type="checkbox"
 									class="form-check-input"
 									id="scope_all_account"
-									checked={areAllEnabled(selected, scopesForAccount)}
+									checked={allForAccount}
 									on:change={e=>onBigCheckChanged(e, scopesForAccount)}
 								/>
 							{:else}
-								<input type="checkbox" class="form-check-input" checked={areAllEnabled(selected, scopesForAccount)} disabled />
+								<input type="checkbox" class="form-check-input" checked={allForAccount} disabled />
 							{/if}
 						</label>
 					</td>
@@ -125,11 +128,11 @@
 									type="checkbox"
 									class="form-check-input"
 									id="scope_all_repo"
-									checked={areAllEnabled(selected, scopesForRepo)}
+									checked={allForRepo}
 									on:change={e=>onBigCheckChanged(e, scopesForRepo)}
 								/>
 							{:else}
-								<input type="checkbox" class="form-check-input" checked={areAllEnabled(selected, scopesForRepo)} disabled />
+								<input type="checkbox" class="form-check-input" checked={allForRepo} disabled />
 							{/if}
 						</label>
 					</td>
