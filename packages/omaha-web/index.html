@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 
-		<title>Omaha</title>
+		<title>Loading</title>
 
 		<link rel="icon" type="image/png" href="/favicon.png">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,11 +12,21 @@
 		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
 		<link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-		<!-- <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap-dark-5/dist/css/bootstrap-nightfall.min.css"> -->
 		<link rel="stylesheet" type="text/css" href="/src/app/styles/index.scss">
 	</head>
 	<body>
-		<noscript>Please enable JavaScript to view this application.</noscript>
+		<div class="preloading">
+			<div class="preloading-container">
+				<div class="spinner">
+					<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+				</div>
+				<h1>Loading, please wait...</h1>
+				<noscript>
+					<div class="no-js">Please enable JavaScript to view this application.</div>
+				</noscript>
+			</div>
+		</div>
+
 		<script type="module" src="/src/main.ts"></script>
 	</body>
 </html>

@@ -2,8 +2,14 @@ import { ClientManager } from './managers/ClientManager';
 import { AlertManager } from './managers/AlertManager';
 import { RepositoriesManager } from './managers/RepositoriesManager';
 import { SessionManager } from './managers/SessionManager';
+import { AppManager } from './managers/AppManager';
 
 export default {
+
+	/**
+	 * The manager for the application.
+	 */
+	app: new AppManager(),
 
 	/**
 	 * The manager for the API connection.

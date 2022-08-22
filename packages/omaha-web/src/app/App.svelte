@@ -65,7 +65,17 @@ import ActionRoutes from './ActionRoutes.svelte';
 <svelte:window on:focus={ () => omaha.session.refresh() } />
 
 {#if !$bootstrapped}
-	<Loader full size={40} theme="gray" message="Loading" />
+	<div class="preloading">
+		<div class="preloading-container">
+			<div class="spinner">
+				<div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+			</div>
+			<h1>Loading, please wait...</h1>
+			<noscript>
+				<div class="no-js">Please enable JavaScript to view this application.</div>
+			</noscript>
+		</div>
+	</div>
 {:else if $account}
 
 	<Layout {repository}>

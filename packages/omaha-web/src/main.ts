@@ -8,4 +8,6 @@ const app = new App({
 	target: document.body
 });
 
+document.body.querySelector('.preloading').remove();
+
 export default app;
