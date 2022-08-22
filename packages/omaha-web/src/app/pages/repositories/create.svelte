@@ -7,6 +7,7 @@
 	import User from 'tabler-icons-svelte/icons/User.svelte';
 	import Archive from 'tabler-icons-svelte/icons/Archive.svelte';
 	import InfoCircle from 'tabler-icons-svelte/icons/InfoCircle.svelte';
+	import AlertTriangle from 'tabler-icons-svelte/icons/AlertTriangle.svelte';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
 	import { RepositoryAccessType, RepositoryVersionScheme } from '@omaha/client';
@@ -22,8 +23,9 @@
 	let repoArchiveExpiration = 14;
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
-
 	onDestroy(dispose);
+
+	let { account } = omaha.session;
 
 	async function onSubmit() {
 		try {
@@ -47,6 +49,15 @@
 		}
 	}
 </script>
+
+{#if !$account.verified}
+	<div class="promise error">
+		<div class="inner">
+			<AlertTriangle />
+			<p>You can't create new repositories until you verify your email address.</p>
+		</div>
+	</div>
+{:else}
 
 <div class="form-container">
 	<form class="form" on:submit|preventDefault={ onSubmit }>
@@ -289,3 +300,5 @@
 		</div>
 	</form>
 </div>
+
+{/if}

@@ -16,6 +16,8 @@
 				existingPassword: inputPassword
 			});
 
+			await omaha.session.refresh();
+
 			inputEmail = '';
 			inputPassword = '';
 			omaha.alerts.success('Changes saved successfully.', 3500);

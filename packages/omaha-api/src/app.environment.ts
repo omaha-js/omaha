@@ -40,6 +40,16 @@ export const Environment = Env.rules({
 	},
 
 	/// =======================================================
+	/// == Website settings
+	/// =======================================================
+
+	/**
+	 * Whether or not to require accounts to verify their email address. Changing this setting will apply to existing
+	 * accounts as well.
+	 */
+	REQUIRE_EMAIL_VERIFICATION: Env.schema.boolean().optional(true),
+
+	/// =======================================================
 	/// == Database
 	/// =======================================================
 

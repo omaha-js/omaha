@@ -10,6 +10,7 @@
 	import { Collaboration, Repository } from '@omaha/client';
 	import PromiseLoader from './components/helpers/PromiseLoader.svelte';
 	import { setContext } from 'svelte';
+import ActionRoutes from './ActionRoutes.svelte';
 
 	const { account } = omaha.session;
 
@@ -61,9 +62,12 @@
 	router.subscribe(() => window.scrollTo(0, 0));
 </script>
 
+<svelte:window on:focus={ () => omaha.session.refresh() } />
+
 {#if !$bootstrapped}
 	<Loader full size={40} theme="gray" message="Loading" />
 {:else if $account}
+
 	<Layout {repository}>
 		<Route path="/"><Loadable component={ import('./pages/index.svelte') } /></Route>
 
@@ -103,12 +107,16 @@
 		<!-- Account -->
 		<Route path="/account/settings/*"><Loadable component={ import('./pages/account/settings.svelte') } /></Route>
 		<Route path="/account/logout"><Loadable component={ import('./pages/account/logout.svelte') } /></Route>
+
+		<!-- Global -->
+		<ActionRoutes />
 	</Layout>
 {:else}
 	<Route>
 		<Route path="/login"><Loadable component={ import('./pages/guard/login.svelte') } /></Route>
 		<Route path="/register"><Loadable component={ import('./pages/guard/register.svelte') } /></Route>
 		<Route path="/invitation/:id"><Loadable component={ import('./pages/invitations/guest.svelte') } /></Route>
+		<ActionRoutes />
 		<ProtectedRoute fallback />
 	</Route>
 {/if}

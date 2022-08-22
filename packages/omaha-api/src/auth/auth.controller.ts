@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, UnauthorizedException } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
+import { ActionsService } from 'src/accounts/actions/actions.service';
 import { UseRateLimit } from 'src/ratelimit/ratelimit.decorator';
 import { User } from 'src/support/User';
 import { AuthScopes } from './auth.scopes';
 import { Guest } from './decorators/guest.decorator';
+import { ActionDto } from './dto/ActionDto';
 import { LoginDto } from './dto/LoginDto';
 import { RegisterDto } from './dto/RegisterDto';
 import { BaseToken } from './tokens/models/BaseToken';
@@ -15,6 +17,7 @@ export class AuthController {
 	public constructor(
 		private readonly accounts: AccountsService,
 		private readonly tokens: TokensService,
+		private readonly actions: ActionsService
 	) {}
 
 	@Get('identity')
@@ -67,8 +70,21 @@ export class AuthController {
 
 	@Post('confirm')
 	@Guest()
-	public async confirmEmail() {
-		throw new UnauthorizedException();
+	@UseRateLimit(5, 10, 15)
+	public async confirmEmail(@Body() dto: ActionDto) {
+		const action = await this.actions.getAction<MetaConfirmEmail>(dto.token);
+
+		if (action.account.email !== action.metadata.email) {
+			throw new BadRequestException(`The account's email address has changed so this token is no longer valid`);
+		}
+
+		await this.accounts.setVerified(action.account, true);
+		await this.actions.consumeAction(action);
+
+		return {
+			success: true,
+			message: 'Your email address has been verified successfully! Thanks!'
+		};
 	}
 
 	@Post('password_reset/request')
@@ -102,4 +118,8 @@ export class AuthController {
 		};
 	}
 
+}
+
+interface MetaConfirmEmail {
+	email: string;
 }

@@ -1,4 +1,5 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { Environment } from 'src/app.environment';
 import { NotificationId } from 'src/notifications/notifications.types';
 import { CreateDateColumn, UpdateDateColumn } from 'src/support/orm/decorators';
 import { Column, Entity, Index, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
@@ -28,6 +29,7 @@ export class Account {
 	public notifications!: NotificationId[];
 
 	@Column({ default: false })
+	@Exclude()
 	public verified!: boolean;
 
 	@CreateDateColumn()
@@ -41,5 +43,18 @@ export class Account {
 
 	@OneToMany(() => Token, token => token.account)
 	public tokens!: Promise<Token[]>;
+
+	/**
+	 * Returns `true` if this account needs to be verified, considering whether both verification and emails ending is
+	 * enabled on the system.
+	 */
+	public get verification_required() {
+		return !this.verified && Environment.SMTP_HOST && Environment.REQUIRE_EMAIL_VERIFICATION;
+	}
+
+	@Expose({ name: 'verified' })
+	protected get jsonPropVerified() {
+		return !this.verification_required;
+	}
 
 }

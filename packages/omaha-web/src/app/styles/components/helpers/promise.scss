@@ -7,14 +7,11 @@
 	align-items: center;
 	justify-content: center;
 
-	&.error {
-		background-color: $oc-red-1;
-
+	&.error, &.success {
 		.inner {
 			text-align: center;
 
 			svg {
-				color: $oc-red-6;
 				margin-bottom: 0.5rem;
 
 				width: 3.6rem;
@@ -23,12 +20,66 @@
 			}
 
 			p {
-				color: $oc-red-7;
 				font-size: 1.6rem;
 				font-weight: 500;
 				line-height: 1.6;
 				margin: 0;
 			}
+		}
+	}
+
+	&.error {
+		background-color: $oc-red-1;
+
+		.inner {
+			text-align: center;
+
+			svg {
+				color: $oc-red-6;
+			}
+
+			p {
+				color: $oc-red-7;
+			}
+		}
+	}
+
+	&.success {
+		.inner {
+			text-align: center;
+
+			svg {
+				color: $oc-dark-3;
+			}
+
+			p {
+				color: $oc-dark-3;
+			}
+		}
+	}
+
+	.actions {
+		margin-top: 2rem;
+	}
+
+	.d-flex {
+		align-items: center;
+		width: 100%;
+
+		svg {
+			margin-right: 1rem;
+			margin-bottom: 0 !important;
+			flex-shrink: 1;
+			flex-basis: 3.6rem;
+		}
+
+		p {
+			flex-grow: 1;
+			text-align: left;
+		}
+
+		.actions {
+			margin-top: 0;
 		}
 	}
 }

@@ -5,12 +5,14 @@ import { AccountsService } from './accounts.service';
 import { AccountsController } from './accounts.controller';
 import { TokensController } from './tokens/tokens.controller';
 import { TokensModule } from './tokens/tokens.module';
+import { ActionsModule } from './actions/actions.module';
 
 @Global()
 @Module({
 	imports: [
 		TypeOrmModule.forFeature([ Account ]),
-		TokensModule
+		TokensModule,
+		ActionsModule
 	],
 	exports: [
 		AccountsService

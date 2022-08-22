@@ -4,12 +4,15 @@
 	import HeaderCreateButton from './header/HeaderCreateButton.svelte';
 	import HeaderUserDropdown from './header/HeaderUserDropdown.svelte';
 	import HeaderRepoNavigation from './header/HeaderRepoNavigation.svelte';
+	import HeaderVerificationAlert from './header/HeaderVerificationAlert.svelte';
 	import { Repository } from '@omaha/client';
 
 	export let repository: Repository | undefined;
 </script>
 
 <header class:state--with-repo={ !!repository }>
+	<HeaderVerificationAlert />
+
 	<div class="main-header">
 		<div class="container">
 			<div class="header-flex">

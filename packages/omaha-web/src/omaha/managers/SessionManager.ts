@@ -15,11 +15,6 @@ export class SessionManager extends Manager {
 	public account = createStore<Account>();
 
 	/**
-	 * Whether or not the current user has verified their email address.
-	 */
-	public verified = createStore(false);
-
-	/**
 	 * The scopes that the current account has access to.
 	 */
 	public scopes = createStore<Scope[]>([]);
@@ -78,7 +73,6 @@ export class SessionManager extends Manager {
 
 		this.token.set(undefined);
 		this.account.set(undefined);
-		this.verified.set(false);
 		this.scopes.set([]);
 
 		this.client.setToken();
@@ -112,7 +106,6 @@ export class SessionManager extends Manager {
 
 			this.token.set(token);
 			this.account.set(identity.account);
-			this.verified.set(identity.account.verified);
 			this.scopes.set(identity.scopes);
 			this.client.setToken(token);
 
@@ -142,6 +135,39 @@ export class SessionManager extends Manager {
 			reattemptFailedCount: 0,
 			token
 		});
+	}
+
+	/**
+	 * Creates a new client instance for the current token with retries disabled.
+	 *
+	 * @returns
+	 */
+	private createClientWithoutRetries() {
+		return new Omaha((new URL('/', document.URL)).href, {
+			reattemptFailed: false,
+			token: this.token.get()
+		});
+	}
+
+	/**
+	 * Refreshes the current account's identity.
+	 */
+	public async refresh() {
+		if (!this.token.get()) {
+			return;
+		}
+
+		const client = this.createClientWithoutRetries();
+		const identity = await client.auth.identity();
+
+		if (identity.access !== 'account') {
+			throw new Error('The token was not for an account');
+		}
+
+		this.account.set(identity.account);
+		this.scopes.set(identity.scopes);
+
+		this.logger.info('Refreshed account information');
 	}
 
 }

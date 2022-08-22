@@ -23,14 +23,14 @@ export class RatelimitGuard implements CanActivate {
 		const custom = this.reflector.get<CustomRateLimit | undefined>('ratelimit', context.getHandler());
 
 		if (this.service.global.guard(request.ip) === false) {
-			throw new HttpException(`You're sending requests too quickly`, 429);
+			throw new HttpException(`You're sending requests too quickly!`, 429);
 		}
 
 		if (custom) {
 			custom[0] ??= this.service.getKeyFromContext(context);
 
 			if (this.service.getManager(...custom).guard(request.ip) === false) {
-				throw new HttpException(`You're sending requests too quickly`, 429);
+				throw new HttpException(`You're doing that too quickly! Please wait a few minutes and try again.`, 429);
 			}
 		}
 

@@ -15,6 +15,8 @@
 				name: inputs.name
 			});
 
+			await omaha.session.refresh();
+
 			inputs = {...account};
 			omaha.alerts.success('Changes saved successfully.', 3500);
 		}

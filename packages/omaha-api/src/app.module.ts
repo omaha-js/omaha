@@ -23,6 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { QueuedNotification } from './entities/QueuedNotification';
 import { RatelimitModule } from './ratelimit/ratelimit.module';
 import path from 'path';
+import { AccountAction } from './entities/AccountAction';
 
 @Module({
 	imports: [
@@ -39,6 +40,7 @@ import path from 'path';
 			synchronize: true,
 			entities: [
 				Account,
+				AccountAction,
 				Repository,
 				Collaboration,
 				CollaborationInvite,

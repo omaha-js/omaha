@@ -93,4 +93,19 @@ export class AccountsController {
 		return instanceToPlain(collab, { groups: ['repo'] });
 	}
 
+	@Post('actions/resend_verification')
+	@UseRateLimit(1, 3, 5)
+	public async resendVerification(@User() token: AccountToken) {
+		if (!token.account.verification_required) {
+			throw new BadRequestException('Your email address does not need to be verified at this time');
+		}
+
+		await this.service.sendVerificationEmail(token.account);
+
+		return {
+			success: true,
+			message: `We've sent you a new verification email`
+		};
+	}
+
 }

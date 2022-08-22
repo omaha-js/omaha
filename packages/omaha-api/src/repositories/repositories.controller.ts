@@ -49,6 +49,10 @@ export class RepositoriesController {
 	@Post()
 	@UseScopes('account.repos.manage')
 	public async createRepository(@Body() dto: CreateRepoDto, @User() token: AccountToken) {
+		if (token.account.verification_required) {
+			throw new BadRequestException('You must verify your email address before creating a repository!');
+		}
+
 		const result = await this.service.createRepository(dto, token.account);
 
 		return {

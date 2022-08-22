@@ -248,6 +248,7 @@ header {
 		box-shadow: 0 0 0.8rem rgba(113, 113, 113, 0.06);
 	}
 
+	@import 'header/alert';
 	@import 'header/repo_picker';
 	@import 'header/user_dropdown';
 }

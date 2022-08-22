@@ -11,3 +11,14 @@ main.content {
 .form-container {
 	max-width: 70rem;
 }
+
+.action-page {
+	margin: 0 auto;
+	max-width: 126.6rem;
+	font-size: 1.5rem;
+	padding: 3rem 5rem;
+}
+
+main.content .action-page {
+	padding: 0;
+}

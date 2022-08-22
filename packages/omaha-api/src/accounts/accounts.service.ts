@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from 'src/auth/dto/RegisterDto';
 import { Account } from 'src/entities/Account';
@@ -10,13 +10,21 @@ import { Environment } from 'src/app.environment';
 import { NotificationId } from 'src/notifications/notifications.types';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import { EmailService } from 'src/email/email.service';
+import { getAppLink } from 'src/support/utilities/links';
+import { ActionsService } from './actions/actions.service';
+import { AccountActionType } from 'src/entities/enum/AccountActionType';
 
 @Injectable()
 export class AccountsService {
 
+	private readonly logger = new Logger('AccountsService');
+
 	public constructor(
 		@InjectRepository(Account) private readonly repository: Repository<Account>,
-		private readonly collaborations: CollaborationsService
+		private readonly collaborations: CollaborationsService,
+		private readonly email: EmailService,
+		private readonly actions: ActionsService,
 	) {}
 
 	/**
@@ -65,6 +73,16 @@ export class AccountsService {
 				catch (err) {
 					// Silently fail to avoid disrupting registration
 				}
+			}
+		}
+
+		// Send verification email
+		if (account.verification_required) {
+			try {
+				await this.sendVerificationEmail(account);
+			}
+			catch (error) {
+				this.logger.error('Failed to send verification email for new account:', error);
 			}
 		}
 
@@ -198,7 +216,9 @@ export class AccountsService {
 			account.email = email;
 			account.verified = false;
 
-			return this.repository.save(account);
+			const response = await this.repository.save(account);
+			await this.sendVerificationEmail(account);
+			return response;
 		}
 	}
 
@@ -224,6 +244,44 @@ export class AccountsService {
 	public async setNotifications(account: Account, notifications: NotificationId[]) {
 		account.notifications = notifications;
 		return this.repository.save(account);
+	}
+
+	/**
+	 * Updates an account's email verification status.
+	 *
+	 * @param account
+	 * @param verified
+	 * @returns
+	 */
+	public async setVerified(account: Account, verified: boolean) {
+		account.verified = verified;
+		return this.repository.save(account);
+	}
+
+	/**
+	 * Sends a verification email to the given account. Controllers that invoke this should have heavy rate limiting!
+	 *
+	 * @param account
+	 */
+	public async sendVerificationEmail(account: Account) {
+		if (!this.email.enabled || !Environment.REQUIRE_EMAIL_VERIFICATION) {
+			return false;
+		}
+
+		const response = await this.actions.createAction(account, AccountActionType.ConfirmEmail, {
+			email: account.email
+		});
+
+		await this.email.send({
+			to: account.email,
+			subject: 'Please verify your email address',
+			template: 'email_verification',
+			context: {
+				link: getAppLink('/actions/confirm', {
+					token: response.token
+				})
+			}
+		});
 	}
 
 }

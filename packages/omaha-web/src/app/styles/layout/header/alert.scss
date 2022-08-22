@@ -1,0 +1,48 @@
+.verification-alert {
+	background-color: $oc-red-9;
+	color: $oc-white;
+
+	padding: 0 3rem;
+
+	.alert-container {
+		display: flex;
+		align-items: center;
+
+		.alert-icon {
+			flex-shrink: 0;
+			padding: 1rem 0;
+			margin-right: 0.8rem;
+
+			svg {
+				width: 2.4rem;
+				height: 2.4rem;
+				stroke-width: 2;
+			}
+		}
+
+		p {
+			font-size: 1.4rem;
+			margin: 0;
+			line-height: 1.3;
+			flex-grow: 1;
+
+			a {
+				color: $oc-white;
+			}
+		}
+
+		button.btn {
+			background-color: rgba(#000, 0.15);
+			color: #fff;
+			// text-decoration: underline;
+			font-size: 1.4rem;
+
+			height: auto;
+			padding: 0.7rem 1.2rem;
+
+			&.loading {
+				background-color: rgba(#000, 0.25) !important;
+			}
+		}
+	}
+}
