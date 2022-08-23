@@ -1,0 +1,89 @@
+.repo-list-heading {
+	display: flex;
+	align-items: stretch;
+
+	border-bottom: 1px solid $oc-gray-2;
+	padding-bottom: 2rem;
+
+	h1 {
+		margin-bottom: 0;
+	}
+
+	.count {
+		display: flex;
+		align-items: center;
+
+		margin-left: 1rem;
+
+		background-color: $oc-gray-3;
+		padding: 0 0.8rem;
+
+		font-size: 1.2rem;
+		color: $oc-gray-7;
+
+		border-radius: 4px;
+	}
+}
+
+.dashboard-list {
+	a.repo-list-item {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+
+		border-bottom: 1px solid $oc-gray-2;
+
+		padding: 2rem 0;
+		display: flex;
+
+		.repo-overview {
+			flex-grow: 1;
+		}
+
+		.repo-name {
+			display: flex;
+			align-items: center;
+
+			font-size: 1.6rem;
+			font-weight: 500;
+			color: $oc-gray-9;
+
+			margin-bottom: 0.5rem;
+
+			svg {
+				margin-left: -0.4rem;
+				margin-right: 0.5rem;
+				width: 2.2rem;
+				height: 2.2rem;
+				color: $oc-gray-9;
+			}
+		}
+
+		.repo-description {
+			font-size: 1.5rem;
+			color: $oc-gray-6;
+			line-height: 1.5;
+			margin-bottom: 1.2rem;
+		}
+
+		.repo-details {
+			display: flex;
+			align-items: center;
+
+			color: $oc-gray-6;
+			font-size: 1.4rem;
+
+			.sep {
+				display: inline-block;
+				padding: 0 0.5rem;
+				color: $oc-gray-5;
+			}
+		}
+	}
+
+	.no-repositories {
+		font-size: 1.5rem;
+		padding: 2rem 0;
+		color: $oc-gray-7;
+	}
+}
