@@ -1,7 +1,9 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post, Req } from '@nestjs/common';
 import { instanceToPlain } from 'class-transformer';
+import { Request } from 'express';
 import { UseScopes } from 'src/auth/decorators/scopes.decorator';
 import { AccountToken } from 'src/auth/tokens/models/AccountToken';
+import { EmailService } from 'src/email/email.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { UseRateLimit } from 'src/ratelimit/ratelimit.decorator';
 import { CollaborationsService } from 'src/repositories/collaborations/collaborations.service';
@@ -16,6 +18,7 @@ export class AccountsController {
 		private readonly service: AccountsService,
 		private readonly collaborations: CollaborationsService,
 		private readonly notifications: NotificationsService,
+		private readonly email: EmailService,
 	) {}
 
 	@Get()
@@ -26,15 +29,25 @@ export class AccountsController {
 
 	@Patch()
 	@UseScopes('account.settings.manage')
-	public async updateAccount(@User() token: AccountToken, @Body() dto: UpdateAccountDto) {
+	public async updateAccount(@User() token: AccountToken, @Body() dto: UpdateAccountDto, @Req() request: Request) {
 		if (dto.email !== undefined) {
 			await this.service.verifyPassword(token.account, dto.existingPassword);
 			await this.service.setAccountEmail(token.account, dto.email);
 		}
 
-		if (dto.password !== undefined) {
+		if (dto.password !== undefined && dto.existingPassword !== dto.password) {
 			await this.service.verifyPassword(token.account, dto.existingPassword);
 			await this.service.setAccountPassword(token.account, dto.password);
+			await this.email.send({
+				to: token.account.email,
+				subject: 'Your password has been changed',
+				template: 'password_changed',
+				context: {
+					account: token.account,
+					time: new Date(),
+					ip: request.ip
+				}
+			});
 		}
 
 		if (dto.name !== undefined) {
