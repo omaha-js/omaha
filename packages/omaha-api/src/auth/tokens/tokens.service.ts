@@ -13,6 +13,7 @@ import { Token } from 'src/entities/Token';
 import { DatabaseToken } from './models/DatabaseToken';
 import jwt from 'jsonwebtoken';
 import crypto, { randomBytes } from 'crypto';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class TokensService {
@@ -341,6 +342,16 @@ export class TokensService {
 		}
 
 		throw new RequestTimeoutException('Token generation timed out');
+	}
+
+	@Cron('0 0 * * * *')
+	protected onDeleteExpiredTokens() {
+		const query = this.repository.createQueryBuilder().softDelete();
+
+		query.andWhere('expires_at IS NOT NULL');
+		query.andWhere('expires_at <= NOW()');
+
+		return query.execute();
 	}
 
 }
