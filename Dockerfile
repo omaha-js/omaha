@@ -48,7 +48,6 @@ RUN rm -rf node_modules && pnpm --filter omaha-api --prod deploy pruned
 
 FROM node:16-alpine
 WORKDIR /srv/app
-ENV NODE_ENV=production
 
 COPY --from=pruned /srv/app/pruned ./
 
@@ -56,6 +55,9 @@ RUN mkdir storage && chown 1000 storage && chgrp 1000 storage && \
 	mkdir temp && chown 1000 temp && chgrp 1000 temp
 
 USER 1000
+
 ARG TAG=dev
+ENV TAG=$TAG
+ENV NODE_ENV=production
 
 ENTRYPOINT ["node", "--expose-gc", "dist/main.js"]
