@@ -8,6 +8,7 @@ import { Repository } from 'src/entities/Repository';
 import { Release } from 'src/entities/Release';
 import { DownloadLogsDto } from './dto/DownloadLogsDto';
 import moment from 'moment';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class DownloadsService {
@@ -194,6 +195,13 @@ export class DownloadsService {
 			},
 			logs
 		};
+	}
+
+	@Cron('0 0 0 * * *')
+	protected onCleanup() {
+		const query = this.repository.createQueryBuilder().delete();
+		query.andWhere('date < DATE_SUB(NOW(), INTERVAL 1 YEAR)');
+		query.execute();
 	}
 
 }
