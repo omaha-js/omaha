@@ -6,7 +6,7 @@
 
 	export let history: WeeklyDownloadCount[];
 	export let width: number = 350;
-	export let height: number = 56;
+	export let height: number = 40;
 
 	let data = new Array<[ time: number, downloads: number ]>();
 
