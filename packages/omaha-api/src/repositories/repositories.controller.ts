@@ -14,6 +14,7 @@ import { User } from 'src/support/User';
 import { CollaborationRole } from '../entities/enum/CollaborationRole';
 import { CreateRepoDto } from './dto/CreateRepoDto';
 import { UpdateRepoDto } from './dto/UpdateRepoDto';
+import { DownloadsService } from './releases/downloads/downloads.service';
 import { ReleasesService } from './releases/releases.service';
 import { RepositoriesGuard } from './repositories.guard';
 import { RepositoriesService } from './repositories.service';
@@ -25,6 +26,7 @@ export class RepositoriesController {
 		private readonly service: RepositoriesService,
 		private readonly releases: ReleasesService,
 		private readonly notifications: NotificationsService,
+		private readonly downloads: DownloadsService,
 	) {}
 
 	/**
@@ -34,10 +36,15 @@ export class RepositoriesController {
 	 * @returns
 	 */
 	@Get()
-	public getRepositoryList(@User() token?: BaseToken) {
+	public async getRepositoryList(@User() token?: BaseToken) {
 		if (token) {
 			if (token.isForAccount()) {
-				return this.service.getRepositoriesForAccount(token.account);
+				const results = await this.service.getRepositoriesForAccount(token.account);
+
+				return results.map(result => ({
+					...instanceToPlain(result.repository),
+					collaboration: instanceToPlain(result.collaboration)
+				}))
 			}
 			else if (token.isForRepository()) {
 				return [token.repository];
@@ -45,6 +52,40 @@ export class RepositoriesController {
 		}
 
 		return [];
+	}
+
+	/**
+	 * Lists all repositories that the requester has access to along with their weekly downloads and latest releases.
+	 *
+	 * @param token
+	 * @returns
+	 */
+	@Get('overview')
+	public async getRepositoryOverview(@User() token?: BaseToken) {
+		if (!token || !token.isForAccount()) {
+			throw new BadRequestException('This endpoint is only available for accounts');
+		}
+
+		const results = await this.service.getRepositoriesForAccount(token.account);
+		const targets = results.map(res => res.repository);
+
+		if (targets.length === 0) {
+			return [];
+		}
+
+		const downloads = await this.downloads.getWeeklyDownloadsForMany(targets);
+		const releases = await this.releases.getLatestReleaseForMany(targets);
+		const response = new Array<any>();
+
+		for (const target of results) {
+			response.push({
+				...instanceToPlain(target),
+				release: releases[target.repository.id],
+				downloads: downloads[target.repository.id],
+			});
+		}
+
+		return response;
 	}
 
 	@Post()

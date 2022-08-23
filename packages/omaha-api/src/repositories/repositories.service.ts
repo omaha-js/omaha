@@ -45,8 +45,8 @@ export class RepositoriesService {
 	 * @param account
 	 * @returns
 	 */
-	public async getRepositoriesForAccount(account: Account): Promise<Repository[]> {
-		const results = new Array<any>();
+	public async getRepositoriesForAccount(account: Account) {
+		const results = new Array<RepositoryWithCollab>();
 		const collabs = await this.collaborations.getForAccount(account);
 
 		for (const collab of collabs) {
@@ -54,8 +54,8 @@ export class RepositoriesService {
 
 			if (repo) {
 				results.push({
-					...instanceToPlain(repo),
-					collaboration: instanceToPlain(collab)
+					repository: repo,
+					collaboration: collab
 				});
 			}
 		}
@@ -293,6 +293,7 @@ export class RepositoriesService {
 
 }
 
-export interface RepositoryWithCollab extends Repository {
+export interface RepositoryWithCollab {
+	repository: Repository;
 	collaboration: Collaboration;
 }

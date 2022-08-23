@@ -20,6 +20,7 @@ import { CollaborationRole } from 'src/entities/enum/CollaborationRole';
 import { EmailService } from 'src/email/email.service';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { getAppLink } from 'src/support/utilities/links';
+import { FunctionQueue } from '@baileyherbert/queue';
 
 const AllStatuses = [ReleaseStatus.Draft, ReleaseStatus.Published, ReleaseStatus.Archived];
 
@@ -173,6 +174,36 @@ export class ReleasesService {
 			},
 			results
 		};
+	}
+
+	/**
+	 * Returns the latest release for all repositories in the given array.
+	 *
+	 * @param targets
+	 * @returns
+	 */
+	public async getLatestReleaseForMany(targets: Repository[]) {
+		const queue = new FunctionQueue({ maxConcurrentTasks: 3, useAsyncTicking: false });
+		const releases: Record<string, Release | undefined> = {};
+
+		for (const target of targets) {
+			releases[target.id] = undefined;
+
+			queue.push(async () => {
+				const versions = await this.getAllVersions(target, [ReleaseStatus.Published]);
+
+				if (versions.length > 0) {
+					const sorted = target.driver.getVersionsSorted({ all: versions, selected: versions }, 'desc');
+					const latestVersion = sorted[0];
+					const latestRelease = await this.getFromVersionOrFail(target, latestVersion);
+
+					releases[target.id] = latestRelease;
+				}
+			});
+		}
+
+		await queue.getCompletionPromise();
+		return releases;
 	}
 
 	/**

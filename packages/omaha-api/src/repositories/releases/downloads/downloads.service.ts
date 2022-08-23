@@ -94,6 +94,68 @@ export class DownloadsService {
 		return history;
 	}
 
+	/**
+	 * Computes weekly downloads of many target repositores for the last year.
+	 *
+	 * @param targets
+	 * @returns
+	 */
+	public async getWeeklyDownloadsForMany(targets: Repository[]) {
+		const query = this.repository.createQueryBuilder();
+		const history: Record<string, DownloadHistoryRecord[]> = {};
+
+		// Data ranges from one year ago (52 weeks = 364 days) to yesterday
+		const startDate = moment().subtract(364, 'day').format('YYYY-MM-DD');
+		const endDate = moment().subtract(1, 'day').format('YYYY-MM-DD');
+
+		// Group downloads on a weekly interval
+		query.select('repository_id');
+		query.addSelect(`'${startDate}' + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_start`);
+		query.addSelect(`'${startDate}' + INTERVAL 6 DAY + INTERVAL (DATEDIFF(date, '${startDate}') DIV 7) WEEK AS date_end`);
+		query.addSelect(`COUNT(*) AS downloads`);
+
+		// Target constraint
+		query.where('repository_id IN (:targets)', { targets: targets.map(repo => repo.id) });
+
+		// Date range & grouping
+		query.andWhere(`date >= '${startDate}'`);
+		query.andWhere(`date <= '${endDate}'`);
+		query.groupBy(`repository_id, date_start, date_end`);
+
+		// Compile the data
+		// Note: The download counts are returned as strings
+		const records = await query.getRawMany();
+		const map: Record<string, DownloadHistoryRecord[]> = records.reduce((map, cur) => {
+			const repo = cur.repository_id;
+			delete cur['repository_id'];
+			if (typeof map[repo] === 'object') map[repo].push(cur);
+			else map[repo] = [cur];
+			return map;
+		}, {});
+
+		for (const target of targets) {
+			const records = (typeof map[target.id] === 'object' ? map[target.id] : [])
+				.reduce((acc, curr) => (acc[curr.date_start] = curr, acc), {});
+
+			history[target.id] = [];
+
+			for (let weekNumber = 52; weekNumber >= 1; weekNumber--) {
+				const timestamp = moment().subtract(7 * weekNumber, 'day');
+				const date_start = timestamp.format('YYYY-MM-DD');
+				const date_end = timestamp.add(6, 'day').format('YYYY-MM-DD');
+				const downloads = (date_start in records) ? +records[date_start].downloads : 0;
+
+				history[target.id].push({
+					date_start,
+					date_end,
+					downloads
+				});
+			}
+		}
+
+		return history;
+	}
+
 	public async getDownloadLogs(target: Repository | Release | ReleaseAttachment, params: DownloadLogsDto) {
 		const query = this.repository.createQueryBuilder('ReleaseDownload');
 		const page = params.page ?? 1;
