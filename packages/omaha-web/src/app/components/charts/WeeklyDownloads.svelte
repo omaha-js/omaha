@@ -50,7 +50,6 @@
 				mouseLeave: () => {
 					hoveringDataSet = 0;
 					dispatch('dataset_leave');
-					console.log('Not hovering');
 				}
 			}
 		},
