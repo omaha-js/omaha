@@ -30,8 +30,10 @@ export class RepositoriesManager extends Manager {
 		try {
 			const repositories = await this.client.repos.list();
 
-			this.repositories.set(repositories);
-			this.logger.info('Fetched %d repositories for the current account', repositories.length);
+			if (JSON.stringify(this.repositories.get()) !== JSON.stringify(repositories)) {
+				this.repositories.set(repositories);
+				this.logger.info('Fetched %d repositories for the current account', repositories.length);
+			}
 		}
 		catch (error) {
 			this.logger.error('Failed to fetch repositories:', error);

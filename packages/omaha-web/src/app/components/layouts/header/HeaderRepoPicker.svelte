@@ -8,7 +8,7 @@
 	const { repositories } = omaha.repositories;
 
 	let dropDownActive = false;
-	let lastRefreshTime = 0;
+	let lastRefreshTime = Date.now();
 
 	export let repository: Repository | undefined;
 
