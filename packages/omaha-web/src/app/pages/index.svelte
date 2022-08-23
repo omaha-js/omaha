@@ -1,17 +1,26 @@
 <script lang="ts">
-	import { RepositoryAccessType } from '@omaha/client';
+	import { RepositoryAccessType, WeeklyDownloadCount } from '@omaha/client';
 	import omaha from 'src/omaha';
 	import { onDestroy } from 'svelte';
 	import PromiseLoader from '../components/helpers/PromiseLoader.svelte';
 	import Time from '../components/helpers/Time.svelte';
 	import PublicIcon from 'tabler-icons-svelte/icons/Notebook.svelte';
 	import PrivateIcon from 'tabler-icons-svelte/icons/Lock.svelte';
-import WeeklyDownloads from '../components/charts/WeeklyDownloads.svelte';
+	import WeeklyDownloads from '../components/charts/WeeklyDownloads.svelte';
+	import DownloadIcon from 'tabler-icons-svelte/icons/ArrowBarToDown.svelte';
+	import dayjs from 'dayjs';
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
 	onDestroy(dispose);
 
 	let promise = client.repos.overview();
+	let downloadRecord: WeeklyDownloadCount | undefined = undefined;
+	let activeRepo = '';
+
+	function setRecord(repo?: string, record?: WeeklyDownloadCount) {
+		activeRepo = repo ?? '';
+		downloadRecord = record;
+	}
 </script>
 
 <svelte:head><title>{omaha.app.title('Dashboard')}</title></svelte:head>
@@ -24,8 +33,8 @@ import WeeklyDownloads from '../components/charts/WeeklyDownloads.svelte';
 
 	<div class="dashboard-list">
 		{#each results as { repository, collaboration, downloads, release }}
-			<a href="/repository/{repository.id}" class="repo-list-item">
-				<div class="repo-overview">
+			<div class="repo-list-item">
+				<a href="/repository/{repository.id}" class="repo-overview">
 					<div class="repo-name">
 						<div>
 							{#if repository.access === RepositoryAccessType.Public}
@@ -48,11 +57,34 @@ import WeeklyDownloads from '../components/charts/WeeklyDownloads.svelte';
 							{/if}
 						</div>
 					</div>
+				</a>
+				<div class="repo-downloads">
+					<div class="chart-tooltip">
+						<DownloadIcon />
+						<div class="datetime">
+							{#if downloadRecord && activeRepo == repository.id}
+								{dayjs(downloadRecord.date_start).format('YYYY-MM-DD')}
+								to
+								{dayjs(downloadRecord.date_end).format('YYYY-MM-DD')}
+							{:else}
+								weekly downloads
+							{/if}
+						</div>
+						<div class="count">
+							{#if activeRepo == repository.id}
+								{downloadRecord?.downloads}
+							{:else}
+								{downloads[downloads.length - 1].downloads}
+							{/if}
+						</div>
+					</div>
+					<WeeklyDownloads
+						history={downloads}
+						on:dataset_enter={ (e) => setRecord(repository.id, e.detail) }
+						on:dataset_leave={ () => setRecord() }
+					/>
 				</div>
-				<div class="download-graph">
-					<WeeklyDownloads history={downloads} />
-				</div>
-			</a>
+			</div>
 		{:else}
 			<p class="no-repositories">
 				You're not in any repositories yet. Why not <a href="/repositories/create">create one</a>?

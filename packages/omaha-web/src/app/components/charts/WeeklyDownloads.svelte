@@ -14,6 +14,9 @@
 		data.push([row.date_start.getTime(), row.downloads]);
 	}
 
+	const dispatch = createEventDispatcher();
+
+	let hoveringDataSet = 0;
 	let options: ApexOptions = {
 		chart: {
 			type: 'area',
@@ -25,6 +28,31 @@
 			animations: {
 				enabled: false
 			},
+			events: {
+				mouseMove: (e, chart, options) => {
+					const index = options.dataPointIndex;
+
+					if (index >= 0) {
+						const dataset = history[index];
+
+						if (hoveringDataSet !== dataset.date_start.getTime()) {
+							hoveringDataSet = dataset.date_start.getTime();
+							dispatch('dataset_enter', dataset);
+						}
+					}
+					else {
+						if (hoveringDataSet !== 0) {
+							hoveringDataSet = 0;
+							dispatch('dataset_leave');
+						}
+					}
+				},
+				mouseLeave: () => {
+					hoveringDataSet = 0;
+					dispatch('dataset_leave');
+					console.log('Not hovering');
+				}
+			}
 		},
 		markers: {
 			strokeWidth: 0,

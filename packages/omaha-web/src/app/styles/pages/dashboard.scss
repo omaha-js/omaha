@@ -26,20 +26,18 @@
 }
 
 .dashboard-list {
-	a.repo-list-item {
+	.repo-list-item {
 		display: flex;
 		align-items: center;
 
-		text-decoration: none;
-		color: inherit;
-
 		border-bottom: 1px solid $oc-gray-2;
 
-		display: flex;
-
 		.repo-overview {
-			padding: 2rem 0;
 			flex-grow: 1;
+			padding: 2rem 0;
+
+			text-decoration: none;
+			color: inherit;
 		}
 
 		.repo-name {
@@ -81,6 +79,36 @@
 				color: $oc-gray-5;
 			}
 		}
+
+		.repo-downloads {
+			padding-left: 2rem;
+		}
+
+		.chart-tooltip {
+			display: flex;
+
+			font-size: 1.4rem;
+			font-weight: 500;
+			color: $oc-gray-6;
+
+			height: 1.6rem;
+			padding-left: 0.5rem;
+
+			svg {
+				width: 1.6rem;
+				height: 1.6rem;
+				margin-right: 0.6rem;
+			}
+
+			.datetime {
+				flex-grow: 1;
+			}
+
+			.count {
+				color: $oc-gray-6;
+				font-weight: 400;
+			}
+		}
 	}
 
 	.no-repositories {
@@ -88,4 +116,12 @@
 		padding: 2rem 0;
 		color: $oc-gray-7;
 	}
+}
+
+.apexcharts-tooltip,
+.apexcharts-tooltip.active,
+.apexcharts-xaxistooltip,
+.apexcharts-xaxistooltip.active,
+.apexcharts-marker {
+	transition: none !important;
 }
