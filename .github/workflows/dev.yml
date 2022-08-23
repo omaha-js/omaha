@@ -15,6 +15,9 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == 'omaha-js/omaha' }}
     concurrency: ${{ github.ref }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -30,6 +33,7 @@ jobs:
       - name: Build and push to hub
         uses: docker/build-push-action@v3
         with:
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: TAG=${{ steps.meta.outputs.version }}
