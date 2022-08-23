@@ -5,7 +5,7 @@
 	import { meta, router } from 'tinro';
 	import PromiseLoader from 'src/app/components/helpers/PromiseLoader.svelte';
 	import DotsVertical from 'tabler-icons-svelte/icons/DotsVertical.svelte';
-	import ArrowDownCircle from 'tabler-icons-svelte/icons/ArrowDownCircle.svelte';
+	import DownloadIcon from 'tabler-icons-svelte/icons/ArrowBarToDown.svelte';
 	import File from 'tabler-icons-svelte/icons/File.svelte';
 	import FileOff from 'tabler-icons-svelte/icons/FileOff.svelte';
 	import Pencil from 'tabler-icons-svelte/icons/Pencil.svelte';
@@ -233,7 +233,7 @@
 										<div class="download-count">
 											<div class="download-count-flex">
 												<strong>{release.download_count}</strong>
-												<div><ArrowDownCircle /></div>
+												<div><DownloadIcon /></div>
 											</div>
 										</div>
 									</td>

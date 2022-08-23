@@ -6,7 +6,7 @@
 	import RepoRefreshAction from 'src/app/components/layouts/header/repositories/RepoRefreshAction.svelte';
 	import RepoSearchAction from 'src/app/components/layouts/header/repositories/RepoSearchAction.svelte';
 	import SortedTableHeader from 'src/app/components/tables/SortedTableHeader.svelte';
-	import ArrowDownCircle from 'tabler-icons-svelte/icons/ArrowDownCircle.svelte';
+	import DownloadIcon from 'tabler-icons-svelte/icons/ArrowBarToDown.svelte';
 	import BoxIcon from 'tabler-icons-svelte/icons/Box.svelte';
 	import BoxOffIcon from 'tabler-icons-svelte/icons/BoxOff.svelte';
 	import omaha from 'src/omaha';
@@ -148,7 +148,7 @@
 									<div class="download-count">
 										<div class="download-count-flex">
 											<strong>{result.download_count}</strong>
-											<div><ArrowDownCircle /></div>
+											<div><DownloadIcon /></div>
 										</div>
 									</div>
 								</a>
