@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { chart } from 'svelte-apexcharts';
+	import { chart } from './chart';
 	import { ApexOptions } from 'apexcharts';
 	import { WeeklyDownloadCount } from '@omaha/client';
-	import { onDestroy } from 'svelte';
+	import { createEventDispatcher, onDestroy } from 'svelte';
 
 	export let history: WeeklyDownloadCount[];
 	export let width: number = 350;
@@ -27,7 +27,10 @@
 			},
 		},
 		markers: {
-			size: 0
+			strokeWidth: 0,
+			hover: {
+				size: 4,
+			}
 		},
 		series: [{
 			name: 'downloads',
