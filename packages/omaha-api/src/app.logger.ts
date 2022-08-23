@@ -1,13 +1,36 @@
-import { Logger } from '@baileyherbert/logging';
+import { Logger, LogLevel } from '@baileyherbert/logging';
 import { LoggerService } from '@nestjs/common';
+import { Environment } from './app.environment';
 
 export const logger = new Logger('Nest');
-logger.createConsoleTransport();
+
+if (Environment.APP_LOGGING !== undefined) {
+	logger.createConsoleTransport(LogLevel[Environment.APP_LOGGING]);
+}
+else {
+	logger.createConsoleTransport(
+		process.env.NODE_ENV === 'production' ?
+		LogLevel.Information :
+		LogLevel.Debug
+	);
+}
+
+const DebugNames = new Set([
+	'RouterExplorer',
+	'RoutesResolver',
+	'InstanceLoader'
+]);
 
 export class CustomLogger implements LoggerService {
 	private loggers = new Map<string, Logger>();
 
 	log(message: any, ...optionalParams: any[]) {
+		if (typeof optionalParams[0] === 'string') {
+			if (DebugNames.has(optionalParams[0])) {
+				return this.debug(message, ...optionalParams);
+			}
+		}
+
 		const target = this.alloc(optionalParams.pop());
 		target.info(message, ...optionalParams);
 	}

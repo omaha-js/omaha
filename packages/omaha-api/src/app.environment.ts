@@ -1,4 +1,5 @@
 import { Env } from '@baileyherbert/env';
+import { LogLevel } from '@baileyherbert/logging';
 import { StorageDriverType } from './drivers/storage';
 
 export const Environment = Env.rules({
@@ -21,6 +22,12 @@ export const Environment = Env.rules({
 	 * The public URL of the application (trailing slash is optional).
 	 */
 	APP_URL: Env.schema.string().optional('http://localhost:3000'),
+
+	/**
+	 * The logging level to use. When not specified, defaults to `Information` in production, and `Debug` in
+	 * development mode.
+	 */
+	APP_LOGGING: Env.schema.enum(LogLevel).optional(),
 
 	/**
 	 * The trusted proxy setting for `express`. Refer to the following documentation link for possible values:
