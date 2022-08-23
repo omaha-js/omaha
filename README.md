@@ -38,7 +38,7 @@ To support all of these features, `omaha` offers a complete REST API, a convenie
 This is a work in progress – here's an overview of the current status:
 
 - [x] REST API
-- [ ] Web interface
+- [x] Web interface
 - [x] API client (JS)
 - [ ] API client (C#)
 - [x] Docker deployment
