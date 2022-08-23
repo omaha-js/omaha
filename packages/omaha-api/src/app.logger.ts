@@ -4,8 +4,8 @@ import { Environment } from './app.environment';
 
 export const logger = new Logger('Nest');
 
-if (Environment.APP_LOGGING !== undefined) {
-	logger.createConsoleTransport(LogLevel[Environment.APP_LOGGING]);
+if (Environment.APP_LOG_LEVEL !== undefined) {
+	logger.createConsoleTransport(LogLevel[Environment.APP_LOG_LEVEL]);
 }
 else {
 	logger.createConsoleTransport(

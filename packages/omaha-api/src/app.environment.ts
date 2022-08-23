@@ -27,7 +27,12 @@ export const Environment = Env.rules({
 	 * The logging level to use. When not specified, defaults to `Information` in production, and `Debug` in
 	 * development mode.
 	 */
-	APP_LOGGING: Env.schema.enum(LogLevel).optional(),
+	APP_LOG_LEVEL: Env.schema.enum(LogLevel).optional(),
+
+	/**
+	 * Whether or not to log all requests.
+	 */
+	APP_LOG_REQUESTS: Env.schema.boolean().optional(true),
 
 	/**
 	 * The trusted proxy setting for `express`. Refer to the following documentation link for possible values:

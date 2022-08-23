@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { AccountsModule } from './accounts/accounts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +13,7 @@ import { RatelimitModule } from './ratelimit/ratelimit.module';
 import { AppController } from './app.controller';
 import { config } from './typeorm';
 import path from 'path';
+import { AppLoggerMiddleware } from './app.middleware';
 
 @Module({
 	imports: [
@@ -35,4 +36,10 @@ import path from 'path';
 		AppController
 	]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+
+	configure(consumer: MiddlewareConsumer) {
+		consumer.apply(AppLoggerMiddleware).forRoutes('/v(\\d+)/*');
+	}
+
+}
