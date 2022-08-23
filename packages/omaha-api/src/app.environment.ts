@@ -112,11 +112,6 @@ export const Environment = Env.rules({
 	/// =======================================================
 
 	/**
-	 * The name of a directory to use for temporary file uploads.
-	 */
-	TEMP_DIRNAME: Env.schema.string().optional('temp'),
-
-	/**
 	 * The storage driver to use.
 	 */
 	STORAGE_DRIVER: Env.schema.enum(StorageDriverType),

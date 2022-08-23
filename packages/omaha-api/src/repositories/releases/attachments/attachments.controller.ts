@@ -149,7 +149,7 @@ export class AttachmentsController {
 	@Post()
 	@UseScopes('repo.releases.attachments.manage')
 	@UseGuards(AttachmentStorageGuard)
-	@UseInterceptors(FileInterceptor('file', { dest: Environment.TEMP_DIRNAME, storage: new AttachmentStorageEngine() }))
+	@UseInterceptors(FileInterceptor('file', { storage: new AttachmentStorageEngine() }))
 	public async uploadAttachment(@Req() request: Request, @UploadedFile() file: Express.Multer.File) {
 		if (!file) {
 			throw new BadRequestException(
