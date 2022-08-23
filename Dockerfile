@@ -56,4 +56,6 @@ RUN mkdir storage && chown 1000 storage && chgrp 1000 storage && \
 	mkdir temp && chown 1000 temp && chgrp 1000 temp
 
 USER 1000
+ARG TAG=dev
+
 ENTRYPOINT ["node", "--expose-gc", "dist/main.js"]
