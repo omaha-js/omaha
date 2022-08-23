@@ -27,16 +27,18 @@
 
 .dashboard-list {
 	a.repo-list-item {
-		display: block;
+		display: flex;
+		align-items: center;
+
 		text-decoration: none;
 		color: inherit;
 
 		border-bottom: 1px solid $oc-gray-2;
 
-		padding: 2rem 0;
 		display: flex;
 
 		.repo-overview {
+			padding: 2rem 0;
 			flex-grow: 1;
 		}
 

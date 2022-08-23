@@ -6,6 +6,7 @@
 	import Time from '../components/helpers/Time.svelte';
 	import PublicIcon from 'tabler-icons-svelte/icons/Notebook.svelte';
 	import PrivateIcon from 'tabler-icons-svelte/icons/Lock.svelte';
+import WeeklyDownloads from '../components/charts/WeeklyDownloads.svelte';
 
 	const [client, error, loading, dispose] = omaha.client.useFromComponent();
 	onDestroy(dispose);
@@ -47,6 +48,9 @@
 							{/if}
 						</div>
 					</div>
+				</div>
+				<div class="download-graph">
+					<WeeklyDownloads history={downloads} />
 				</div>
 			</a>
 		{:else}
