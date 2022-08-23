@@ -34,9 +34,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-main-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-main-
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
 
       - name: Build and push to hub
         uses: docker/build-push-action@v3
