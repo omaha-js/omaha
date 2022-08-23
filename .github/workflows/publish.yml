@@ -6,34 +6,9 @@ on:
       - "v*"
 
 jobs:
-  run-tests:
-    name: build-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js v16
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run build scripts
-        run: pnpm -w run build
-
-      - name: Run tests
-        run: pnpm --filter=omaha-api test
-
   docker-push:
-    name: docker-push
+    name: docker-push-release
     runs-on: ubuntu-latest
-    needs: run-tests
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -43,6 +18,10 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: baileyherbert/omaha
+          tags: |
+            type=semver,pattern=v{{version}}
+            type=semver,pattern=v{{major}}.{{minor}}
+            type=semver,pattern=v{{major}}
 
       - name: Docker authentication
         uses: docker/login-action@v2
