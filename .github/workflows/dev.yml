@@ -18,6 +18,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Set up buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Initialize cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+
       - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -29,12 +38,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Initialize cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
 
       - name: Build and push to hub
         uses: docker/build-push-action@v3
