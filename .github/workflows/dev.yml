@@ -30,6 +30,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Initialize cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-main-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-main-
+
       - name: Build and push to hub
         uses: docker/build-push-action@v3
         with:
@@ -38,5 +46,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           build-args: TAG=${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=baileyherbert/omaha:main
-          cache-to: type=inline
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
