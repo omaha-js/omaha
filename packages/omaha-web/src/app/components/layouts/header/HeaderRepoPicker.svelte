@@ -1,9 +1,10 @@
 <script lang="ts">
 	import Notebook from 'tabler-icons-svelte/icons/Notebook.svelte';
+	import Lock from 'tabler-icons-svelte/icons/Lock.svelte';
 	import ChevronDown from 'tabler-icons-svelte/icons/ChevronDown.svelte';
 	import Star from 'tabler-icons-svelte/icons/Star.svelte';
 	import omaha from 'src/omaha';
-	import { Repository } from '@omaha/client';
+	import { Repository, RepositoryAccessType } from '@omaha/client';
 
 	const { repositories } = omaha.repositories;
 
@@ -27,7 +28,11 @@
 <div class="repo-picker" class:active={ dropDownActive }>
 	<div class="repo-picker-input" on:click|stopPropagation={ () => showDropDown() }>
 		<div class="repo-icon">
-			<Notebook strokeWidth={1.5} />
+			{#if !repository || repository.access === RepositoryAccessType.Public}
+				<Notebook strokeWidth={1.5} />
+			{:else}
+				<Lock strokeWidth={1.5} />
+			{/if}
 		</div>
 		<div class="repo-name" class:state--no-selection={ !repository } class:state--has-selection={ !!repository }>
 			{#if repository}
