@@ -84,9 +84,9 @@
 					<label for="inputDescription">Description <span class="tip">(optional)</span></label>
 					<input type="text" class="form-control" id="inputDescription" bind:value={assetDescription}>
 				</div>
-				<div class="form-group">
-					<label for="inputRequired">Required before publishing?</label>
+				<div class="form-check">
 					<input type="checkbox" class="form-check-input" id="inputRequired" bind:checked={assetRequired}>
+					<label for="inputRequired">Required before publishing?</label>
 				</div>
 			</div>
 
