@@ -194,6 +194,16 @@ export const Environment = Env.rules({
 	 * Whether or not to require TLS for the connection. If `SMTP_SECURE` is disabled then `STARTTLS` will be used to
 	 * upgrade after initial connection.
 	 */
-	SMTP_REQUIRE_TLS: Env.schema.boolean().optional(false)
+	SMTP_REQUIRE_TLS: Env.schema.boolean().optional(false),
+
+	/// =======================================================
+	/// == Build metadata
+	/// =======================================================
+
+	/**
+	 * The build tag for the current release of the application. This could be a branch name, a version tag (`v1.0.0`),
+	 * a pull request (`pr-1`), or potentially something else like a commit sha1.
+	 */
+	TAG: Env.schema.string().optional('dev'),
 
 });

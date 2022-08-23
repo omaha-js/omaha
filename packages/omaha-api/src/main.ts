@@ -12,6 +12,8 @@ import { EntityNotFoundExceptionFilter } from './support/filters/entities';
 import { Environment } from './app.environment';
 
 async function bootstrap() {
+	logger.info('Starting omaha service (tag: %s)', Environment.TAG);
+
 	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		logger: new CustomLogger()
 	});
