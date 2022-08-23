@@ -1,4 +1,4 @@
-import { Omaha } from '@omaha/client';
+import { HttpError, Omaha } from '@omaha/client';
 import { Manager } from '../framework/Manager';
 import { createStore, Store } from '../helpers/stores';
 
@@ -42,6 +42,10 @@ export class ClientManager extends Manager {
 		});
 
 		client.on('client_error', (err, attempt) => {
+			if (!(err instanceof HttpError)) {
+				this.logger.error(err);
+			}
+
 			this.recordConnectError();
 		});
 
