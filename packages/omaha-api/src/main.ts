@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { NextFunction, Request, Response } from 'express';
 import { TrimPipe } from './support/TrimPipe';
 import { ClassSerializerInterceptor, ValidationPipe, VersioningType } from '@nestjs/common';
-import { CustomLogger } from './app.logger';
+import { CustomLogger, logger } from './app.logger';
 import { EntityNotFoundExceptionFilter } from './support/filters/entities';
 import { Environment } from './app.environment';
 
@@ -67,6 +67,21 @@ async function bootstrap() {
 	}
 
 	await app.listen(3000);
+
+	if (typeof global.gc === 'function') {
+		const runGarbageCollector = () => {
+			const start = Date.now(); gc!();
+			const end = Date.now(); const took = end - start;
+			const timeout = (Math.floor(took / 100) * 2000) + 20000;
+
+			setInterval(runGarbageCollector, timeout).unref();
+		};
+
+		runGarbageCollector();
+	}
+	else if (process.env.NODE_ENV === 'production') {
+		logger.warning('Application was started without gc exposed, memory usage may be elevated');
+	}
 }
 
 bootstrap();
