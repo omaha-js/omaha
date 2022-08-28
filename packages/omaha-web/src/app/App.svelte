@@ -102,7 +102,6 @@ import ActionRoutes from './ActionRoutes.svelte';
 					<Route path="/tags/create"><Loadable {collab} {repo} component={ import('./pages/repositories/tags/create.svelte') } /></Route>
 					<Route path="/tags/:tag"><Loadable {collab} {repo} component={ import('./pages/repositories/tags/edit.svelte') } /></Route>
 
-					<Route path="/stats"><Loadable {collab} {repo} component={ import('./pages/repositories/stats.svelte') } /></Route>
 					<Route path="/settings/*" firstmatch><Loadable {collab} {repo} component={ import('./pages/repositories/settings.svelte') } /></Route>
 				</Route>
 			</PromiseLoader>
