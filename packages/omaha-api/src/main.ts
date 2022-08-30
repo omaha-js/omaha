@@ -74,7 +74,7 @@ async function bootstrap() {
 		const runGarbageCollector = () => {
 			const start = Date.now(); gc!();
 			const end = Date.now(); const took = end - start;
-			const timeout = (Math.floor(took / 100) * 2000) + 20000;
+			const timeout = (Math.floor(took / 100) * 10000) + 120000;
 
 			setTimeout(runGarbageCollector, timeout).unref();
 		};
