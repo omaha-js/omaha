@@ -7,7 +7,7 @@ importers:
 
   packages/omaha-api:
     specifiers:
-      '@baileyherbert/env': ^1.3.1
+      '@baileyherbert/env': ^2.0.1
       '@baileyherbert/logging': ^2.1.0
       '@baileyherbert/nested-collections': ^1.3.0
       '@baileyherbert/queue': ^2.1.1
@@ -67,7 +67,7 @@ importers:
       typescript: ^4.7.4
       uuid: ^8.3.2
     dependencies:
-      '@baileyherbert/env': 1.3.1
+      '@baileyherbert/env': 2.0.1
       '@baileyherbert/logging': 2.1.0
       '@baileyherbert/nested-collections': 1.3.0
       '@baileyherbert/queue': 2.1.1
@@ -597,8 +597,8 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@baileyherbert/env/1.3.1:
-    resolution: {integrity: sha512-2OHIyk/Unl5yv1EN3PgoN+jsNR1O4tcCqvDCcaCINfdQrfJVSEE9Pj537UzE5HGtnVWaZ/jxGtm4vZ+HJjLEQw==}
+  /@baileyherbert/env/2.0.1:
+    resolution: {integrity: sha512-v3kBagrEmUCufJWapyntvi2h991Cr6ZWLJx9WWHtYliPqZWZ7k0UQ0FTQ7ZmTiOdIhjFHnbt8c64hf1aZ5a4ZQ==}
     dev: false
 
   /@baileyherbert/events/1.0.1:
