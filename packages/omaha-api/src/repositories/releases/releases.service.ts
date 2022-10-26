@@ -151,9 +151,11 @@ export class ReleasesService {
 			const { entities, raw } = await query.getRawAndEntities();
 			results = entities.map((entity, index) => {
 				const downloads = raw[index].Release_weekly_downloads;
-				if (typeof downloads !== 'string') return instanceToPlain(entity);
+				if (typeof downloads !== 'string') return instanceToPlain(entity, {
+					excludePrefixes: ['_']
+				});
 				return {
-					...instanceToPlain(entity),
+					...instanceToPlain(entity, { excludePrefixes: ['_'] }),
 					weekly_downloads: Number(downloads)
 				};
 			});
