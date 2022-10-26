@@ -1,4 +1,4 @@
-import { Controller, ForbiddenException, Get, NotFoundException, Param, Query, StreamableFile } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, Logger, NotFoundException, Param, Query, StreamableFile } from '@nestjs/common';
 import { Guest } from 'src/auth/decorators/guest.decorator';
 import { DownloadQueryDto } from './dto/DownloadQueryDto';
 import { StorageService } from './storage.service';
@@ -38,11 +38,14 @@ export class StorageController {
 		}
 
 		const stream = fs.createReadStream(objectPath);
-
-		return new StreamableFile(stream, {
+		const file = new StreamableFile(stream, {
 			disposition: query.disposition,
 			length: objectStats.size
 		});
+
+		file.setErrorHandler(err => Logger.error(err));
+
+		return file;
 	}
 
 }
