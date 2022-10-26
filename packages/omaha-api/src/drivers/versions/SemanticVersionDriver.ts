@@ -24,6 +24,10 @@ export class SemanticVersionDriver implements VersionSchemeDriver {
 		});
 	}
 
+	public getVersionMatchesConstraint(versions: VersionList, input: string, constraint: string): boolean {
+		return semver.satisfies(input, constraint);
+	}
+
 	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[] {
 		return versions.selected.sort(direction === 'asc' ? semver.compare : semver.rcompare);
 	}

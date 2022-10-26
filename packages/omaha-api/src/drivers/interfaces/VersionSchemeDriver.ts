@@ -23,6 +23,15 @@ export interface VersionSchemeDriver {
 	getVersionsFromConstraint(versions: VersionList, constraint: string): string[];
 
 	/**
+	 * Returns true if the given input matches the specified version constraint.
+	 *
+	 * @param versions
+	 * @param input
+	 * @param constraint
+	 */
+	getVersionMatchesConstraint(versions: VersionList, input: string, constraint: string): boolean;
+
+	/**
 	 * Returns a new array of all given versions sorted in the specified direction.
 	 *
 	 * @param versions

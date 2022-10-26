@@ -91,6 +91,13 @@ export class MicrosoftVersionDriver implements VersionSchemeDriver {
 		});
 	}
 
+	public getVersionMatchesConstraint(versions: VersionList, input: string, constraint: string): boolean {
+		constraint = this.toSemanticConstraint(constraint);
+		input = this.toSemantic(input);
+
+		return semver.satisfies(input, constraint);
+	}
+
 	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc'): string[] {
 		const sorted = versions.selected
 			.map(version => this.toSemantic(version))

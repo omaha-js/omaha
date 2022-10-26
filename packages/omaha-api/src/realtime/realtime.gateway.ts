@@ -1,5 +1,5 @@
 import { HttpException, Logger, UnauthorizedException } from '@nestjs/common';
-import { WebSocketGateway } from '@nestjs/websockets';
+import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import { TokensService } from 'src/auth/tokens/tokens.service';
 import { RealtimeService } from './realtime.service';
@@ -7,6 +7,7 @@ import getipaddr from 'proxy-addr';
 import { Environment } from 'src/app.environment';
 import { RatelimitManager } from 'src/ratelimit/ratelimit.manager';
 import { RatelimitService } from 'src/ratelimit/ratelimit.service';
+import { Release } from 'src/entities/Release';
 
 @WebSocketGateway({
 	cors: { origin: '*' },
@@ -95,6 +96,50 @@ export class RealtimeGateway {
 	 */
 	public async handleDisconnect(socket: Socket) {
 		return this.service.deregister(socket);
+	}
+
+	@SubscribeMessage('subscribe')
+	protected async handleNewSubscription(socket: Socket, data: unknown) {
+		if (!Array.isArray(data)) return false;
+		if (data.length !== 3) return false;
+
+		const remoteId: number = data[0];
+		const repoId: string = data[1];
+		const constraint: string = data[2];
+
+		if (typeof remoteId !== 'number') return false;
+		if (typeof repoId !== 'string') return false;
+		if (typeof constraint !== 'string') return false;
+
+		try {
+			return await this.service.registerSubscription(socket, remoteId, repoId, constraint);
+		}
+		catch (err) {
+			this.logger.error('Failed to create subscription for client <%s>:', socket.remoteAddress, err);
+		}
+	}
+
+	@SubscribeMessage('subscription:update')
+	protected handleUpdateSubscription(socket: Socket, data: unknown) {
+		if (!Array.isArray(data)) return false;
+		if (data.length !== 2) return false;
+
+		const remoteId: number = data[0];
+		const constraint: string = data[1];
+
+		if (typeof remoteId !== 'number') return false;
+		if (typeof constraint !== 'string') return false;
+
+		this.service.updateSubscription(socket, remoteId, constraint);
+		return true;
+	}
+
+	@SubscribeMessage('subscription:close')
+	protected handleCloseSubscription(socket: Socket, remoteId: number) {
+		if (typeof remoteId !== 'number') return false;
+
+		this.service.closeSubscription(socket, remoteId);
+		return true;
 	}
 
 	/**

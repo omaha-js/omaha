@@ -388,6 +388,7 @@ export class ReleasesService {
 			});
 
 			this.ws.emit(repo, 'release_published', { release });
+			await this.ws.emitNewRelease(repo, release);
 		}
 
 		return release;

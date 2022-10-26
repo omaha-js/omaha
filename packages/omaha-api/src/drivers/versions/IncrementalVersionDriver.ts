@@ -47,6 +47,14 @@ export class IncrementalVersionDriver implements VersionSchemeDriver {
 		return versions.selected.filter(version => eligibleVersions.has(version));
 	}
 
+	public getVersionMatchesConstraint(versions: VersionList, input: string, constraint: string): boolean {
+		const matches = this.getVersionsFromConstraint({
+			all: versions.all, selected: [input]
+		}, constraint);
+
+		return matches.length > 0;
+	}
+
 	public getVersionsSorted(versions: VersionList, direction: 'asc' | 'desc') {
 		const selected = [...versions.selected];
 

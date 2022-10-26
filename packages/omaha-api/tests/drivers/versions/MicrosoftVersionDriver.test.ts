@@ -29,6 +29,18 @@ describe('MicrosoftVersionDriver', function() {
 		expect(driver.toMicrosoft('1.2.110000310000004')).toBe('1.2.100003.10000004');
 	});
 
+	it('matches constraints', function() {
+		const blank = { all: [], selected: [] };
+
+		expect(driver.getVersionMatchesConstraint(blank, '1.0.0.0', '^1.0.0.0')).toBe(true);
+		expect(driver.getVersionMatchesConstraint(blank, '1.1.0.0', '^1.0.0.0')).toBe(true);
+		expect(driver.getVersionMatchesConstraint(blank, '1.0.1.0', '^1.0.0.0')).toBe(true);
+		expect(driver.getVersionMatchesConstraint(blank, '1.0.0.1', '^1.0.0.0')).toBe(true);
+
+		expect(driver.getVersionMatchesConstraint(blank, '2.0.0.0', '^1.0.0.0')).toBe(false);
+		expect(driver.getVersionMatchesConstraint(blank, '1.0.1.2', '^1.1.0.0')).toBe(false);
+	});
+
 	it('sorts properly', function() {
 		const unsorted = ['1.0.0.2', '1.0.0.1', '1.1.0.0', '1.1.0.2', '1.0.1.1', '1.0.0.0', '1.0.1.2', '1.1.0.1', '1.0.1.0'];
 		const sorted = ['1.0.0.0', '1.0.0.1', '1.0.0.2', '1.0.1.0', '1.0.1.1', '1.0.1.2', '1.1.0.0', '1.1.0.1', '1.1.0.2'];
