@@ -116,6 +116,7 @@ export class RealtimeGateway {
 		}
 		catch (err) {
 			this.logger.error('Failed to create subscription for client <%s>:', socket.remoteAddress, err);
+			return false;
 		}
 	}
 
